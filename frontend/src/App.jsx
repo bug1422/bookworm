@@ -1,13 +1,9 @@
-import { useState } from 'react'
-import './App.css'
+import "./App.css";
+import RouteContext from "./route";
 
 function App() {
-  const [count, setCount] = useState(0)
 
-  return (
-    <>
-    </>
-  )
+  return <RouteContext />;
 }
 
-export default App
+export default App;
