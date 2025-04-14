@@ -1,13 +1,15 @@
 import { Outlet } from "react-router-dom";
-import Navigation from "../component/navigation";
+import Header from "../component/header";
+import Footer from "@/component/footer";
 
 const UserLaytout = () => {
   return (
     <div className="">
-      <Navigation />
+      <Header />
       <div className="mx-16">
-      <Outlet />
+        <Outlet />
       </div>
+      <Footer />
     </div>
   );
 };
