@@ -9,7 +9,7 @@ import {
 
 const BookCard = () => {
   return (
-    <Card className="min-w-60 w-full h-fit gap-0 p-0">
+    <Card className="min-w-60 max-w-80 w-full h-fit gap-0 p-0">
       <CardHeader className="w-full h-fit border-b-2 rounded-sm border-gray-100 ">
         <img
           src="/assets/book-placeholder.png"

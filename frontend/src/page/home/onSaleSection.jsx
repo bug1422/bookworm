@@ -22,8 +22,8 @@ const ItemContainer = ({ books }) => {
 
 const OnSaleSection = () => {
   return (
-    <div className="w-full">
-      <div>On Sale</div>
+    <div className="w-full xl:my-8">
+      <div className="xl:text-3xl">On Sale</div>
       <Carousel
         opts={{
           align: "start",
