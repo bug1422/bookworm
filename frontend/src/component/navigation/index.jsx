@@ -11,7 +11,7 @@ const Navigation = () => {
   };
   return (
     <header className="py-3 flex flex-row justify-between w-full bg-gray-200">
-      <div className="ms-3 flex items-center gap-2">
+      <div className="ms-6 flex items-center gap-2">
         <img src="https://placehold.co/32x32" alt="bookworm-logo" />
         <div className="font-bold uppercase">bookworm</div>
       </div>
