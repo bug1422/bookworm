@@ -1,5 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
-@import "tailwindcss"; /* Base styles (replaces @tailwind base) */
+@import "tailwindcss"; /* Base styles (replaces @tailwind base) */;
+@plugin "flowbite-react/plugin/tailwindcss";
+@source "../.flowbite-react/class-list.json";
 @theme {
   --font-roboto: "Roboto", sans-serif;
 }
