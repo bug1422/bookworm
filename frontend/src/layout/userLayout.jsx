@@ -1,9 +1,10 @@
 import { Outlet } from "react-router-dom";
+import Navigation from "../component/navigation";
 
 const UserLaytout = () => {
   return (
-    <div>
-        This is a layout
+    <div className="">
+      <Navigation />
       <Outlet />
     </div>
   );
