@@ -4,10 +4,12 @@ const QueryContext = createContext();
 
 export const QueryProvider = ({ children }) => {
   const [filters, setFilters] = useState({});
-  const [sorts, setSorts] = useState({});
+  const [sorts, setSorts] = useState("");
   const [shows, setShows] = useState(20);
+  const [currentPage, setCurrentPage] = useState();
   const [bookList, setBookList] = useState({});
   useEffect(() => {
+    console.log(`${filters} ${sorts} ${shows}`)
     //Call api
   }, [filters, sorts, shows]);
   return (
@@ -19,7 +21,10 @@ export const QueryProvider = ({ children }) => {
         setSorts: setSorts,
         shows: shows,
         setShows: setShows,
-        list: bookList,
+        currentPage: currentPage,
+        setCurrentPage: setCurrentPage,
+        list: bookList.data,
+        maxPage: 5
       }}
     >
       {children}
