@@ -19,7 +19,7 @@ def parse_cors(v: Any) -> list[str] | str:
     raise ValueError(v)
 
 class Settings(BaseSettings):
-    model_config SettingsConfigDict(
+    model_config = SettingsConfigDict(
         env_file="../.env",
         env_ignore_empty=True,
         extra="ignore"
@@ -47,7 +47,7 @@ class Settings(BaseSettings):
     @property
     def SQLMODEL_DATABASE_URI(self) -> PostgresDsn:
         return Url.build(
-            scheme="postgresql+psycopg",
+            scheme="postgresql+psycopg2",
             username=self.POSTGRES_USER,
             password=self.POSTGRES_PASSWORD,
             host=self.POSTGRES_SERVER,

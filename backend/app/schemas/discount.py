@@ -1,0 +1,13 @@
+from sqlmodel import SQLModel,Numeric, Relationship, Field
+from typing import Optional
+from datetime import datetime, timezone
+from decimal import Decimal
+class DiscountBase(SQLModel):
+    discount_start_date: datetime = Field(default=datetime.now(timezone.utc), nullable=False)
+    discount_end_date: datetime = Field(default=None, nullable=True)
+    discount_price: Decimal = Field(max_digits=5,decimal_places=2, nullable=False, gt=0)
+    
+class Discount(DiscountBase):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    book_id: int = Field(nullable=False, foreign_key="book.id")
+    book: "Book" = Relationship(back_populates="discounts")
