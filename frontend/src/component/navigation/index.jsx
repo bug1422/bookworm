@@ -10,8 +10,8 @@ const Navigation = () => {
     }}>{children}</div>;
   };
   return (
-    <div className="p-3 flex flex-row justify-between w-full bg-gray-200">
-      <div className="flex items-center gap-2">
+    <header className="py-3 flex flex-row justify-between w-full bg-gray-200">
+      <div className="ms-3 flex items-center gap-2">
         <img src="https://placehold.co/32x32" alt="bookworm-logo" />
         <div className="font-bold uppercase">bookworm</div>
       </div>
@@ -23,7 +23,7 @@ const Navigation = () => {
         <div>Sign In</div>
         {/* last is a pop up sign in */}
       </div>
-    </div>
+    </header>
   );
 };
 
