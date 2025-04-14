@@ -5,7 +5,9 @@ const UserLaytout = () => {
   return (
     <div className="">
       <Navigation />
+      <div className="ms-3 me-16">
       <Outlet />
+      </div>
     </div>
   );
 };
