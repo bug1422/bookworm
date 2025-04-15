@@ -1,5 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { combineClass } from "../../util/classname";
+import SignInDialog from "./signin";
+
+
 
 const Header = () => {
   const location = useLocation();
@@ -15,12 +18,12 @@ const Header = () => {
         <img src="https://placehold.co/32x32" alt="bookworm-logo" />
         <div className="font-bold xl:text-3xl">BOOKWORM</div>
       </div>
-      <div className="flex gap-12 me-16">
+      <div className="flex gap-12 me-16 items-center">
         <Nav link="/home">Home</Nav>
         <Nav link="/shop">Shop</Nav>
         <Nav link="/about">About</Nav>
         <Nav link="/cart">Cart</Nav>
-        <div>Sign In</div>
+        <SignInDialog/>
         {/* last is a pop up sign in */}
       </div>
     </header>
