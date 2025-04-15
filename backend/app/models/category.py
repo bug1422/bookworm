@@ -7,6 +7,6 @@ class CategoryBase(SQLModel):
 class Category(CategoryBase, table=True):
     __tablename__ = "category"
     id: Optional[int] = Field(default=None, primary_key=True)
-    books: list["Book"] = Relationship(back_populates="author")
+    books: list["Book"] = Relationship(back_populates="category")
     
     

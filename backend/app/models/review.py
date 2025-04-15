@@ -7,7 +7,8 @@ class ReviewBase(SQLModel):
     review_date: datetime = Field(default=datetime.now(timezone.utc))
     rating_start: str
     
-class Review(ReviewBase):
+class Review(ReviewBase, table=True):
+    __tablename__ = "review"
     id: Optional[int] = Field(default=None, primary_key=True)
     book_id: int = Field(nullable=False, foreign_key="book.id")
     book: "Book" = Relationship(back_populates="reviews")
