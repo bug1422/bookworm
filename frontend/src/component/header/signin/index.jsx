@@ -39,8 +39,7 @@ const SignInForm = () => {
   });
 
   const onSubmit = (data) => {
-    handleSignIn(data)
-    console.log(data);
+    handleSignIn(data.email,data.password)
   };
   return (
     <>
