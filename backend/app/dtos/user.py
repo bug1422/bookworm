@@ -1,6 +1,10 @@
 from pydantic import BaseModel
 from app.models import User
 
+class UserLoginDTO(BaseModel):
+    email: str
+    password: str
+
 class UserDTO(BaseModel):
     email: str | None = None
     full_name: str | None = None
