@@ -1,6 +1,6 @@
-import { api } from "@/script/api";
+import { api } from ".."
 
-export function handleSignIn(email,password) {
+export function login(email,password) {
     const formData = new FormData()
     formData.append('email', email)
     formData.append('password', password)

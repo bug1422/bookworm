@@ -22,6 +22,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { toast } from "sonner";
 import { handleSignIn } from "./script";
+import { login } from "@/api/service/user";
 const signInSchema = Yup.object({
   email: Yup.string().email("Must be email").required("Can't be empty"),
   password: Yup.string()
@@ -39,7 +40,7 @@ const SignInForm = () => {
   });
 
   const onSubmit = (data) => {
-    handleSignIn(data.email,data.password)
+    login(data.email,data.password)
   };
   return (
     <>
