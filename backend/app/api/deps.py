@@ -8,6 +8,9 @@ def get_user_service(session: Session = Depends(get_session)):
     from app.services.user import UserService
     return UserService(session)
 
+def get_book_service(session: Session = Depends(get_session)):
+    from app.services.book import BookService
+    return BookService(session)
 
 def get_token_data(request: Request) -> TokenData:
     credentials_exception = HTTPException(

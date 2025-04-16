@@ -2,6 +2,7 @@ from sqlmodel import SQLModel, Numeric, Relationship, Field
 from typing import Optional
 from decimal import Decimal
 
+
 class BookBase(SQLModel):
     book_title: str = Field(nullable=False, max_length=255, index=True)
     book_summary: str = Field()
@@ -18,3 +19,8 @@ class Book(BookBase, table=True):
     category: "Category" = Relationship(back_populates="books")
     discounts: list["Discount"] = Relationship(back_populates="book")    
     reviews: list["Review"] = Relationship(back_populates="book")    
+    
+class OnSaleBook(BookBase):
+    author_name: str 
+    price_offset: Decimal = Field()
+    max_discount_price: Decimal = Field()

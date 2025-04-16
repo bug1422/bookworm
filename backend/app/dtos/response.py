@@ -1,7 +1,6 @@
-from typing import Generic,TypeVar,Optional
+from typing import Any,Optional
 from pydantic import BaseModel
-T = TypeVar("T", default= None)
-class AppResponse(BaseModel,Generic[T]):
+class AppResponse(BaseModel):
     status_code: int
-    message: str
-    detail: Optional[T] = None
+    message: str = ""
+    detail: Optional[Any] = None
