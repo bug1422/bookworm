@@ -8,8 +8,6 @@ class BookService(BaseService[BookRepository]):
     def __init__(self, session):
         super().__init__(BookRepository(session))
 
-    # def get_books(self,)
-
     @async_res_wrapper
     async def get_top_on_sale(self, limit: int = 10) -> list[OnSaleBook]:
         books = await self.repository.get_book_on_discount(limit)

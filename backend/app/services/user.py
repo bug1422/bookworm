@@ -1,5 +1,6 @@
 from app.services.base import BaseService
-from app.repository.user import UserRepository, User
+from app.repository.user import UserRepository
+from app.models.user import User, UserInfo
 from sqlmodel import Session
 from app.services.response import async_res_wrapper
 
@@ -9,8 +10,12 @@ class UserService(BaseService[UserRepository]):
         super().__init__(UserRepository(session))
 
     @async_res_wrapper
-    async def get_by_id(self, id: int) -> User:
-        return await self.repository.get_by_id(id)
+    async def get_user_info(self, id: int) -> UserInfo:
+        user = await self.repository.get_by_id(id)
+        if user:
+            return UserInfo(**user.model_dump())
+        else:
+            raise Exception("No user found")
 
 
     @async_res_wrapper

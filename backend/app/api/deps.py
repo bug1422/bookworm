@@ -1,7 +1,7 @@
 from fastapi import Depends, Request, HTTPException, status
 from app.core.db import Session, get_session
 from app.core.security import decode_access_token, InvalidTokenError
-from app.dtos.token import TokenData
+from app.models.token import TokenData
 
 
 def get_user_service(session: Session = Depends(get_session)):

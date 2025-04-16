@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, Header, status, HTTPException
 from app.api.deps import get_book_service
 from app.services.book import BookService
-from app.dtos.response import AppResponse
-from app.dtos.book import OnSaleBookDTO
+from app.models.response import AppResponse
 from typing import Any
 
 router = APIRouter(prefix="/book", tags=["book"])
@@ -18,11 +17,8 @@ async def get_on_sale_books(limit: int = 10, service: BookService = Depends(get_
         )
     return AppResponse(
         status_code=status.HTTP_200_OK,
-        detail = [OnSaleBookDTO.from_orm(book) for book in book_res.result]
+        detail = book_res.result
     )
-    
-# return AppResponse[Any](
-#     status_code=status.HTTP_200_OK,
-#     detail= data,
-#     message="success"
-# )
+
+@router.get("/",response_model=AppResponse)
+async def get_books(offset: int = 0, limit: int = 20,)
