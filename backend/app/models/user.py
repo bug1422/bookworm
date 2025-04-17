@@ -1,6 +1,17 @@
 from sqlmodel import SQLModel, Relationship, Field
 from pydantic import EmailStr
 from typing import Optional
+
+class UserLogin(SQLModel):
+    email: str
+    password: str
+
+class UserInfo(SQLModel):
+    email: str | None = None
+    full_name: str | None = None
+    admin: bool
+    
+
 class UserBase(SQLModel):
     first_name: str = Field(max_length=50,nullable=False)
     last_name: str = Field(max_length=50,nullable=True)

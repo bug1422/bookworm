@@ -1,5 +1,7 @@
 from typing import Generic, TypeVar, Type
-from sqlmodel import SQLModel, Session, select
+from sqlmodel import SQLModel, Session, select, and_
+from sqlmodel.sql.expression import SelectOfScalar
+from typing import Any
 T = TypeVar("T", bound=SQLModel)
 
 
@@ -8,8 +10,12 @@ class BaseRepository(Generic[T]):
         self.model = model
         self.session = session
 
-    async def get_all(self) -> list[T]:
-        return self.session.exec(select(self.model)).all()
+    async def exec(self,statement: SelectOfScalar, offset: int = 0, limit: int = 0, filters: list[Any | None] = None):
+        if filters:
+            statement.where(and_(*filters))
+        statement.offset(offset)
+        statement.limit(limit)
+        return self.session.exec(statement)
 
     async def get_by_id(self, id: int) -> T | None:
         return self.session.exec(select(self.model).where(self.model.id == id)).first()
