@@ -1,13 +1,25 @@
 from fastapi import Depends, Request, HTTPException, status
 from app.core.db import Session, get_session
 from app.core.security import decode_access_token, InvalidTokenError
-from app.dtos.token import TokenData
+from app.models.token import TokenData
+from app.repository.user import UserRepository
+from app.repository.book import BookRepository
+
+from app.services.user import UserService
+from app.services.book import BookService
+
+def get_book_repo(session: Session = Depends(get_session)):
+    return BookRepository(session)
+
+def get_user_repo(session: Session = Depends(get_session)):
+    return UserRepository(session)
 
 
-def get_user_service(session: Session = Depends(get_session)):
-    from app.services.user import UserService
-    return UserService(session)
+def get_user_service(user_repo: UserRepository = Depends(get_user_repo)):
+    return UserService(user_repo)
 
+def get_book_service(book_repo: BookRepository = Depends(get_book_repo)):
+    return BookService(book_repo)
 
 def get_token_data(request: Request) -> TokenData:
     credentials_exception = HTTPException(
