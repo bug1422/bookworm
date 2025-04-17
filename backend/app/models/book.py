@@ -4,7 +4,6 @@ from typing import Optional, Literal
 from decimal import Decimal
 from enum import Enum
 
-
 class SortOption(Enum):
     ON_SALE = "on-sale"
     POPULARITY = "popularity"
@@ -12,6 +11,13 @@ class SortOption(Enum):
     PRICE_HIGH_TO_LOW = "price-high"
 
 ALLOWED_TAKE_AMOUNT = [5,15,20,25]
+
+class BookSearchOption(SQLModel):
+    sort_options: dict[str,str] = []
+    category_names: list[str]
+    author_names: list[str]
+    min_rating: int
+    max_rating: int 
 
 class BookQuery(SQLModel):
     page: int = Field(default=1, ge=1)
@@ -40,11 +46,16 @@ class BookPreview(SQLModel):
     book_price: Decimal
     book_cover_photo: str
     author_name: str
-    discount_offset: Optional[Decimal] = Field(default=None)
-    max_discount_price: Optional[Decimal] = Field(default=None)
-    star_rating: Optional[float] = Field(default=None)
-    total_review: Optional[int] = Field(default=0)
+    category_name: str
+    final_price: Optional[Decimal] = Field(default=None)
 
+class BookSearchResult(BookPreview):
+    discount_offset: Optional[Decimal] = Field(default=None)
+    total_review: Optional[int] = Field(default=0)
+    star_rating: Optional[float] = Field(default=None)
+
+class BookDetail(BookPreview):
+    book_summary: str
 
 class Book(BookBase, table=True):
     __tablename__ = "book"

@@ -4,22 +4,16 @@ from app.core.security import decode_access_token, InvalidTokenError
 from app.models.token import TokenData
 from app.repository.user import UserRepository
 from app.repository.book import BookRepository
+from app.repository.review import ReviewRepository
+from app.repository.author import AuthorRepository
+from app.repository.category import CategoryRepository
 
 from app.services.user import UserService
 from app.services.book import BookService
+from app.services.review import ReviewService
+from app.services.author import AuthorService
+from app.services.category import CategoryService
 
-def get_book_repo(session: Session = Depends(get_session)):
-    return BookRepository(session)
-
-def get_user_repo(session: Session = Depends(get_session)):
-    return UserRepository(session)
-
-
-def get_user_service(user_repo: UserRepository = Depends(get_user_repo)):
-    return UserService(user_repo)
-
-def get_book_service(book_repo: BookRepository = Depends(get_book_repo)):
-    return BookService(book_repo)
 
 def get_token_data(request: Request) -> TokenData:
     credentials_exception = HTTPException(
@@ -37,3 +31,39 @@ def get_token_data(request: Request) -> TokenData:
         return token_data
     except InvalidTokenError:
         raise credentials_exception
+
+#region Service&Repository
+def __get_book_repo(session: Session = Depends(get_session)):
+    return BookRepository(session)
+
+def __get_user_repo(session: Session = Depends(get_session)):
+    return UserRepository(session)
+
+def __get_review_repo(session: Session = Depends(get_session)):
+    return ReviewRepository(session)
+
+def __get_author_repo(session: Session = Depends(get_session)):
+    return AuthorRepository(session)
+
+def __get_category_repo(session: Session = Depends(get_session)):
+    return CategoryRepository(session)
+
+
+
+def get_user_service(user_repo: UserRepository = Depends(__get_user_repo)):
+    return UserService(user_repo)
+
+def get_book_service(book_repo: BookRepository = Depends(__get_book_repo)):
+    return BookService(book_repo)
+
+def get_review_service(session: Session = Depends(__get_review_repo)):
+    return ReviewService(session)
+
+def get_author_service(session: Session = Depends(__get_author_repo)):
+    return AuthorService(session)
+
+def get_category_service(session: Session = Depends(__get_category_repo)):
+    return CategoryService(session)
+#endregion
+
+

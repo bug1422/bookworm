@@ -4,14 +4,31 @@ from sqlmodel.sql.expression import Select
 from typing import Tuple
 from decimal import Decimal
 from app.models.book import Book, SortOption
+from app.models.author import Author
+from app.models.category import Category
 
 
 class BookRepository(BaseRepository[Book]):
     def __init__(self, session):
         super().__init__(Book, session)
 
+    async def get_book_detail(
+        self,
+        book_id: int
+    ) -> Tuple[Book, Decimal]:
+        on_sale_sub = self.__get_on_sale_subquery()
+        final_price = case((on_sale_sub.c.max_discount_price > Book.book_price,
+                           on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
+        query: Select = select(
+            Book,
+            final_price
+        ).join(Author).join(Category).where(Book.id == book_id)
+        book = self.session.exec(query).first()
+        return book
+
     async def get_books(
-        self, sort_option: SortOption = None,
+        self,
+        sort_option: SortOption = None,
         category_name: str = None,
         author_name: str = None,
         rating_star: str = None,
@@ -19,14 +36,13 @@ class BookRepository(BaseRepository[Book]):
         limit: int = 0,
 
     ) -> list[Tuple[Book, Decimal, Decimal, int, float]]:
-        from app.models.author import Author
-        from app.models.category import Category
         # first get all book with reviews and discount
         on_sale_sub = self.__get_on_sale_subquery()
         rating_sub = self.__get_review_subquery()
         discount_offset = (
             Book.book_price - on_sale_sub.c.max_discount_price).label("discount_offset")
-        final_price = case((on_sale_sub.c.max_discount_price > Book.book_price, on_sale_sub.c.max_discount_price),else_=Book.book_price).label("final_price")
+        final_price = case((on_sale_sub.c.max_discount_price > Book.book_price,
+                           on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
         query: Select = select(
             Book,
             discount_offset,
@@ -46,7 +62,7 @@ class BookRepository(BaseRepository[Book]):
             onclause=rating_sub.c.book_id == Book.id,
             isouter=True
         )
-        
+
         match sort_option:
             case SortOption.ON_SALE:
                 query = query.where(discount_offset != None).order_by(
@@ -67,7 +83,8 @@ class BookRepository(BaseRepository[Book]):
         if author_name:
             query = query.where(Author.author_name == author_name)
         if rating_star:
-            query = query.where(and_(rating_sub.c.average_rating != None,func.cast(rating_sub.c.average_rating, Integer) >= int(rating_star)))
+            query = query.where(and_(rating_sub.c.average_rating != None, func.cast(
+                rating_sub.c.average_rating, Integer) >= int(rating_star)))
         query = query.offset(offset).limit(limit)
         books = self.session.exec(query).all()
         return books

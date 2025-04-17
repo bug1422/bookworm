@@ -1,6 +1,10 @@
-from sqlmodel import SQLModel,Numeric, Relationship, Field
+from sqlmodel import SQLModel, Relationship, Field
 from typing import Optional
 from datetime import datetime, timezone
+
+MinRating = 1
+MaxRating = 5
+
 class ReviewBase(SQLModel):
     review_title: str = Field(max_length=120, nullable = False)
     review_details: str = Field(nullable=False)
