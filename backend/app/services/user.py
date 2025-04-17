@@ -6,8 +6,8 @@ from app.services.response import async_res_wrapper
 
 
 class UserService(BaseService[UserRepository]):
-    def __init__(self, session: Session):
-        super().__init__(UserRepository(session))
+    def __init__(self, user_repo: UserRepository):
+        super().__init__(UserRepository(user_repo))
 
     @async_res_wrapper
     async def get_user_info(self, id: int) -> UserInfo:
