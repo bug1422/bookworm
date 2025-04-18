@@ -27,5 +27,8 @@ class SearchOptionSerivce():
             rating_list=self.review_service.get_list_of_rating(),
             book_sort_options=self.book_service.get_sort_option(),
             review_sort_options=self.review_service.get_sort_option(),
-            paging_options=settings.ALLOWED_TAKE_AMOUNT
+            paging_options={
+                str(key): f"{key} per page"
+                for key in settings.ALLOWED_TAKE_AMOUNT
+            }
         )

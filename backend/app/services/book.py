@@ -2,12 +2,14 @@ from app.services.base import BaseService
 from app.repository.discount import DiscountRepository
 from app.repository.book import BookRepository
 from app.models.review import ReviewBase
+from app.models.paging import PagingResponse
 from app.models.book import BookQuery, Book, BookPreview, BookSearchResult, BookDetail, BookSortOption
 from app.services.review import ReviewService
 from app.services.author import AuthorService
 from app.services.category import CategoryService
 from app.services.response import async_res_wrapper
 from decimal import Decimal
+from math import ceil
 
 
 class BookService(BaseService[BookRepository]):
@@ -16,7 +18,7 @@ class BookService(BaseService[BookRepository]):
 
     @async_res_wrapper
     async def get_top_on_sale(self, limit: int = 10) -> list[BookSearchResult]:
-        books = await self.repository.get_books(
+        books, _ = await self.repository.get_books(
             BookSortOption.ON_SALE, limit=limit)
         return [
             self.__map_to_search_result(
@@ -27,7 +29,7 @@ class BookService(BaseService[BookRepository]):
 
     @async_res_wrapper
     async def get_recommended_books(self, limit: int = 8) -> list[BookSearchResult]:
-        books = await self.repository.get_books(
+        books, _ = await self.repository.get_books(
             BookSortOption.AVG_RATING, limit=limit)
         return [
             self.__map_to_search_result(
@@ -35,10 +37,10 @@ class BookService(BaseService[BookRepository]):
                 final_price, total_review, avg_rating)
             for book, discount_offset, final_price, total_review, avg_rating in books
         ]
-        
+
     @async_res_wrapper
     async def get_popular_books(self, limit: int = 8) -> list[BookSearchResult]:
-        books = await self.repository.get_books(
+        books, _ = await self.repository.get_books(
             BookSortOption.POPULARITY, limit=limit)
         return [
             self.__map_to_search_result(
@@ -48,8 +50,8 @@ class BookService(BaseService[BookRepository]):
         ]
 
     @async_res_wrapper
-    async def get_books(self, query_option: BookQuery) -> list[BookSearchResult]:
-        books = await self.repository.get_books(
+    async def get_books(self, query_option: BookQuery) -> PagingResponse[BookSearchResult]:
+        books, max_entries = await self.repository.get_books(
             sort_option=query_option.sort_option,
             category_name=query_option.category_name,
             author_name=query_option.author_name,
@@ -57,11 +59,14 @@ class BookService(BaseService[BookRepository]):
             offset=(query_option.page-1) * query_option.take,
             limit=query_option.take
         )
-        return [
-            self.__map_to_search_result(book, discount_offset,
-                                        final_price, total_review, avg_rating)
-            for book, discount_offset, final_price, total_review, avg_rating in books
-        ]
+        return PagingResponse[BookSearchResult](
+            current_page=query_option.page,
+            max_page=ceil(max_entries / query_option.take),
+            items=[
+                self.__map_to_search_result(book, discount_offset,
+                                            final_price, total_review, avg_rating)
+                for book, discount_offset, final_price, total_review, avg_rating in books
+            ])
 
     @async_res_wrapper
     async def get_book_detail(self, book_id: int, review_service: ReviewService) -> BookDetail:
@@ -77,7 +82,7 @@ class BookService(BaseService[BookRepository]):
         self,
     ) -> dict[str, str]:
         return {
-            key.value: key.label_name
+            key.value: key.label
             for key in BookSortOption
             if key.is_public
         }
