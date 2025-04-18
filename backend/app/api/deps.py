@@ -15,7 +15,6 @@ from app.services.author import AuthorService
 from app.services.category import CategoryService
 from app.services.search_option import SearchOptionSerivce
 
-
 def get_token_data(request: Request) -> TokenData:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
