@@ -6,4 +6,4 @@ class SearchOptions(SQLModel):
     rating_list: list[str] = []
     book_sort_options: dict[str,str] = {}
     review_sort_options: dict[str,str] = {},
-    paging_options: list[int] = []
+    paging_options: dict[str,str] = []

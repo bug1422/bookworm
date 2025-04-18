@@ -16,10 +16,6 @@ class ReviewSortOption(Enum):
     def __init__(self,value,label):
         self._value_ = value
         self.label = label
-        
-    @property
-    def label_name(self):
-        return self.label
 
 
 class ReviewBase(SQLModel):

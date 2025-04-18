@@ -38,12 +38,12 @@ class BookRepository(BaseRepository[Book]):
         offset: int = 0,
         limit: int = 0,
 
-    ) -> list[Tuple[Book, Decimal, Decimal, int, float]]:
+    ) -> Tuple[list[Tuple[Book, Decimal, Decimal, int, float]],int]:
         on_sale_sub = self.__get_on_sale_subquery()
         rating_sub = self.__get_review_subquery()
         discount_offset = (
             Book.book_price - on_sale_sub.c.max_discount_price).label("discount_offset")
-        final_price = case((on_sale_sub.c.max_discount_price > Book.book_price,
+        final_price = case((on_sale_sub.c.max_discount_price < Book.book_price,
                            on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
         query: Select = select(
             Book,
@@ -90,9 +90,10 @@ class BookRepository(BaseRepository[Book]):
         if rating_star:
             query = query.where(and_(rating_sub.c.average_rating != None, func.cast(
                 rating_sub.c.average_rating, Integer) >= int(rating_star)))
+        max_entries = self.session.scalar(select(func.count()).select_from(query))
         query = query.offset(offset).limit(limit)
         books = self.session.exec(query).all()
-        return books
+        return books, max_entries
 
 <<<<<<< HEAD
     # region Subquery

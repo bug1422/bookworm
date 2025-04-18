@@ -23,6 +23,6 @@ class ReviewService(BaseService[ReviewRepository]):
         
     def get_sort_option(self) -> list[str, str]:
         return {
-            key.value: key.label_name
+            key.value: key.label
             for key in ReviewSortOption
         }
