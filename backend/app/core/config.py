@@ -31,6 +31,8 @@ class Settings(BaseSettings):
     ENVIRONMENT: Literal["local","staging","production"] = "local"
     BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = []
     
+    ALLOWED_TAKE_AMOUNT: list[int] = [5,15,20,25]
+    
     @computed_field
     @property
     def all_cors_origins(self) -> list[str]:

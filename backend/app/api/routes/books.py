@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, Query, status, HTTPException
-from app.api.deps import get_book_service, get_author_service, get_category_service, get_review_service
+from app.api.deps import get_book_service, get_review_service
 from app.services.book import BookService
-from app.services.author import AuthorService
-from app.services.category import CategoryService
+from app.services.review import ReviewService
 from app.models.response import AppResponse
 from app.models.book import BookQuery
+from app.models.review import ReviewQuery
 from typing import Any
 
 router = APIRouter(prefix="/books", tags=["book"])
@@ -38,9 +38,14 @@ async def get_books(query: BookQuery = Query(...), service: BookService = Depend
     )
 
 
-@router.get("/", response_model=AppResponse)
-async def get_book_detail(book_id: int = Query(...), service: BookService = Depends(get_book_service)):
-    book_res = await service.get_book_detail(book_id)
+
+@router.get("/{book_id}", response_model=AppResponse)
+async def get_book_detail(
+    book_id: int,
+    book_service: BookService = Depends(get_book_service),
+    review_service: ReviewService = Depends(get_review_service)
+):
+    book_res = await book_service.get_book_detail(book_id, review_service)
     if not book_res.is_success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -52,19 +57,19 @@ async def get_book_detail(book_id: int = Query(...), service: BookService = Depe
     )
 
 
-@router.get("/search-option", response_model=AppResponse)
-async def get_search_options(
-    book_service: BookService = Depends(get_book_service),
-    author_service: AuthorService = Depends(get_author_service),
-    category_service: CategoryService = Depends(get_category_service),
+@router.get("/{book_id}/reviews", response_model=AppResponse)
+async def get_book_review(
+    book_id: int,
+    query: ReviewQuery = Query(...),
+    service: ReviewService = Depends(get_review_service)
 ):
-    option_res = await book_service.get_book_search_option(author_service,category_service)
-    if not option_res.is_success:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=str(option_res.exception)
-            )
+    reviews_res = await service.get_book_reviews(book_id, query)
+    if not reviews_res.is_success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(reviews_res.exception)
+        )
     return AppResponse(
         status_code=status.HTTP_200_OK,
-        detail=option_res.result
+        detail=reviews_res.result
     )
