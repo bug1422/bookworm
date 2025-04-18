@@ -21,25 +21,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useQuery } from "./usequeryContext";
+import { useBookQuery } from "../../component/context/useBookQueryContext";
 import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import BookCard from "@/component/card/book";
+import { useSearch } from "@/component/context/useSearch";
 
 //mock api option
-const sortOptions = [
-  { value: "sale", label: "Sort by on sale" },
-  { value: "popularity", label: "Sort by popularity" },
-  { value: "price-asc", label: "Sort by price: low to high" },
-  { value: "price-desc", label: "Sort by price: high to low" },
-];
-
 const SortDropdown = () => {
   const [open, setOpen] = useState(false);
-  const { sorts, setSorts } = useQuery();
-  useEffect(() => {
-    setSorts(sortOptions[0].value);
-  }, []);
+  const { bookSortOptions } = useSearch();
+  const { sortOption, setQueryState } = useBookQuery();
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -49,9 +41,7 @@ const SortDropdown = () => {
           variant="secondary"
           className="w-fit justify-between"
         >
-          {sorts
-            ? sortOptions.find((opt) => opt.value === sorts)?.label
-            : "In case no value"}
+          {sortOption ? sortOption[1] : "In case no value"}
           <ChevronDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -60,18 +50,21 @@ const SortDropdown = () => {
           <CommandList>
             <CommandEmpty>No option found</CommandEmpty>
             <CommandGroup>
-              {sortOptions.map((opt) => (
+              {bookSortOptions.map((opt) => (
                 <CommandItem
-                  key={opt.value}
-                  value={opt.value}
-                  onSelect={(curValue) => {
-                    if (curValue !== sorts) {
-                      setSorts(curValue);
+                  key={opt[0]}
+                  value={opt[0]}
+                  onSelect={(curValue, v) => {
+                    if (curValue !== sortOption[0]) {
+                      setQueryState((prev) => ({
+                        ...prev,
+                        sortOption: opt,
+                      }));
                     }
                     setOpen(false);
                   }}
                 >
-                  {opt.label}
+                  {opt[1]}
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -82,19 +75,10 @@ const SortDropdown = () => {
   );
 };
 
-const showsOptions = [
-  { value: "5", label: "Show 5" },
-  { value: "15", label: "Show 15" },
-  { value: "20", label: "Show 20" },
-  { value: "25", label: "Show 25" },
-];
-
 const ShowDropdown = () => {
   const [open, setOpen] = useState(false);
-  const { shows, setShows } = useQuery();
-  useEffect(() => {
-    setShows(showsOptions[2].value);
-  }, []);
+  const { pagingOptions } = useSearch();
+  const { pagingOption, setQueryState } = useBookQuery();
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -104,9 +88,7 @@ const ShowDropdown = () => {
           variant="secondary"
           className="w-fit justify-between"
         >
-          {shows
-            ? showsOptions.find((opt) => opt.value == shows)?.label
-            : "In case no value"}
+          {pagingOption ? pagingOption[1] : "In case no value"}
           <ChevronDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -115,18 +97,21 @@ const ShowDropdown = () => {
           <CommandList>
             <CommandEmpty>No option found</CommandEmpty>
             <CommandGroup>
-              {showsOptions.map((opt) => (
+              {pagingOptions.map((opt) => (
                 <CommandItem
-                  key={opt.value}
-                  value={opt.value}
+                  key={opt[0]}
+                  value={opt[0]}
                   onSelect={(curValue, v) => {
-                    if (curValue !== shows) {
-                      setShows(parseInt(curValue));
+                    if (curValue !== pagingOption[0]) {
+                      setQueryState((prev) => ({
+                        ...prev,
+                        pagingOption: opt,
+                      }));
                     }
                     setOpen(false);
                   }}
                 >
-                  {opt.label}
+                  {opt[1]}
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -138,10 +123,15 @@ const ShowDropdown = () => {
 };
 
 const ListPagination = () => {
-  const { currentPage, setCurrentPage, maxPage } = useQuery();
-  useEffect(() => {
-    setCurrentPage(1);
-  }, []);
+  const { currentPage, maxPage, setQueryState } = useBookQuery();
+  useEffect(()=>{
+    setCurrentPage(1)
+  },[])
+  const setCurrentPage = (page) => {
+    setQueryState((prev) => ({
+      currentPage: page,
+    }));
+  };
   return (
     <Pagination className="h-24">
       <PaginationContent>
@@ -186,7 +176,8 @@ const ListPagination = () => {
 };
 
 const ListSection = () => {
-  const { shows } = useQuery();
+  const { shows } = useBookQuery();
+  const { books, setQueryState } = useBookQuery();
 
   return (
     <div>
@@ -197,14 +188,24 @@ const ListSection = () => {
           <ShowDropdown />
         </div>
       </div>
-      <div className="grid grid-cols-4 min-h-[700px]">
-        {Array(shows)
-          .fill(1)
-          .map((v, k) => (
-            <BookCard key={k} />
-          ))}
+      <div className=" min-h-[700px]">
+        {books.length > 0 && (
+          <>
+            <div className="grid grid-cols-4">
+              {books.map((v, k) => (
+                <BookCard
+                  key={k}
+                  bookTitle={v.book_title}
+                  authorName={v.author_name}
+                  bookPrice={v.book_price}
+                  finalPrice={v.final_price}
+                />
+              ))}
+            </div>
+            <ListPagination />
+          </>
+        )}
       </div>
-      <ListPagination />
     </div>
   );
 };

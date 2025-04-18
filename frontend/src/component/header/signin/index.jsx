@@ -20,8 +20,6 @@ import { Input } from "@/components/ui/input";
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { toast } from "sonner";
-import { handleSignIn } from "./script";
 import { login } from "@/api/service/user";
 const signInSchema = Yup.object({
   email: Yup.string().email("Must be email").required("Can't be empty"),

@@ -1,14 +1,12 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { combineClass } from "../../util/classname";
 import SignInDialog from "./signin";
-
-
+import { cn } from "@/lib/utils";
 
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate()
   const Nav = ({ children, link }) => {
-    return <div className={combineClass(location.pathname.includes(link) && "underline decoration-2", "select-none cursor-pointer")} onClick={()=>{
+    return <div className={cn(location.pathname.includes(link) && "underline decoration-2", "select-none cursor-pointer")} onClick={()=>{
         navigate(link)
     }}>{children}</div>;
   };
