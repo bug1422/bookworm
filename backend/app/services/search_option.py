@@ -4,7 +4,7 @@ from app.services.review import ReviewService
 from app.services.author import AuthorService
 from app.services.category import CategoryService
 from app.services.response import async_res_wrapper
-
+from app.core.config import settings
 
 class SearchOptionSerivce():
     def __init__(
@@ -25,6 +25,7 @@ class SearchOptionSerivce():
             author_names=await self.author_service.get_list_of_name(),
             category_names=await self.category_service.get_list_of_name(),
             rating_list=self.review_service.get_list_of_rating(),
-            book_sort_option=self.book_service.get_sort_option(),
-            review_sort_option=self.review_service.get_sort_option()
+            book_sort_options=self.book_service.get_sort_option(),
+            review_sort_options=self.review_service.get_sort_option(),
+            paging_options=settings.ALLOWED_TAKE_AMOUNT
         )

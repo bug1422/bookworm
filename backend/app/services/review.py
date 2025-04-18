@@ -14,7 +14,7 @@ class ReviewService(BaseService[ReviewRepository]):
     @async_res_wrapper
     async def get_book_reviews(self,book_id: int, query_option: ReviewQuery) -> list[ReviewDetail]:
         reviews = await self.repository.get_by_book_id(book_id, query_option)
-        return [ReviewDetail(**review) for review in reviews]
+        return [ReviewDetail(**review.model_dump()) for review in reviews]
     
     def get_list_of_rating(self):
         return [

@@ -30,7 +30,7 @@ class ReviewBase(SQLModel):
 
 
 class ReviewQuery(QueryPaging):
-    star_rating: Optional[int]
+    star_rating: Optional[int] = Field(default=None)
     sort_option: ReviewSortOption = Field(default=ReviewSortOption.NEWEST_DATE)
 
 
