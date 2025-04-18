@@ -15,6 +15,15 @@ from app.services.author import AuthorService
 from app.services.category import CategoryService
 from app.services.search_option import SearchOptionSerivce
 
+def get_user_repo(session: Session = Depends(get_session)):
+    return UserRepository(session)
+
+
+def get_user_service(user_repo: UserRepository = Depends(get_user_repo)):
+    return UserService(user_repo)
+
+def get_book_service(book_repo: BookRepository = Depends(get_book_repo)):
+    return BookService(book_repo)
 
 def get_token_data(request: Request) -> TokenData:
     credentials_exception = HTTPException(
