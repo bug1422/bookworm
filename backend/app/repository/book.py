@@ -39,7 +39,6 @@ class BookRepository(BaseRepository[Book]):
         limit: int = 0,
 
     ) -> list[Tuple[Book, Decimal, Decimal, int, float]]:
-        # first get all book with reviews and discount
         on_sale_sub = self.__get_on_sale_subquery()
         rating_sub = self.__get_review_subquery()
         discount_offset = (
@@ -81,6 +80,9 @@ class BookRepository(BaseRepository[Book]):
                 query = query.order_by(final_price)
             case BookSortOption.PRICE_HIGH_TO_LOW:
                 query = query.order_by(desc(final_price))
+            case BookSortOption.AVG_RATING:
+                query = query.order_by(
+                    desc(rating_sub.c.average_rating), final_price)
         if category_name:
             query = query.where(Category.category_name == category_name)
         if author_name:
@@ -92,8 +94,29 @@ class BookRepository(BaseRepository[Book]):
         books = self.session.exec(query).all()
         return books
 
+<<<<<<< HEAD
     # region Subquery
 
+=======
+    async def get_book_detail(
+        self,
+        book_id: int
+    ) -> Tuple[Book, Decimal, int, float]:
+        on_sale_sub = self.__get_on_sale_subquery(book_id)
+        rating_sub = self.__get_review_subquery(book_id)
+        final_price = case((on_sale_sub.c.max_discount_price > Book.book_price,
+                           on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
+        query: Select = select(
+            Book,
+            final_price,
+            rating_sub.c.total_review,
+            rating_sub.c.average_rating,
+        ).join(Author).join(Category).where(Book.id == book_id)
+        book = self.session.exec(query).first()
+        return book
+    
+    #region Subquery
+>>>>>>> 5b02c56bfaa0340468d6266c8ea9ec838e12660e
     def __get_on_sale_subquery(self, book_id: int = None):
         from datetime import datetime, timezone
         from app.models.discount import Discount
