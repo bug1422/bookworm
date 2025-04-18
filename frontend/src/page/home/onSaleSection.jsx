@@ -16,10 +16,11 @@ import { useNavigate } from "react-router-dom";
 const ItemContainer = ({ books }) => {
   return (
     <CarouselItem className="">
-      <div className="flex justify-center gap-8 md:basis-1/2 lg:basis-1/4">
+      <div className="px-44 grid grid-cols-4 xl:gap-8">
         {books &&
           books.map((v, k) => (
             <BookCard
+              bookId={v.id}
               key={k}
               bookTitle={v.book_title}
               authorName={v.author_name}

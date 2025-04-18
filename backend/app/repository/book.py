@@ -38,7 +38,7 @@ class BookRepository(BaseRepository[Book]):
         offset: int = 0,
         limit: int = 0,
 
-    ) -> Tuple[list[Tuple[Book, Decimal, Decimal, int, float]],int]:
+    ) -> Tuple[list[Tuple[Book, Decimal, Decimal, int, float]], int]:
         on_sale_sub = self.__get_on_sale_subquery()
         rating_sub = self.__get_review_subquery()
         discount_offset = (
@@ -90,15 +90,12 @@ class BookRepository(BaseRepository[Book]):
         if rating_star:
             query = query.where(and_(rating_sub.c.average_rating != None, func.cast(
                 rating_sub.c.average_rating, Integer) >= int(rating_star)))
-        max_entries = self.session.scalar(select(func.count()).select_from(query))
+        max_entries = self.session.scalar(
+            select(func.count()).select_from(query))
         query = query.offset(offset).limit(limit)
         books = self.session.exec(query).all()
         return books, max_entries
 
-<<<<<<< HEAD
-    # region Subquery
-
-=======
     async def get_book_detail(
         self,
         book_id: int
@@ -115,9 +112,8 @@ class BookRepository(BaseRepository[Book]):
         ).join(Author).join(Category).where(Book.id == book_id)
         book = self.session.exec(query).first()
         return book
-    
-    #region Subquery
->>>>>>> 5b02c56bfaa0340468d6266c8ea9ec838e12660e
+
+    # region Subquery
     def __get_on_sale_subquery(self, book_id: int = None):
         from datetime import datetime, timezone
         from app.models.discount import Discount

@@ -6,10 +6,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
-const BookCard = ({bookTitle, authorName, img_path, bookPrice, finalPrice}) => {
+const BookCard = ({bookId, bookTitle, authorName, img_path, bookPrice, finalPrice}) => {
+  const navigate = useNavigate()
   return (
-    <Card className="w-64 h-fit gap-0 p-0">
+    <Card className="select-none cursor-pointer w-64 h-fit gap-0 p-0" onClick={() => { navigate("/product/"+bookId)}}>
       <CardHeader className="w-full h-fit border-b-2 rounded-sm border-gray-100 ">
         <img
           src={"/assets/book-placeholder.png"}

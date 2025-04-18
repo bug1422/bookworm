@@ -20,18 +20,22 @@ export const QueryProvider = ({ children }) => {
     const defaultSortOption = bookSortOptions?.find(
       (opt) => opt[0] == "on-sale"
     );
-    setQueryState((prev) => ({
-      ...prev,
-      sortOption: defaultSortOption,
-    }));
+    if (defaultSortOption != null) {
+      setQueryState((prev) => ({
+        ...prev,
+        sortOption: defaultSortOption,
+      }));
+    }
   }, [bookSortOptions]);
 
   useEffect(() => {
     const defaultPaging = pagingOptions?.find((opt) => opt[0] == "20");
-    setQueryState((prev) => ({
-      ...prev,
-      pagingOption: defaultPaging,
-    }));
+    if (defaultPaging != null) {
+      setQueryState((prev) => ({
+        ...prev,
+        pagingOption: defaultPaging,
+      }));
+    }
   }, [pagingOptions]);
 
   useEffect(() => {
@@ -47,13 +51,13 @@ export const QueryProvider = ({ children }) => {
   ]);
 
   useEffect(() => {
-    if (queryState.sortOption && pagingOption) {
+    if (queryState.sortOption && queryState.pagingOption) {
       getBooks(queryState.currentPage);
     }
   }, [queryState.currentPage]);
 
   const getBooks = async (currentPage) => {
-    console.log("call api")
+    console.log("call api");
     const {
       selectedAuthor,
       selectedCategory,
@@ -70,7 +74,7 @@ export const QueryProvider = ({ children }) => {
       currentPage
     );
     if (bookList) {
-      setBooks(bookList);
+      setBooks(bookList.items);
       setQueryState((prev) => ({
         ...prev,
         maxPage: bookList.max_page,

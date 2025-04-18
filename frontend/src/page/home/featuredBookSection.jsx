@@ -49,6 +49,7 @@ const FeaturedBookSection = () => {
       <div className="border-1 border-gray-200 p-6 px-50 w-full min-h-[52rem] xl:gap-8 grid grid-cols-4">
         {featuredList.map((v, k) => (
           <BookCard
+            bookId={v.id}
             key={k}
             bookTitle={v.book_title}
             authorName={v.author_name}

@@ -1,9 +1,5 @@
 from sqlmodel import SQLModel, Numeric, Relationship, Field
-<<<<<<< HEAD
-from typing import Optional, Literal
-=======
 from typing import Optional
->>>>>>> 5b02c56bfaa0340468d6266c8ea9ec838e12660e
 from decimal import Decimal
 from enum import Enum
 from app.models.paging import QueryPaging

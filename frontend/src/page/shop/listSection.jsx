@@ -124,11 +124,12 @@ const ShowDropdown = () => {
 
 const ListPagination = () => {
   const { currentPage, maxPage, setQueryState } = useBookQuery();
-  useEffect(()=>{
-    setCurrentPage(1)
-  },[])
+  useEffect(() => {
+    setCurrentPage(1);
+  }, []);
   const setCurrentPage = (page) => {
     setQueryState((prev) => ({
+      ...prev,
       currentPage: page,
     }));
   };
@@ -191,9 +192,10 @@ const ListSection = () => {
       <div className=" min-h-[700px]">
         {books.length > 0 && (
           <>
-            <div className="grid grid-cols-4">
+            <div className="grid grid-cols-4 gap-6">
               {books.map((v, k) => (
                 <BookCard
+                  bookId={v.id}
                   key={k}
                   bookTitle={v.book_title}
                   authorName={v.author_name}
