@@ -1,31 +1,30 @@
 from sqlmodel import SQLModel, Numeric, Relationship, Field
-from pydantic import field_validator
 from typing import Optional, Literal
 from decimal import Decimal
 from enum import Enum
+from app.models.paging import QueryPaging
 
 
-class SortOption(Enum):
-    ON_SALE = "on-sale"
-    POPULARITY = "popularity"
-    PRICE_LOW_TO_HGIH = "price-low"
-    PRICE_HIGH_TO_LOW = "price-high"
+class BookSortOption(Enum):
+    ON_SALE = ("on-sale", "Sort by on sale")
+    POPULARITY = ("popularity", "Sort by popularity")    
+    PRICE_LOW_TO_HGIH = ("price-low", "Sort by price: low to high")
+    PRICE_HIGH_TO_LOW = ("price-high", "Sort by price: high to low")
+    
+    def __init__(self,value,label):
+        self._value_ = value
+        self.label = label
+        
+    @property
+    def label_name(self):
+        return self.label
 
-ALLOWED_TAKE_AMOUNT = [5,15,20,25]
 
-class BookQuery(SQLModel):
-    page: int = Field(default=1, ge=1)
-    take: int = Field(default=20,)
-    sort_option: SortOption
+class BookQuery(QueryPaging):
+    sort_option: BookSortOption
     category_name: str | None = None
     author_name: str | None = None
     rating_star: str | None = None
-    @field_validator("take")
-    @classmethod
-    def enforce_take_number(cls, value):
-        if value not in ALLOWED_TAKE_AMOUNT:
-            raise ValueError(f"take must be one of {ALLOWED_TAKE_AMOUNT}")
-        return value
 
 
 class BookBase(SQLModel):
@@ -40,10 +39,19 @@ class BookPreview(SQLModel):
     book_price: Decimal
     book_cover_photo: str
     author_name: str
-    discount_offset: Optional[Decimal] = Field(default=None)
-    max_discount_price: Optional[Decimal] = Field(default=None)
-    star_rating: Optional[float] = Field(default=None)
+    category_name: str
+    final_price: Optional[Decimal] = Field(default=None)
     total_review: Optional[int] = Field(default=0)
+    star_rating: Optional[float] = Field(default=None)
+
+
+class BookSearchResult(BookPreview):
+    discount_offset: Optional[Decimal] = Field(default=None)
+
+
+class BookDetail(BookPreview):
+    book_summary: str
+    review_count_by_rating: dict[str, int]
 
 
 class Book(BookBase, table=True):
