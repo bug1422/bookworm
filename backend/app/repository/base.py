@@ -10,13 +10,6 @@ class BaseRepository(Generic[T]):
         self.model = model
         self.session = session
 
-    async def exec(self,statement: SelectOfScalar, offset: int = 0, limit: int = 0, filters: list[Any | None] = None):
-        if filters:
-            statement.where(and_(*filters))
-        statement.offset(offset)
-        statement.limit(limit)
-        return self.session.exec(statement)
-
     async def get_by_id(self, id: int) -> T | None:
         return self.session.exec(select(self.model).where(self.model.id == id)).first()
 
