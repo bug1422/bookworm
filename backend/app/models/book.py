@@ -1,24 +1,21 @@
 from sqlmodel import SQLModel, Numeric, Relationship, Field
-from typing import Optional, Literal
+from typing import Optional
 from decimal import Decimal
 from enum import Enum
 from app.models.paging import QueryPaging
 
 
 class BookSortOption(Enum):
-    ON_SALE = ("on-sale", "Sort by on sale")
-    POPULARITY = ("popularity", "Sort by popularity")    
-    PRICE_LOW_TO_HGIH = ("price-low", "Sort by price: low to high")
-    PRICE_HIGH_TO_LOW = ("price-high", "Sort by price: high to low")
+    ON_SALE = ("on-sale", "Sort by on sale", True)
+    POPULARITY = ("popularity", "Sort by popularity", True)    
+    PRICE_LOW_TO_HGIH = ("price-low", "Sort by price: low to high", True)
+    PRICE_HIGH_TO_LOW = ("price-high", "Sort by price: high to low", True)
+    AVG_RATING = ("avg-rating", "Sort by average rating", False)
     
-    def __init__(self,value,label):
+    def __init__(self,value,label, is_public):
         self._value_ = value
         self.label = label
-        
-    @property
-    def label_name(self):
-        return self.label
-
+        self.is_public = is_public
 
 class BookQuery(QueryPaging):
     sort_option: BookSortOption

@@ -26,14 +26,26 @@ class BookService(BaseService[BookRepository]):
         ]
 
     @async_res_wrapper
-    async def get_book_detail(self, book_id: int, review_service: ReviewService) -> BookDetail:
-        book, final_price, total_review, avg_rating = await self.repository.get_book_detail(book_id)
-        review_count_result = await review_service.get_review_count_by_rating(book_id)
-        if not book:
-            raise Exception("Book not found")
-        elif not review_count_result.is_success:
-            raise review_count_result.exception
-        return self.__map_to_detail(book, final_price, total_review, avg_rating, review_count_result.result)
+    async def get_recommended_books(self, limit: int = 8) -> list[BookSearchResult]:
+        books = await self.repository.get_books(
+            BookSortOption.AVG_RATING, limit=limit)
+        return [
+            self.__map_to_search_result(
+                book, discount_offset,
+                final_price, total_review, avg_rating)
+            for book, discount_offset, final_price, total_review, avg_rating in books
+        ]
+        
+    @async_res_wrapper
+    async def get_popular_books(self, limit: int = 8) -> list[BookSearchResult]:
+        books = await self.repository.get_books(
+            BookSortOption.POPULARITY, limit=limit)
+        return [
+            self.__map_to_search_result(
+                book, discount_offset,
+                final_price, total_review, avg_rating)
+            for book, discount_offset, final_price, total_review, avg_rating in books
+        ]
 
     @async_res_wrapper
     async def get_books(self, query_option: BookQuery) -> list[BookSearchResult]:
@@ -51,12 +63,23 @@ class BookService(BaseService[BookRepository]):
             for book, discount_offset, final_price, total_review, avg_rating in books
         ]
 
+    @async_res_wrapper
+    async def get_book_detail(self, book_id: int, review_service: ReviewService) -> BookDetail:
+        book, final_price, total_review, avg_rating = await self.repository.get_book_detail(book_id)
+        review_count_result = await review_service.get_review_count_by_rating(book_id)
+        if not book:
+            raise Exception("Book not found")
+        elif not review_count_result.is_success:
+            raise review_count_result.exception
+        return self.__map_to_detail(book, final_price, total_review, avg_rating, review_count_result.result)
+
     def get_sort_option(
         self,
     ) -> dict[str, str]:
         return {
             key.value: key.label_name
             for key in BookSortOption
+            if key.is_public
         }
 
     def __map_to_preview(self, book: Book, final_price: Decimal, total_review: int, avg_rating: float) -> BookPreview:
