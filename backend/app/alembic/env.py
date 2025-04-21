@@ -1,4 +1,3 @@
-import os
 from logging.config import fileConfig
 from app.core.config import settings
 from app.core.db import engine

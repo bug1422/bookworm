@@ -11,11 +11,11 @@ class ReviewRepository(BaseRepository[Review]):
 
     async def get_review_count_by_rating(self, book_id: int, rating_list: list[str] = []) -> dict[str, int]:
         query = select(
-            Review.rating_start, func.coalesce(
-                func.count(Review.rating_start), 0)
+            Review.rating_star, func.coalesce(
+                func.count(Review.rating_star), 0)
         ).where(
             Review.book_id == book_id
-        ).group_by(Review.rating_start)
+        ).group_by(Review.rating_star)
         review_counts = self.session.exec(query).all()
         result = { key: 0 for key in rating_list}
         for rating_start, review_count in review_counts:
@@ -25,7 +25,7 @@ class ReviewRepository(BaseRepository[Review]):
     async def get_by_book_id(self, book_id: int, query_option: ReviewQuery) -> list[Review]:
         query = select(Review).where(Review.book_id == book_id)
         if query_option.star_rating:
-            query = query.where(func.cast(Review.rating_start,Integer) >= query_option.star_rating)
+            query = query.where(func.cast(Review.rating_star,Integer) >= query_option.star_rating)
         match query_option.sort_option:
             case ReviewSortOption.NEWEST_DATE:
                 query = query.order_by(desc(Review.review_date))

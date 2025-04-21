@@ -9,12 +9,12 @@ class ServiceResponse(Generic[P]):
     is_success: bool
     result: Optional[P] = None
     exception: Optional[Exception] = None
-    @classmethod
-    def success(cls, result: P):
+    @staticmethod
+    def success(result: P):
         return ServiceResponse(is_success=True, result=result)
 
     @classmethod
-    def fail(cls, exception):
+    def fail(exception):
         return ServiceResponse[Any](is_success=False, exception=exception)
 
 def async_res_wrapper(func: Callable[..., Awaitable[P]]):

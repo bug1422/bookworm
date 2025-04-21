@@ -21,7 +21,7 @@ class BookQuery(QueryPaging):
     sort_option: BookSortOption
     category_name: str | None = None
     author_name: str | None = None
-    rating_star: str | None = None
+    rating_star: int | None = None
 
 
 class BookBase(SQLModel):
@@ -31,7 +31,7 @@ class BookBase(SQLModel):
     book_cover_photo: str = Field(max_length=20)
 
 
-class BookPreview(SQLModel):
+class BookOutput(SQLModel):
     book_title: str
     book_price: Decimal
     book_cover_photo: str
@@ -39,14 +39,14 @@ class BookPreview(SQLModel):
     category_name: str
     final_price: Optional[Decimal] = Field(default=None)
     total_review: Optional[int] = Field(default=0)
-    star_rating: Optional[float] = Field(default=None)
+    rating_star: Optional[float] = Field(default=None)
 
 
-class BookSearchResult(BookPreview):
+class BookSearchOutput(BookOutput):
     discount_offset: Optional[Decimal] = Field(default=None)
 
 
-class BookDetail(BookPreview):
+class BookDetailOutput(BookOutput):
     book_summary: str
     review_count_by_rating: dict[str, int]
 

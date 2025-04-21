@@ -30,9 +30,10 @@ class Settings(BaseSettings):
     FRONTEND_HOST: str = "http://localhost:5173"
     ENVIRONMENT: Literal["local","staging","production"] = "local"
     BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = []
-    
-    ALLOWED_TAKE_AMOUNT: list[int] = [5,15,20,25]
-    
+    MAX_REVIEW_RATING: int = 5
+    MIN_REVIEW_RATING: int = 1
+    ALLOWED_TAKE_AMOUNT: list[int] = []
+    MAX_ITEM_QUANTITY: int = 8
     @computed_field
     @property
     def all_cors_origins(self) -> list[str]:

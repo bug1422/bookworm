@@ -1,11 +1,10 @@
-from app.services.base import BaseService
 from app.repository.user import UserRepository
 from app.models.user import User, UserInfo
 from sqlmodel import Session
-from app.services.response import async_res_wrapper
+from app.services.wrapper import async_res_wrapper
 
 
-class UserService(BaseService[UserRepository]):
+class UserService(UserRepository):
     def __init__(self, user_repo: UserRepository):
         super().__init__(UserRepository(user_repo))
 

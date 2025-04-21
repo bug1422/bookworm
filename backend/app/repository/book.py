@@ -26,8 +26,7 @@ class BookRepository(BaseRepository[Book]):
         rating_sub = self.__get_review_subquery()
         discount_offset = (
             Book.book_price - on_sale_sub.c.max_discount_price).label("discount_offset")
-        final_price = case((on_sale_sub.c.max_discount_price < Book.book_price,
-                           on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
+        final_price = on_sale_sub.c.max_discount_price.label("final_price")
         query: Select = select(
             Book,
             discount_offset,
@@ -71,8 +70,7 @@ class BookRepository(BaseRepository[Book]):
         if author_name:
             query = query.where(Author.author_name == author_name)
         if rating_star:
-            query = query.where(and_(rating_sub.c.average_rating != None, func.cast(
-                rating_sub.c.average_rating, Integer) >= int(rating_star)))
+            query = query.where(and_(rating_sub.c.average_rating != None, rating_sub.c.average_rating >= int(rating_star)))
         max_entries = self.session.scalar(select(func.count()).select_from(query))
         query = query.offset(offset).limit(limit)
         books = self.session.exec(query).all()
@@ -117,13 +115,13 @@ class BookRepository(BaseRepository[Book]):
     def __get_review_subquery(self, book_id: int = None):
         from app.models.review import Review
         avg_rating = (
-            (1 * func.count(case((Review.rating_start == "1", 1))) +
-             2 * func.count(case((Review.rating_start == "2", 1))) +
-             3 * func.count(case((Review.rating_start == "3", 1))) +
-             4 * func.count(case((Review.rating_start == "4", 1))) +
-             5 * func.count(case((Review.rating_start == "5", 1)))
+            (1 * func.count(case((Review.rating_star == 1, 1))) +
+             2 * func.count(case((Review.rating_star == 2, 1))) +
+             3 * func.count(case((Review.rating_star == 3, 1))) +
+             4 * func.count(case((Review.rating_star == 4, 1))) +
+             5 * func.count(case((Review.rating_star == 5, 1)))
              )/func.coalesce(
-                func.count(Review.rating_start), 1
+                func.count(Review.rating_star), 1
             )
         ).label("average_rating")
         total_review = func.count(Review.book_id).label("total_review")
