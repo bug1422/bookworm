@@ -26,7 +26,7 @@ def get_token_data(request: Request) -> TokenData:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid credential",
-        headers={"WWW-Authenticate": "Bearer"}
+        headers={"WWW-Authenticate": "Bearer"},
     )
     try:
         token = request.cookies.get("access_token")
@@ -38,6 +38,7 @@ def get_token_data(request: Request) -> TokenData:
         return token_data
     except InvalidTokenError:
         raise credentials_exception
+
 
 # region Repository
 
@@ -77,6 +78,7 @@ def __get_order_repo(session: Session = Depends(get_session)):
 def __get_order_item_repo(session: Session = Depends(get_session)):
     return OrderItemRepository(session)
 
+
 # endregion
 # region Service
 
@@ -89,26 +91,34 @@ def get_book_service(book_repo: BookRepository = Depends(__get_book_repo)):
     return BookService(book_repo)
 
 
-def get_review_service(review_repo: ReviewRepository = Depends(__get_review_repo)):
+def get_review_service(
+    review_repo: ReviewRepository = Depends(__get_review_repo),
+):
     return ReviewService(review_repo)
 
 
-def get_author_service(author_repo: AuthorRepository = Depends(__get_author_repo)):
+def get_author_service(
+    author_repo: AuthorRepository = Depends(__get_author_repo),
+):
     return AuthorService(author_repo)
 
 
-def get_category_service(category_repo: CategoryRepository = Depends(__get_category_repo)):
+def get_category_service(
+    category_repo: CategoryRepository = Depends(__get_category_repo),
+):
     return CategoryService(category_repo)
 
 
-def get_discount_service(discount_repo: DiscountRepository = Depends(__get_discount_repo)):
+def get_discount_service(
+    discount_repo: DiscountRepository = Depends(__get_discount_repo),
+):
     return DiscountService(discount_repo)
 
 
 def get_order_item_service(
     order_item_repo: OrderItemRepository = Depends(__get_order_item_repo),
     book_service: BookService = Depends(get_book_service),
-    discount_service: DiscountService = Depends(get_discount_service)
+    discount_service: DiscountService = Depends(get_discount_service),
 ):
     return OrderItemService(
         item_repository=order_item_repo,
@@ -124,7 +134,6 @@ def get_order_service(
     return OrderService(
         order_repository=order_repository,
         item_service=item_service,
-
     )
 
 
@@ -132,7 +141,11 @@ def get_search_option_service(
     book_service: BookService = Depends(get_book_service),
     author_service: AuthorService = Depends(get_author_service),
     category_service: CategoryService = Depends(get_category_service),
-    review_service: ReviewService = Depends(get_review_service)
+    review_service: ReviewService = Depends(get_review_service),
 ):
-    return SearchOptionSerivce(book_service, author_service, category_service, review_service)
+    return SearchOptionSerivce(
+        book_service, author_service, category_service, review_service
+    )
+
+
 # endregion

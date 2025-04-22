@@ -20,7 +20,9 @@ class ReviewBase(SQLModel):
     review_title: str = Field(max_length=120, nullable=False)
     review_details: str = Field(nullable=True)
     review_date: datetime = Field(default=datetime.now(timezone.utc))
-    rating_star: int = Field(default=settings.MIN_REVIEW_RATING,nullable=False)
+    rating_star: int = Field(
+        default=settings.MIN_REVIEW_RATING, nullable=False
+    )
 
 
 class ReviewQuery(QueryPaging):
@@ -38,7 +40,10 @@ class ReviewInput(ReviewBase):
     @field_validator("rating_star")
     @classmethod
     def enforce_in_range(cls, value):
-        if not (value >= settings.MIN_REVIEW_RATING and value <= settings.MAX_REVIEW_RATING):
+        if not (
+            value >= settings.MIN_REVIEW_RATING
+            and value <= settings.MAX_REVIEW_RATING
+        ):
             raise ValueError(
                 f"rating must be from {settings.MIN_REVIEW_RATING} to {settings.MAX_REVIEW_RATING}"
             )

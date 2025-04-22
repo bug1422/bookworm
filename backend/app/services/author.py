@@ -2,7 +2,7 @@ from app.repository.author import AuthorRepository
 from app.services.wrapper import async_res_wrapper
 
 
-class AuthorService():
+class AuthorService:
     def __init__(self, repository: AuthorRepository):
         self.repository = repository
 

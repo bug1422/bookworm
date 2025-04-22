@@ -5,12 +5,12 @@ from app.repository.order import OrderRepository
 from app.models.order import Order, OrderInput, OrderValidateOutput
 
 
-class OrderService():
+class OrderService:
     def __init__(
-            self,
-            order_repository: OrderRepository,
-            user_service: UserService,
-            item_service: OrderItemService
+        self,
+        order_repository: OrderRepository,
+        user_service: UserService,
+        item_service: OrderItemService,
     ):
         self.repository = order_repository
         self.user_service = user_service
@@ -24,8 +24,7 @@ class OrderService():
         validated_items = []
         is_valid: bool = True
         for item in order_input.items:
-            validated_item = await self.item_service.validate_item(
-                item)
+            validated_item = await self.item_service.validate_item(item)
             if len(validated_item.exception_details) != 0:
                 is_valid = False
             else:
@@ -36,9 +35,7 @@ class OrderService():
             raise Exception("")
             # rollback
         total_price = sum([item.final_price for item in validated_items])
-        order = Order(
-            order_amount=total_price
-        )
+        order = Order(order_amount=total_price)
         await self.repository.add(order)
         add_items_res = await self.item_service.add_items()
         if not add_items_res.is_success:
@@ -50,6 +47,11 @@ class OrderService():
         return order
 
     @async_res_wrapper
-    async def validate_order(self, order_input: OrderInput) -> OrderValidateOutput:
-        validated_items = [await self.item_service.validate_item(item) for item in order_input.items]
+    async def validate_order(
+        self, order_input: OrderInput
+    ) -> OrderValidateOutput:
+        validated_items = [
+            await self.item_service.validate_item(item)
+            for item in order_input.items
+        ]
         return OrderValidateOutput(validated_items=validated_items)

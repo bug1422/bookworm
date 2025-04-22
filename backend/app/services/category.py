@@ -2,7 +2,7 @@ from app.repository.category import CategoryRepository
 from app.services.wrapper import async_res_wrapper
 
 
-class CategoryService():
+class CategoryService:
     def __init__(self, repository: CategoryRepository):
         self.repository = repository
 

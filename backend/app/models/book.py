@@ -7,15 +7,16 @@ from app.models.paging import QueryPaging
 
 class BookSortOption(Enum):
     ON_SALE = ("on-sale", "Sort by on sale", True)
-    POPULARITY = ("popularity", "Sort by popularity", True)    
+    POPULARITY = ("popularity", "Sort by popularity", True)
     PRICE_LOW_TO_HGIH = ("price-low", "Sort by price: low to high", True)
     PRICE_HIGH_TO_LOW = ("price-high", "Sort by price: high to low", True)
     AVG_RATING = ("avg-rating", "Sort by average rating", False)
-    
-    def __init__(self,value,label, is_public):
+
+    def __init__(self, value, label, is_public):
         self._value_ = value
         self.label = label
         self.is_public = is_public
+
 
 class BookQuery(QueryPaging):
     sort_option: BookSortOption
