@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:latest
@@ -11,7 +9,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER?error}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?error}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_DEV_PORT?error}:5432"
 
 volumes:
   test_data:

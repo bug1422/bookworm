@@ -1,11 +1,12 @@
 from app.repository.base import BaseRepository
-from sqlmodel import select, func, case, and_, desc, Integer, nulls_last
-from sqlmodel.sql.expression import Select
 from typing import Tuple
+from sqlmodel import select, func, case as query_case, and_, desc, nulls_last
+from sqlmodel.sql.expression import Select
 from decimal import Decimal
 from app.models.book import Book, BookSortOption
 from app.models.author import Author
 from app.models.category import Category
+from app.models.review import Review
 
 
 class BookRepository(BaseRepository[Book]):
@@ -26,7 +27,8 @@ class BookRepository(BaseRepository[Book]):
         discount_offset = (
             Book.book_price - on_sale_sub.c.max_discount_price
         ).label("discount_offset")
-        final_price = on_sale_sub.c.max_discount_price.label("final_price")
+        final_price = query_case((on_sale_sub.c.max_discount_price > Book.book_price,
+                            on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
         query: Select = select(
             Book,
             discount_offset,
@@ -74,7 +76,7 @@ class BookRepository(BaseRepository[Book]):
                 )
             )
         max_entries = self.session.scalar(
-            select(func.count()).select_from(query)
+            select(func.count()).select_from(query.subquery())
         )
         query = query.offset(offset).limit(limit)
         books = self.session.exec(query).all()
@@ -85,7 +87,7 @@ class BookRepository(BaseRepository[Book]):
     ) -> Tuple[Book, Decimal, int, float]:
         on_sale_sub = self.__get_on_sale_subquery(book_id)
         rating_sub = self.__get_review_subquery(book_id)
-        final_price = case(
+        final_price = query_case(
             (
                 on_sale_sub.c.max_discount_price > Book.book_price,
                 on_sale_sub.c.max_discount_price,
@@ -131,15 +133,14 @@ class BookRepository(BaseRepository[Book]):
         return available_discount_subquery.subquery()
 
     def __get_review_subquery(self, book_id: int = None):
-        from app.models.review import Review
 
         avg_rating = (
             (
-                1 * func.count(case((Review.rating_star == 1, 1)))
-                + 2 * func.count(case((Review.rating_star == 2, 1)))
-                + 3 * func.count(case((Review.rating_star == 3, 1)))
-                + 4 * func.count(case((Review.rating_star == 4, 1)))
-                + 5 * func.count(case((Review.rating_star == 5, 1)))
+                1 * func.count(query_case((Review.rating_star == 1, 1)))
+                + 2 * func.count(query_case((Review.rating_star == 2, 1)))
+                + 3 * func.count(query_case((Review.rating_star == 3, 1)))
+                + 4 * func.count(query_case((Review.rating_star == 4, 1)))
+                + 5 * func.count(query_case((Review.rating_star == 5, 1)))
             )
             / func.coalesce(func.count(Review.rating_star), 1)
         ).label("average_rating")

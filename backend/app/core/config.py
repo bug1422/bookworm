@@ -44,9 +44,12 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str
     POSTGRES_SERVER: str
-    POSTGRES_PORT: int = 5432
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str = ""
+
+    @property
+    def POSTGRES_PORT(self) -> int:
+        return 0
 
     @property
     def POSTGRES_DB(self) -> str:
@@ -54,19 +57,39 @@ class Settings(BaseSettings):
 
     @computed_field
     @property
-z
+    def SQLMODEL_DATABASE_URI(self) -> PostgresDsn:
+         return Url.build(
+             scheme="postgresql+psycopg2",
+             username=self.POSTGRES_USER,
+             password=self.POSTGRES_PASSWORD,
+             host=self.POSTGRES_SERVER,
+             port=self.POSTGRES_PORT,
+             path=self.POSTGRES_DB
+         )
 
 
 class DevSettings(Settings):
-    POSTGRES_DEV_DB: str = ""
+    POSTGRES_DEV_DB: str
+    POSTGRES_DEV_PORT: int
+
+    
+    @property
+    def POSTGRES_PORT(self) -> int:
+        return self.POSTGRES_DEV_PORT
 
     @property
     def POSTGRES_DB(self) -> str:
         return self.POSTGRES_DEV_DB
 
 class TestSettings(Settings):
-    POSTGRES_TEST_DB: str = ""
-
+    POSTGRES_TEST_DB: str
+    POSTGRES_TEST_PORT: int
+    TEST_API_URL: str
+    
+    @property
+    def POSTGRES_PORT(self) -> int:
+        return self.POSTGRES_TEST_PORT
+    
     @property
     def POSTGRES_DB(self) -> str:
         return self.POSTGRES_TEST_DB
