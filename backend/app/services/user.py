@@ -1,13 +1,11 @@
-from app.services.base import BaseService
 from app.repository.user import UserRepository
 from app.models.user import User, UserInfo
-from sqlmodel import Session
-from app.services.response import async_res_wrapper
+from app.services.wrapper import async_res_wrapper
 
 
-class UserService(BaseService[UserRepository]):
+class UserService:
     def __init__(self, user_repo: UserRepository):
-        super().__init__(UserRepository(user_repo))
+        self.repository = user_repo
 
     @async_res_wrapper
     async def get_user_info(self, id: int) -> UserInfo:
@@ -17,9 +15,10 @@ class UserService(BaseService[UserRepository]):
         else:
             raise Exception("No user found")
 
-
     @async_res_wrapper
-    async def get_by_email_and_password(self, email: str, password: str) -> User | None:
+    async def get_by_email_and_password(
+        self, email: str, password: str
+    ) -> User | None:
         user = await self.repository.get_by_email(email)
         if user and self.verify_password(password, user.password):
             return user
@@ -28,4 +27,5 @@ class UserService(BaseService[UserRepository]):
 
     def verify_password(self, plain, hashed) -> bool:
         from app.core.security import pwd_context
+
         return pwd_context.verify(plain, hashed)

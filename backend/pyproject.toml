@@ -1,0 +1,12 @@
+[tool.ruff]
+exclude = ["app/tests/", "app/alembic/", ".env"]
+line-length = 79  # PEP 8 recommends a maximum line length of 79 characters
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]  # Enable rules from Pyflakes (F), pycodestyle (E, W)
+ignore = ["E501", "F401"]  # Ignore line length warnings (optional)
+
+[tool.pytest.ini_options]
+markers = [
+    "books: all book endpoint tests"
+]

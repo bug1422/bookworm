@@ -5,8 +5,10 @@ from starlette.middleware.cors import CORSMiddleware
 from app.api.main import api_router
 from app.core.config import settings
 
+
 def custom_generate_unique_id(route: APIRoute) -> str:
     return f"{route.tags[0]}-{route.name}"
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -22,9 +24,11 @@ if settings.all_cors_origins:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-@app.get("/",tags=["init"],include_in_schema=False)
+
+
+@app.get("/", tags=["init"], include_in_schema=False)
 async def root():
     return {"message": "Server started"}
 
-app.include_router(api_router, prefix=settings.API_V1_STR)
 
+app.include_router(api_router, prefix=settings.API_V1_STR)

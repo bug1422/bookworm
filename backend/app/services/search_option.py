@@ -3,16 +3,17 @@ from app.models.search_option import SearchOptions
 from app.services.review import ReviewService
 from app.services.author import AuthorService
 from app.services.category import CategoryService
-from app.services.response import async_res_wrapper
+from app.services.wrapper import async_res_wrapper
 from app.core.config import settings
 
-class SearchOptionSerivce():
+
+class SearchOptionSerivce:
     def __init__(
         self,
         book_service: BookService,
         author_service: AuthorService,
         category_service: CategoryService,
-        review_service: ReviewService
+        review_service: ReviewService,
     ):
         self.book_service = book_service
         self.author_service = author_service
@@ -30,5 +31,5 @@ class SearchOptionSerivce():
             paging_options={
                 str(key): f"{key} per page"
                 for key in settings.ALLOWED_TAKE_AMOUNT
-            }
+            },
         )
