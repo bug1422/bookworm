@@ -29,7 +29,7 @@ export const fetchPopularBook = async () => {
   }
 };
 
-export const fetchBooks = async (
+export const fetchBooksByQuery = async (
   authorName,
   categoryName,
   ratingStar,

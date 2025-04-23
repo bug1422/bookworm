@@ -138,6 +138,7 @@ const ListPagination = () => {
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
+            className="select-none cursor-pointer"
             onClick={() => {
               if (currentPage > 1) setCurrentPage(currentPage - 1);
             }}
@@ -145,6 +146,7 @@ const ListPagination = () => {
         </PaginationItem>
         <PaginationItem>
           <PaginationLink
+            className="select-none cursor-pointer"
             onClick={() => {
               setCurrentPage(currentPage - 1);
             }}
@@ -153,10 +155,13 @@ const ListPagination = () => {
           </PaginationLink>
         </PaginationItem>
         <PaginationItem>
-          <PaginationLink isActive>{currentPage}</PaginationLink>
+          <PaginationLink className="select-none cursor-pointer" isActive>
+            {currentPage}
+          </PaginationLink>
         </PaginationItem>
         <PaginationItem>
           <PaginationLink
+            className="select-none cursor-pointer"
             onClick={() => {
               if (currentPage < maxPage) setCurrentPage(currentPage + 1);
             }}
@@ -166,6 +171,7 @@ const ListPagination = () => {
         </PaginationItem>
         <PaginationItem>
           <PaginationNext
+            className="select-none cursor-pointer"
             onClick={() => {
               if (currentPage < maxPage) setCurrentPage(currentPage + 1);
             }}
@@ -178,7 +184,7 @@ const ListPagination = () => {
 
 const ListSection = () => {
   const { shows } = useBookQuery();
-  const { books, setQueryState } = useBookQuery();
+  const { books, bookIsLoading, setQueryState } = useBookQuery();
 
   return (
     <div>
@@ -190,20 +196,22 @@ const ListSection = () => {
         </div>
       </div>
       <div className=" min-h-[700px]">
-        {books.length > 0 && (
+        {!bookIsLoading && (
           <>
-            <div className="grid grid-cols-4 gap-6">
-              {books.map((v, k) => (
-                <BookCard
-                  bookId={v.id}
-                  key={k}
-                  bookTitle={v.book_title}
-                  authorName={v.author_name}
-                  bookPrice={v.book_price}
-                  finalPrice={v.final_price}
-                />
-              ))}
-            </div>
+            {books !== undefined && (
+              <div className="grid grid-cols-4 gap-6">
+                {books.map((v, k) => (
+                  <BookCard
+                    bookId={v.id}
+                    key={k}
+                    bookTitle={v.book_title}
+                    authorName={v.author_name}
+                    bookPrice={v.book_price}
+                    finalPrice={v.final_price}
+                  />
+                ))}
+              </div>
+            )}
             <ListPagination />
           </>
         )}

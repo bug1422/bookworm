@@ -1,4 +1,4 @@
-import { fetchPopularBook, fetchRecommendedBook } from "@/api/service/book";
+import { fetchPopularBook, fetchRecommendedBook } from "@/api/get/book";
 import BookCard from "@/component/card/book";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";

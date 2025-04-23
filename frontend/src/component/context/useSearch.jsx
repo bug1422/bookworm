@@ -1,4 +1,4 @@
-import { fetchSearchOption } from "@/api/service/searchOption";
+import { fetchSearchOption } from "@/api/get/searchOption";
 import { createContext, useState, useEffect, useContext } from "react";
 
 const SearchContext = createContext();

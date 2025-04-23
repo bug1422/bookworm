@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import {
   fetchOnSaleBook,
   fetchOnSaleBook as getOnSaleBooks,
-} from "@/api/service/book";
+} from "@/api/get/book";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 const ItemContainer = ({ books }) => {
