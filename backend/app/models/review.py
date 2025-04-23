@@ -1,28 +1,28 @@
 from sqlmodel import SQLModel, Relationship, Field
+from pydantic import field_validator
 from typing import Optional
 from datetime import datetime, timezone
 from enum import Enum
 from app.core.config import settings
 from app.models.paging import QueryPaging
 
-MinRating = 1
-MaxRating = 5
-
 
 class ReviewSortOption(Enum):
     OLDEST_DATE = ("oldest-date", "Sort by date: oldest to newest")
     NEWEST_DATE = ("newest-date", "Sort by date: newest to oldest")
-    
-    def __init__(self,value,label):
+
+    def __init__(self, value, label):
         self._value_ = value
         self.label = label
 
 
 class ReviewBase(SQLModel):
     review_title: str = Field(max_length=120, nullable=False)
-    review_details: str = Field(nullable=False)
+    review_details: str = Field(nullable=True)
     review_date: datetime = Field(default=datetime.now(timezone.utc))
-    rating_start: str
+    rating_star: int = Field(
+        default=settings.MIN_REVIEW_RATING, nullable=False
+    )
 
 
 class ReviewQuery(QueryPaging):
@@ -32,6 +32,21 @@ class ReviewQuery(QueryPaging):
 
 class ReviewDetail(ReviewBase):
     id: Optional[int]
+
+
+class ReviewInput(ReviewBase):
+    book_id: int = Field(nullable=False)
+
+    @field_validator("rating_star")
+    @classmethod
+    def enforce_in_range(cls, value):
+        if not (
+            value >= settings.MIN_REVIEW_RATING
+            and value <= settings.MAX_REVIEW_RATING
+        ):
+            raise ValueError(
+                f"rating must be from {settings.MIN_REVIEW_RATING} to {settings.MAX_REVIEW_RATING}"
+            )
 
 
 class Review(ReviewBase, table=True):

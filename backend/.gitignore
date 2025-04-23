@@ -6,3 +6,4 @@ app.egg-info
 htmlcov
 .cache
 .venv
+app/tests/seed_data.py
