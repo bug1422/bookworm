@@ -3,7 +3,7 @@ import ListSection from "./listSection";
 import {
   QueryProvider,
   useBookQuery,
-} from "../../component/context/useBookQueryContext";
+} from "@/components/context/useBookQueryContext";
 
 const ShopTitle = () => {
   const { selectedAuthor, selectedCategory, selectedRating } = useBookQuery();
@@ -18,7 +18,7 @@ const ShopTitle = () => {
   };
   return (
     <div>
-      <div className="py-8 mb-12 border-b-2 border-gray-200 xl:text-xl font-bold">
+      <div className="py-8 mb-12 border-b-2 border-gray-200 xl:text-2xl font-bold">
         Books
         <span className="ms-2 text-base font-normal text-gray-500">
           {getCurrentFilter()}

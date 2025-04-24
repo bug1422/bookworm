@@ -1,5 +1,5 @@
-import { useBookQuery } from "@/component/context/useBookQueryContext";
-import { useSearch } from "@/component/context/useSearch";
+import { useBookQuery } from "@/components/context/useBookQueryContext";
+import { useSearch } from "@/components/context/useSearch";
 import { cn } from "@/lib/utils";
 import {
   Accordion,
@@ -51,6 +51,11 @@ const FilterSection = () => {
       }));
     }
   };
+  var authorsIsUnavail =
+    categoryNames === undefined || categoryNames.length == 0;
+  var categoriesIsUnavail =
+    authorNames === undefined || authorNames.length == 0;
+  var ratingIsUnavail = ratingList === undefined || ratingList.length == 0;
   return (
     <div className="flex flex-col gap-4">
       <div className="font-bold text-2xl">Filter By</div>
@@ -60,14 +65,23 @@ const FilterSection = () => {
         collapsible
       >
         <AccordionItem value="item-1">
-          <AccordionTrigger className="w-full select-none cursor-pointer text-left pb-1 ps-2 font-bold xl:text-xl">
+          <AccordionTrigger
+            disabled={categoriesIsUnavail}
+            className={cn(
+              "w-full select-none text-left pb-1 ps-2 font-bold xl:text-xl",
+              categoriesIsUnavail ? " text-gray-300" : "cursor-pointer"
+            )}
+          >
             Category
           </AccordionTrigger>
           <AccordionContent className="h-56 border-t-1 border-gray-200 overflow-y-scroll flex flex-col mt-2">
             {categoryNames &&
               categoryNames.map((v, k) => (
                 <div
-                  className={cn("select-none cursor-pointer w-full ps-3 py-1 hover:bg-gray-500 transition", selectedAuthor == v && "bg-gray-500")}
+                  className={cn(
+                    "select-none cursor-pointer w-full ps-3 py-1 hover:bg-gray-500 transition",
+                    selectedAuthor == v && "bg-gray-500"
+                  )}
                   key={k}
                   onClick={() => {
                     selectAuthor(v);
@@ -85,14 +99,23 @@ const FilterSection = () => {
         collapsible
       >
         <AccordionItem value="item-2">
-          <AccordionTrigger className="w-full select-none cursor-pointer text-left pb-1 ps-2 font-bold xl:text-xl">
+          <AccordionTrigger
+            disabled={authorsIsUnavail}
+            className={cn(
+              "w-full select-none text-left pb-1 ps-2 font-bold xl:text-xl",
+              categoriesIsUnavail ? " text-gray-300" : "cursor-pointer"
+            )}
+          >
             Author
           </AccordionTrigger>
           <AccordionContent className="h-56 border-t-1 border-gray-200 overflow-y-scroll flex flex-col mt-2">
             {authorNames &&
               authorNames.map((v, k) => (
                 <div
-                  className={cn("select-none cursor-pointer w-full ps-3 py-1 hover:bg-gray-500 transition", selectedCategory == v && "bg-gray-500")}
+                  className={cn(
+                    "select-none cursor-pointer w-full ps-3 py-1 hover:bg-gray-500 transition",
+                    selectedCategory == v && "bg-gray-500"
+                  )}
                   key={k}
                   onClick={() => {
                     selectCategory(v);
@@ -110,14 +133,23 @@ const FilterSection = () => {
         collapsible
       >
         <AccordionItem value="item-3">
-          <AccordionTrigger className="w-full select-none cursor-pointer text-left pb-1 ps-2 font-bold xl:text-xl">
-            Rating Review
+          <AccordionTrigger
+            disabled={ratingIsUnavail}
+            className={cn(
+              "w-full select-none text-left pb-1 ps-2 font-bold xl:text-xl",
+              categoriesIsUnavail ? " text-gray-300" : "cursor-pointer"
+            )}
+          >
+            Rating List
           </AccordionTrigger>
           <AccordionContent className="h-fit border-t-1 border-gray-200 flex flex-col mt-2">
             {ratingList &&
               ratingList.map((v, k) => (
                 <div
-                  className={cn("select-none cursor-pointer w-full ps-3 py-1 hover:bg-gray-500 transition", selectedRating == `${v} Star` && "bg-gray-500")}
+                  className={cn(
+                    "select-none cursor-pointer w-full ps-3 py-1 hover:bg-gray-500 transition",
+                    selectedRating == `${v} Star` && "bg-gray-500"
+                  )}
                   key={k}
                   onClick={() => {
                     selectRating(`${v} Star`);

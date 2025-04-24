@@ -26,7 +26,7 @@ export const SiteRoutes = [
     element: <AboutPage />,
   },
   {
-    path: "/product:productId",
+    path: "/product/:productId",
     element: <ProductPage />,
   },
 ];

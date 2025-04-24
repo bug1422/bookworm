@@ -5,7 +5,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import BookCard from "../../component/card/book";
 import { useEffect, useState } from "react";
 import {
   fetchOnSaleBook,
@@ -13,6 +12,8 @@ import {
 } from "@/api/get/book";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import BookCard from "@/components/card/book";
 const ItemContainer = ({ books }) => {
   return (
     <CarouselItem className="">
@@ -32,31 +33,61 @@ const ItemContainer = ({ books }) => {
     </CarouselItem>
   );
 };
+const FallbackContainer = ({ itemCount }) => {
+  return (
+    <CarouselItem>
+      <div className="px-44 grid grid-cols-4 xl:gap-8">
+        {Array(itemCount)
+          .fill(1)
+          .map((v, k) => (
+            <BookCard key={k} />
+          ))}
+      </div>
+    </CarouselItem>
+  );
+};
+
+const NoBookContainer = () => {
+  return (
+    <CarouselItem>
+      <div className="h-96 flex px-44 xl:gap-8 font-bold text-6xl justify-center items-center">
+        Nothing On Sale At The Moment
+      </div>
+    </CarouselItem>
+  );
+};
 
 const OnSaleSection = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const itemPerContainer = 4;
-  const [onSaleBookContainers, setOnSaleBookContainers] = useState([]);
-  useEffect(() => {
-    const getData = async () => {
-      const result = await fetchOnSaleBook();
-      console.log(result);
-      if (result) {
-        let bookContainers = [];
-        for (let i = 0; i < result.length; i += itemPerContainer) {
-          bookContainers.push(result.slice(i, i + itemPerContainer));
-        }
-        setOnSaleBookContainers(bookContainers);
+  const { data: onSaleBookContainers, isLoading } = useQuery({
+    queryKey: ["on-sale"],
+    queryFn: () => fetchOnSaleContainer(),
+  });
+
+  const fetchOnSaleContainer = async () => {
+    const result = await fetchOnSaleBook();
+    if (result) {
+      let bookContainers = [];
+      for (let i = 0; i < result.length; i += itemPerContainer) {
+        bookContainers.push(result.slice(i, i + itemPerContainer));
       }
-    };
-    getData()
-  }, []);
+      return bookContainers;
+    } else {
+      return [];
+    }
+  };
 
   return (
     <div className="w-full xl:my-8">
       <div className="w-full xl:text-3xl py-2 flex items-center justify-between">
         <div>On Sale</div>
-        <Button className="p-6 select-none cursor-pointer" onClick={() => { navigate("/shop")}}>
+        <Button
+          className="p-6 select-none cursor-pointer"
+          onClick={() => {
+            navigate("/shop");
+          }}
+        >
           View All
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -74,11 +105,20 @@ const OnSaleSection = () => {
           </svg>
         </Button>
       </div>
-      <Carousel className={"min-h- border-1 border-gray-200 p-6"}>
-        <CarouselContent className={"min-h-[25rem]"}>
-          {onSaleBookContainers.map((books, k) => (
-            <ItemContainer key={k} books={books} />
-          ))}
+      <Carousel className={"min-h-[25rem] border-1 border-gray-200 p-6"}>
+        <CarouselContent className="h-full">
+          {isLoading ? (
+            <FallbackContainer itemCount={itemPerContainer} />
+          ) : onSaleBookContainers === undefined ||
+            onSaleBookContainers.length == 0 ? (
+            <NoBookContainer />
+          ) : (
+            <>
+              {onSaleBookContainers.map((books, k) => (
+                <ItemContainer key={k} books={books} />
+              ))}
+            </>
+          )}
         </CarouselContent>
         <div className="absolute scale-200 top-1/2 left-5 flex items-center justify-center">
           <CarouselPrevious className="relative left-0 translate-x-0 hover:translate-x-0 hover:bg-primary/90" />

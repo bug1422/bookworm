@@ -21,27 +21,30 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useBookQuery } from "../../component/context/useBookQueryContext";
+import { useBookQuery } from "@/components/context/useBookQueryContext";
 import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
-import BookCard from "@/component/card/book";
-import { useSearch } from "@/component/context/useSearch";
+import BookCard from "@/components/card/book";
+import { useSearch } from "@/components/context/useSearch";
+import { cn } from "@/lib/utils";
 
 //mock api option
 const SortDropdown = () => {
   const [open, setOpen] = useState(false);
   const { bookSortOptions } = useSearch();
   const { sortOption, setQueryState } = useBookQuery();
+  var sortIsUnavail =
+    bookSortOptions === undefined || bookSortOptions.length == 0;
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger disabled={sortIsUnavail} asChild>
         <Button
           role="combobox"
           aria-expanded={open}
           variant="secondary"
-          className="w-fit justify-between"
+          className="w-36 justify-between"
         >
-          {sortOption ? sortOption[1] : "In case no value"}
+          {sortOption ? sortOption[1] : ""}
           <ChevronDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -79,16 +82,18 @@ const ShowDropdown = () => {
   const [open, setOpen] = useState(false);
   const { pagingOptions } = useSearch();
   const { pagingOption, setQueryState } = useBookQuery();
+  var pagingIsUnavail =
+    pagingOptions === undefined || pagingOptions.length == 0;
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger disabled={pagingIsUnavail} asChild>
         <Button
           role="combobox"
           aria-expanded={open}
           variant="secondary"
-          className="w-fit justify-between"
+          className="w-30 justify-between"
         >
-          {pagingOption ? pagingOption[1] : "In case no value"}
+          {pagingOption ? pagingOption[1] : ""}
           <ChevronDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -122,7 +127,7 @@ const ShowDropdown = () => {
   );
 };
 
-const ListPagination = () => {
+const ListPagination = ({ cls }) => {
   const { currentPage, maxPage, setQueryState } = useBookQuery();
   useEffect(() => {
     setCurrentPage(1);
@@ -134,7 +139,7 @@ const ListPagination = () => {
     }));
   };
   return (
-    <Pagination className="h-24">
+    <Pagination className={cn("h-24", cls)}>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
@@ -182,39 +187,64 @@ const ListPagination = () => {
   );
 };
 
+const LoadingGrid = ({ itemCount }) => {
+  return (
+    <>
+      {Array(itemCount)
+        .fill(1)
+        .map((v, k) => (
+          <BookCard key={k} />
+        ))}
+    </>
+  );
+};
+
+const NoBookGrid = () => {
+  return <div className="flex flex-col text-4xl absolute top-1/3 -translate-x-1/2 left-1/2">
+    No book found
+    <span className="text-[20px] font-light text-center">Try different option</span>
+    </div>;
+};
+
 const ListSection = () => {
   const { shows } = useBookQuery();
   const { books, bookIsLoading, setQueryState } = useBookQuery();
-
+  const booksIsUnavail = books === undefined || books.length == 0 
   return (
     <div>
       <div className="mb-4 flex justify-between">
-        <div>Showing 1-12 of 126 books</div>
-        <div className="flex gap-4">
+        { !booksIsUnavail && <div>Showing 1-12 of 126 books</div>}
+        <div className="flex gap-4 ml-auto">
           <SortDropdown />
           <ShowDropdown />
         </div>
       </div>
-      <div className=" min-h-[700px]">
-        {!bookIsLoading && (
+      <div className=" min-h-[700px] relative">
+        {bookIsLoading ? (
+          <LoadingGrid />
+        ) : booksIsUnavail ? (
+          <NoBookGrid />
+        ) : (
           <>
-            {books !== undefined && (
-              <div className="grid grid-cols-4 gap-6">
-                {books.map((v, k) => (
-                  <BookCard
-                    bookId={v.id}
-                    key={k}
-                    bookTitle={v.book_title}
-                    authorName={v.author_name}
-                    bookPrice={v.book_price}
-                    finalPrice={v.final_price}
-                  />
-                ))}
-              </div>
-            )}
-            <ListPagination />
+            <div className="grid grid-cols-4 gap-6">
+              {books !== undefined && (
+                <>
+                  {books.map((v, k) => (
+                    <BookCard
+                      bookId={v.id}
+                      key={k}
+                      bookTitle={v.book_title}
+                      authorName={v.author_name}
+                      bookPrice={v.book_price}
+                      finalPrice={v.final_price}
+                    />
+                  ))}
+                </>
+              )}
+            </div>
           </>
         )}
+        <ListPagination cls="absolute bottom-0" />
       </div>
     </div>
   );
