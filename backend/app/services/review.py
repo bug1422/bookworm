@@ -15,7 +15,7 @@ class ReviewService:
         self.repository = repository
 
     @async_res_wrapper
-    async def get_review_count_by_rating(self, book_id: int) -> list[str, int]:
+    async def get_review_count_by_rating(self, book_id: int) -> list[int, int]:
         return await self.repository.get_review_count_by_rating(
             book_id, self.get_list_of_rating()
         )
@@ -41,8 +41,8 @@ class ReviewService:
 
     def get_list_of_rating(self):
         return [
-            str(rating_start)
-            for rating_start in range(
+            rating_star
+            for rating_star in range(
                 settings.MIN_REVIEW_RATING, settings.MAX_REVIEW_RATING + 1
             )
         ]

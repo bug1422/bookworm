@@ -120,6 +120,7 @@ class BookRepository(BaseRepository[Book]):
             )
             .join(Author)
             .join(Category)
+            .join(rating_sub, Book.id == rating_sub.c.book_id)
             .where(Book.id == book_id)
         )
         book = self.session.exec(query).first()

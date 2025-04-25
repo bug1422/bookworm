@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+from app.utils.image import get_image_url
+=======
+>>>>>>> 26f08c997f9074c8989cc99af60ce559a3903814
 from app.repository.book import BookRepository
 from app.models.paging import PagingResponse
 from app.models.book import (
@@ -131,8 +135,9 @@ class BookService:
     ) -> BookOutput:
         return BookOutput(
             **book.model_dump(
-                include=["book_title", "book_price", "book_cover_photo"]
+                include=["id","book_title", "book_price"]
             ),
+            book_cover_photo= get_image_url("books",book.book_cover_photo),
             category_name=book.category.category_name,
             author_name=book.author.author_name,
             final_price=final_price,

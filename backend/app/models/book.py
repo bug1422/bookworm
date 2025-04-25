@@ -29,15 +29,16 @@ class BookBase(SQLModel):
     book_title: str = Field(nullable=False, max_length=255, index=True)
     book_summary: str = Field()
     book_price: Decimal = Field(default=0, max_digits=5, decimal_places=2)
-    book_cover_photo: str = Field(max_length=20)
+    book_cover_photo: Optional[str] = Field(max_length=20)
 
 
 class BookOutput(SQLModel):
+    id: int
     book_title: str
     book_price: Decimal
-    book_cover_photo: str
     author_name: str
     category_name: str
+    book_cover_photo: Optional[str]
     final_price: Optional[Decimal] = Field(default=None)
     total_review: Optional[int] = Field(default=0)
     rating_star: Optional[float] = Field(default=None)
@@ -49,7 +50,7 @@ class BookSearchOutput(BookOutput):
 
 class BookDetailOutput(BookOutput):
     book_summary: str
-    review_count_by_rating: dict[str, int]
+    review_count_by_rating: dict[int, int]
 
 
 class Book(BookBase, table=True):
