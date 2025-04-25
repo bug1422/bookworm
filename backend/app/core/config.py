@@ -7,8 +7,8 @@ from pydantic import (
 )
 from pydantic_core import Url
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Any, Literal, Annotated
-
+from typing import Any, Literal, Annotated, Tuple
+import os
 
 def parse_cors(v: Any) -> list[str] | str:
     if isinstance(v, str) and not v.startswith("["):
@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     MIN_REVIEW_RATING: int = 1
     ALLOWED_TAKE_AMOUNT: list[int] = []
     MAX_ITEM_QUANTITY: int = 8
+    IMAGES_ENDPOINT: str = "/images"
+    SUPPORTED_IMAGE_EXTENSIONS : Tuple[str,...] = ('.png', '.jpg', '.jpeg')
+    BASE_DIR: str = os.path.abspath("app")
+    IMAGES_DIR: str = os.path.join(BASE_DIR,"images") 
 
     @computed_field
     @property

@@ -8,8 +8,8 @@ class ReviewRepository(BaseRepository[Review]):
         super().__init__(Review, session)
 
     async def get_review_count_by_rating(
-        self, book_id: int, rating_list: list[str] = []
-    ) -> dict[str, int]:
+        self, book_id: int, rating_list: list[int] = []
+    ) -> dict[int, int]:
         query = (
             select(
                 Review.rating_star,
