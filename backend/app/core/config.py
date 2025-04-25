@@ -7,9 +7,14 @@ from pydantic import (
 )
 from pydantic_core import Url
 from pydantic_settings import BaseSettings, SettingsConfigDict
+<<<<<<< HEAD
 from typing import Any, Literal, Annotated, Tuple
 import os
 ENVIRONMENT: Literal["local", "staging", "STAGINGuction"] = os.getenv("ENVIRONMENT", "local")
+=======
+from typing import Any, Literal, Annotated
+
+>>>>>>> 26f08c997f9074c8989cc99af60ce559a3903814
 
 def parse_cors(v: Any) -> list[str] | str:
     if isinstance(v, str) and not v.startswith("["):
@@ -27,6 +32,10 @@ class Settings(BaseSettings):
     SECRET_KEY: str = secrets.token_urlsafe(32)
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7
     FRONTEND_HOST: str = "http://localhost:5173"
+<<<<<<< HEAD
+=======
+    ENVIRONMENT: Literal["local", "staging", "production"] = "local"
+>>>>>>> 26f08c997f9074c8989cc99af60ce559a3903814
     BACKEND_CORS_ORIGINS: Annotated[
         list[AnyUrl] | str, BeforeValidator(parse_cors)
     ] = []
@@ -34,10 +43,13 @@ class Settings(BaseSettings):
     MIN_REVIEW_RATING: int = 1
     ALLOWED_TAKE_AMOUNT: list[int] = []
     MAX_ITEM_QUANTITY: int = 8
+<<<<<<< HEAD
     IMAGES_ENDPOINT: str = "/images"
     SUPPORTED_IMAGE_EXTENSIONS: Tuple[str, ...] = ('.png', '.jpg', '.jpeg')
     BASE_DIR: str = os.path.abspath("app")
     IMAGES_DIR: str = os.path.join(BASE_DIR, "images")
+=======
+>>>>>>> 26f08c997f9074c8989cc99af60ce559a3903814
 
     @computed_field
     @property
@@ -47,14 +59,21 @@ class Settings(BaseSettings):
         ] + [self.FRONTEND_HOST]
 
     PROJECT_NAME: str
+<<<<<<< HEAD
+=======
+    POSTGRES_SERVER: str
+>>>>>>> 26f08c997f9074c8989cc99af60ce559a3903814
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str = ""
 
     @property
+<<<<<<< HEAD
     def POSTGRES_SERVER(self) -> str:
         return ""
 
     @property
+=======
+>>>>>>> 26f08c997f9074c8989cc99af60ce559a3903814
     def POSTGRES_PORT(self) -> int:
         return 0
 
@@ -65,14 +84,14 @@ class Settings(BaseSettings):
     @computed_field
     @property
     def SQLMODEL_DATABASE_URI(self) -> PostgresDsn:
-        return Url.build(
-            scheme="postgresql+psycopg2",
-            username=self.POSTGRES_USER,
-            password=self.POSTGRES_PASSWORD,
-            host=self.POSTGRES_SERVER,
-            port=self.POSTGRES_PORT,
-            path=self.POSTGRES_DB
-        )
+         return Url.build(
+             scheme="postgresql+psycopg2",
+             username=self.POSTGRES_USER,
+             password=self.POSTGRES_PASSWORD,
+             host=self.POSTGRES_SERVER,
+             port=self.POSTGRES_PORT,
+             path=self.POSTGRES_DB
+         )
 
 
 class StagingSettings(Settings):
