@@ -9,6 +9,7 @@ from pydantic_core import Url
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Any, Literal, Annotated, Tuple
 import os
+ENVIRONMENT: Literal["local", "staging", "STAGINGuction"] = os.getenv("ENVIRONMENT", "local")
 
 def parse_cors(v: Any) -> list[str] | str:
     if isinstance(v, str) and not v.startswith("["):
@@ -26,7 +27,6 @@ class Settings(BaseSettings):
     SECRET_KEY: str = secrets.token_urlsafe(32)
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7
     FRONTEND_HOST: str = "http://localhost:5173"
-    ENVIRONMENT: Literal["local", "staging", "production"] = "local"
     BACKEND_CORS_ORIGINS: Annotated[
         list[AnyUrl] | str, BeforeValidator(parse_cors)
     ] = []
@@ -35,9 +35,9 @@ class Settings(BaseSettings):
     ALLOWED_TAKE_AMOUNT: list[int] = []
     MAX_ITEM_QUANTITY: int = 8
     IMAGES_ENDPOINT: str = "/images"
-    SUPPORTED_IMAGE_EXTENSIONS : Tuple[str,...] = ('.png', '.jpg', '.jpeg')
+    SUPPORTED_IMAGE_EXTENSIONS: Tuple[str, ...] = ('.png', '.jpg', '.jpeg')
     BASE_DIR: str = os.path.abspath("app")
-    IMAGES_DIR: str = os.path.join(BASE_DIR,"images") 
+    IMAGES_DIR: str = os.path.join(BASE_DIR, "images")
 
     @computed_field
     @property
@@ -47,9 +47,12 @@ class Settings(BaseSettings):
         ] + [self.FRONTEND_HOST]
 
     PROJECT_NAME: str
-    POSTGRES_SERVER: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str = ""
+
+    @property
+    def POSTGRES_SERVER(self) -> str:
+        return ""
 
     @property
     def POSTGRES_PORT(self) -> int:
@@ -62,21 +65,43 @@ class Settings(BaseSettings):
     @computed_field
     @property
     def SQLMODEL_DATABASE_URI(self) -> PostgresDsn:
-         return Url.build(
-             scheme="postgresql+psycopg2",
-             username=self.POSTGRES_USER,
-             password=self.POSTGRES_PASSWORD,
-             host=self.POSTGRES_SERVER,
-             port=self.POSTGRES_PORT,
-             path=self.POSTGRES_DB
-         )
+        return Url.build(
+            scheme="postgresql+psycopg2",
+            username=self.POSTGRES_USER,
+            password=self.POSTGRES_PASSWORD,
+            host=self.POSTGRES_SERVER,
+            port=self.POSTGRES_PORT,
+            path=self.POSTGRES_DB
+        )
+
+
+class StagingSettings(Settings):
+    POSTGRES_STAGING_SERVER: str
+    POSTGRES_STAGING_DB: str
+    POSTGRES_STAGING_PORT: int
+
+    @property
+    def POSTGRES_SERVER(self) -> str:
+        return self.POSTGRES_STAGING_SERVER
+
+    @property
+    def POSTGRES_PORT(self) -> int:
+        return self.POSTGRES_STAGING_PORT
+
+    @property
+    def POSTGRES_DB(self) -> str:
+        return self.POSTGRES_STAGING_DB
 
 
 class DevSettings(Settings):
+    POSTGRES_DEV_SERVER: str
     POSTGRES_DEV_DB: str
     POSTGRES_DEV_PORT: int
 
-    
+    @property
+    def POSTGRES_SERVER(self) -> str:
+        return self.POSTGRES_DEV_SERVER
+
     @property
     def POSTGRES_PORT(self) -> int:
         return self.POSTGRES_DEV_PORT
@@ -85,17 +110,27 @@ class DevSettings(Settings):
     def POSTGRES_DB(self) -> str:
         return self.POSTGRES_DEV_DB
 
+
 class TestSettings(Settings):
+    POSTGRES_TEST_SERVER: str
     POSTGRES_TEST_DB: str
     POSTGRES_TEST_PORT: int
     TEST_API_URL: str
-    
+
+    @property
+    def POSTGRES_SERVER(self) -> str:
+        return self.POSTGRES_TEST_SERVER
+
     @property
     def POSTGRES_PORT(self) -> int:
         return self.POSTGRES_TEST_PORT
-    
+
     @property
     def POSTGRES_DB(self) -> str:
         return self.POSTGRES_TEST_DB
-    
-settings = DevSettings()
+
+
+if ENVIRONMENT == "staging":
+    settings = StagingSettings()
+else:
+    settings = DevSettings()

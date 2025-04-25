@@ -1,15 +1,28 @@
 services:
+  fastapi:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - ENVIRONMENT=staging
   postgres:
     image: postgres:latest
-    container_name: test_postgres
+    container_name: postgres
     volumes:
-      - test_data:/var/lib/postgresql/data
+      - data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
     environment:
       POSTGRES_DB: ${POSTGRES_DEV_DB?error}
       POSTGRES_USER: ${POSTGRES_USER?error}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?error}
     ports:
       - "${POSTGRES_DEV_PORT?error}:5432"
+    
 
 volumes:
-  test_data:
+  data:
