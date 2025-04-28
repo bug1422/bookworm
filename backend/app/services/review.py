@@ -6,8 +6,10 @@ from app.models.review import (
     ReviewInput,
     ReviewSortOption,
 )
+from app.models.paging import PagingResponse
 from app.services.wrapper import async_res_wrapper
 from app.core.config import settings
+from math import ceil
 
 
 class ReviewService:
@@ -23,21 +25,28 @@ class ReviewService:
     @async_res_wrapper
     async def get_book_reviews(
         self, book_id: int, query_option: ReviewQuery
-    ) -> list[ReviewDetail]:
-        reviews = await self.repository.get_by_book_id(book_id, query_option)
-        return [ReviewDetail(**review.model_dump()) for review in reviews]
+    ) -> PagingResponse[ReviewDetail]:
+        reviews, max_items = await self.repository.get_by_book_id(book_id, query_option)
+        return PagingResponse[ReviewDetail](
+            current_page=query_option.page,
+            max_page=ceil(max_items / query_option.take),
+            max_items=max_items,
+            items=[ReviewDetail(**review.model_dump()) for review in reviews]
+        )
 
     @async_res_wrapper
     async def add_review(
-        self, review_input: ReviewInput, book_service: "BookService"
+        self, book_id: int, review_input: ReviewInput, book_service: "BookService"
     ) -> Review:
-        book_res = await book_service.get_by_id(review_input.book_id)
+        book_res = await book_service.get_by_id(book_id)
         if not book_res.is_success:
             raise book_res.exception
-        review = Review(**review_input.model_dump())
+        book = book_res.result
+        review = Review(**review_input.model_dump(), book_id=book.id)
+        await self.repository.add(review)
         self.repository.commit()
-        self.repository.refresh()
-        return await self.repository.add(review)
+        self.repository.refresh(review)
+        return review
 
     def get_list_of_rating(self):
         return [

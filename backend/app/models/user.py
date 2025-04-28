@@ -10,7 +10,8 @@ class UserLogin(SQLModel):
 
 class UserInfo(SQLModel):
     email: str | None = None
-    full_name: str | None = None
+    first_name: str = Field(max_length=50, nullable=False)
+    last_name: str = Field(max_length=50, nullable=True)
     admin: bool
 
 

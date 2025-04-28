@@ -34,8 +34,10 @@ class ReviewDetail(ReviewBase):
     id: Optional[int]
 
 
-class ReviewInput(ReviewBase):
-    book_id: int = Field(nullable=False)
+class ReviewInput(SQLModel):
+    review_title: str = Field(nullable=False)
+    review_details: str
+    rating_star: int = Field(nullable=False)
 
     @field_validator("rating_star")
     @classmethod

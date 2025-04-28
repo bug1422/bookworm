@@ -1,7 +1,7 @@
 from app.repository.base import BaseRepository
 from sqlmodel import select, func, desc, Integer
 from app.models.review import Review, ReviewQuery, ReviewSortOption
-
+from typing import Tuple
 
 class ReviewRepository(BaseRepository[Review]):
     def __init__(self, session):
@@ -26,7 +26,7 @@ class ReviewRepository(BaseRepository[Review]):
 
     async def get_by_book_id(
         self, book_id: int, query_option: ReviewQuery
-    ) -> list[Review]:
+    ) -> Tuple[list[Review], int]:
         query = select(Review).where(Review.book_id == book_id)
         if query_option.star_rating:
             query = query.where(
@@ -38,5 +38,8 @@ class ReviewRepository(BaseRepository[Review]):
                 query = query.order_by(desc(Review.review_date))
             case ReviewSortOption.OLDEST_DATE:
                 query = query.order_by(Review.review_date)
+        max_entries = self.session.scalar(
+            select(func.count()).select_from(query.subquery())
+        )
         result = self.session.exec(query).all()
-        return result
+        return result, max_entries

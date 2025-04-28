@@ -1,4 +1,4 @@
-from app.utils.image import get_image_url
+from app.core.image import get_image_url
 from app.repository.book import BookRepository
 from app.models.paging import PagingResponse
 from app.models.book import (
