@@ -5,10 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import SkeletonLoader from "@/components/fallback/skeletonLoader";
 import { SearchProvider } from "@/components/context/useSearch";
 import { fetchBookDetail } from "@/api/get/book";
-import {
-  ReviewQueryProvider,
-  useReviewQuery,
-} from "@/components/context/useReviewQueryContext";
+import { ReviewQueryProvider } from "@/components/context/useReviewQueryContext";
+import SpinningCircle from "@/components/icons/loading";
 
 const ProductError = ({ text }) => {
   return (
@@ -24,8 +22,17 @@ const ProductError = ({ text }) => {
   );
 };
 
+const ProductLoading = ({ text }) => {
+  return (
+    <div className="top-1/2 left-1/2 fixed -translate-x-1/2 text-5xl font-bold flex flex-col items-center gap-4">
+      <SpinningCircle />
+    </div>
+  );
+};
 const ProductPage = () => {
   const { productId } = useParams();
+  if (productId == undefined) return;
+  <ProductError text="Product not found" />;
   const {
     data: book,
     isLoading,
@@ -33,8 +40,11 @@ const ProductPage = () => {
   } = useQuery({
     queryKey: [`product-${productId}`],
     retryOnMount: true,
+    retry: 3,
+    retryDelay: 2000,
     queryFn: () => FetchBookDetail(),
     enabled: productId !== null,
+    staleTime: 0,
   });
 
   const FetchBookDetail = async () => {
@@ -46,8 +56,10 @@ const ProductPage = () => {
   };
   return (
     <SearchProvider>
-      {isLoading || status == "error" ? (
-        <ProductError text="Server is down at the moment" />
+      {isLoading ? (
+        <ProductLoading />
+      ) : status == "error" ? (
+        <ProductError text="Product is down at the moment" />
       ) : (
         <>
           <div className="py-8 mb-12 border-b-2 border-gray-200 xl:text-2xl font-bold">

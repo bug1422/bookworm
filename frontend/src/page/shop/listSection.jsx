@@ -21,8 +21,9 @@ const SortDropdown = () => {
     bookSortOptions === undefined || bookSortOptions.length == 0;
   return (
     <OptionDropdown
-      onSelect={(v) => {
-        if (curValue !== sortOption[0]) {
+      onSelect={(opt) => {
+        console.log(opt)
+        if (opt[0] !== sortOption[0]) {
           setQueryState((prev) => ({
             ...prev,
             sortOption: opt,
@@ -43,8 +44,8 @@ const ShowDropdown = () => {
     pagingOptions === undefined || pagingOptions.length == 0;
   return (
     <OptionDropdown
-      onSelect={(v) => {
-        if (curValue !== pagingOption[0]) {
+      onSelect={(opt) => {
+        if (opt[0] !== pagingOption[0]) {
           setQueryState((prev) => ({
             ...prev,
             pagingOption: opt,

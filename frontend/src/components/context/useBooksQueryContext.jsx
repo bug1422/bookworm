@@ -35,12 +35,13 @@ export const BookQueryProvider = ({ children }) => {
       currentPage
     );
     if (bookList.data) {
+      const data = bookList.data
       setQueryState((prev) => ({
         ...prev,
-        maxPage: bookList.max_page,
-        maxItems: bookList.max_items,
+        maxPage: data.max_page,
+        maxItems: data.max_items,
       }));
-      return bookList.items;
+      return data.items;
     } 
     throw bookList.error
   };

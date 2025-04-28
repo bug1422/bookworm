@@ -22,9 +22,9 @@ const OptionDropdown = ({ options, selectedOption, onSelect, disabled }) => {
           role="combobox"
           aria-expanded={open}
           variant="secondary"
-          className="w-36 justify-between"
+          className="min-w-36 justify-between"
         >
-          {selectedOption ? selectedOption[0] : ""}
+          {selectedOption ? selectedOption[1] : ""}
           <ChevronDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -38,8 +38,8 @@ const OptionDropdown = ({ options, selectedOption, onSelect, disabled }) => {
                   <CommandItem
                     key={opt[0]}
                     value={opt[0]}
-                    onSelect={(curValue, v) => {
-                      onSelect(curValue);
+                    onSelect={() => {
+                      onSelect(opt);
                       setOpen(false);
                     }}
                   >

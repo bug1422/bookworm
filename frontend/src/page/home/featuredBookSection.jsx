@@ -67,14 +67,14 @@ const FeaturedBookSection = () => {
   const fetchRecommendedList = async () => {
     const result = await fetchRecommendedBook();
     if (result.data) {
-      return result;
+      return result.data
     }
     throw result.error;
   };
   const fetchPopularList = async () => {
     const result = await fetchPopularBook();
     if (result.data) {
-      return result;
+      return result.data
     }
     throw result.error;
   };

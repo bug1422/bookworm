@@ -30,9 +30,9 @@ const BookCard = ({
       <CardHeader className="w-full h-fit border-b-2 px-0 rounded-sm border-gray-100 ">
         <img
           src={`${import.meta.env.VITE_BACKEND_URL}${img_path}`}
-          onError={(e)=>{
+          onError={(e) => {
             e.target.onerror = null;
-            e.target.src = "/assets/book-placeholder.png" 
+            e.target.src = "/assets/book-placeholder.png";
           }}
           alt="book-image"
           className="object-fill w-full h-64"
@@ -56,9 +56,13 @@ const BookCard = ({
         {isUndefined ? (
           <SkeletonLoader width={"1/4"} height={"2"} />
         ) : (
-          <p className="text-gray-400 line-through">{bookPrice}</p>
+          <>
+            {bookPrice != finalPrice && (
+              <p className="text-gray-400 line-through">{bookPrice}</p>
+            )}
+            <p className="ms-2 font-bold">{finalPrice}</p>
+          </>
         )}
-        {!isUndefined && <p className="ms-2 font-bold">{finalPrice}</p>}
       </CardFooter>
     </Card>
   );

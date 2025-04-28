@@ -32,12 +32,13 @@ export const ReviewQueryProvider = ({ children }) => {
       currentPage
     );
     if (reviewList.data) {
+      const data = reviewList.data
       setQueryState((prev) => ({
         ...prev,
-        maxPage: reviewList.max_page,
-        maxItems: reviewList.max_items,
+        maxPage: data.max_page,
+        maxItems: data.max_items,
       }));
-      return reviewList.items;
+      return data.items;
     }
     throw reviewList.error
   };
@@ -68,7 +69,7 @@ export const ReviewQueryProvider = ({ children }) => {
 
   useEffect(() => {
     const defaultSortOption = reviewSortOptions?.find(
-      (opt) => opt[0] == "on-sale"
+      (opt) => opt[0] == "newest-date"
     );
     if (defaultSortOption != null) {
       setQueryState((prev) => ({

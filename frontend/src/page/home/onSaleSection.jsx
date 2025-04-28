@@ -73,8 +73,8 @@ const OnSaleSection = () => {
     const result = await fetchOnSaleBook();
     if (result.data) {
       let bookContainers = [];
-      for (let i = 0; i < result.length; i += itemPerContainer) {
-        bookContainers.push(result.slice(i, i + itemPerContainer));
+      for (let i = 0; i < result.data.length; i += itemPerContainer) {
+        bookContainers.push(result.data.slice(i, i + itemPerContainer));
       }
       return bookContainers;
     } 
