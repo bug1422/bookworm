@@ -27,15 +27,19 @@ const BookCard = ({
         navigate("/product/" + bookId);
       }}
     >
-      <CardHeader className="w-full h-fit border-b-2 rounded-sm border-gray-100 ">
+      <CardHeader className="w-full h-fit border-b-2 px-0 rounded-sm border-gray-100 ">
         <img
-          src={"/assets/book-placeholder.png"}
+          src={`${import.meta.env.VITE_BACKEND_URL}${img_path}`}
+          onError={(e)=>{
+            e.target.onerror = null;
+            e.target.src = "/assets/book-placeholder.png" 
+          }}
           alt="book-image"
-          className="object-center w-full h-64"
+          className="object-fill w-full h-64"
         />
       </CardHeader>
-      <CardContent className="border-b-2 animate-pulse h-24 px-5 pt-3">
-        <div className="flex flex-col gap-3">
+      <CardContent className="border-b-2 h-24 px-5 pt-3">
+        <div className="flex flex-col gap-1">
           {isUndefined ? (
             <SkeletonLoader height={"6"} width={"32"} />
           ) : (

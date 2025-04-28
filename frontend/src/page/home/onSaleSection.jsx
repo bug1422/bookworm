@@ -27,6 +27,7 @@ const ItemContainer = ({ books }) => {
               authorName={v.author_name}
               bookPrice={v.book_price}
               finalPrice={v.final_price}
+              img_path={v.book_cover_photo}
             />
           ))}
       </div>
@@ -63,19 +64,21 @@ const OnSaleSection = () => {
   const { data: onSaleBookContainers, isLoading } = useQuery({
     queryKey: ["on-sale"],
     queryFn: () => fetchOnSaleContainer(),
+    retryOnMount: true,
+    retry: 3,
+    retryDelay: 2000,
   });
 
   const fetchOnSaleContainer = async () => {
     const result = await fetchOnSaleBook();
-    if (result) {
+    if (result.data) {
       let bookContainers = [];
       for (let i = 0; i < result.length; i += itemPerContainer) {
         bookContainers.push(result.slice(i, i + itemPerContainer));
       }
       return bookContainers;
-    } else {
-      return [];
-    }
+    } 
+    throw result.error
   };
 
   return (

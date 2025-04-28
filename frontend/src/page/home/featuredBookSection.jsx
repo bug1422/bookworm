@@ -16,11 +16,11 @@ const FallbackGrid = ({ itemCount }) => {
   );
 };
 
-const NoBookGrid = ({text}) => {
+const NoBookGrid = ({ text }) => {
   return (
-      <div className="col-span-4 row-span-2 font-bold text-6xl self-center justify-self-center">
-        {text}
-      </div>
+    <div className="col-span-4 row-span-2 font-bold text-6xl self-center justify-self-center">
+      {text}
+    </div>
   );
 };
 
@@ -35,6 +35,7 @@ const FeaturedGrid = ({ bookList }) => {
           authorName={v.author_name}
           bookPrice={v.book_price}
           finalPrice={v.final_price}
+          img_path={v.book_cover_photo}
         />
       ))}
     </>
@@ -47,11 +48,17 @@ const FeaturedBookSection = () => {
     queryKey: ["recommended"],
     queryFn: () => fetchRecommendedList(),
     enabled: mode == 0,
+    retryOnMount: true,
+    retry: 3,
+    retryDelay: 2000,
   });
   const { data: popularList, isLoading: popularIsLoading } = useQuery({
     queryKey: ["popular"],
     queryFn: () => fetchPopularList(),
     enabled: mode == 1,
+    retryOnMount: true,
+    retry: 3,
+    retryDelay: 2000,
   });
 
   useEffect(() => {
@@ -59,24 +66,24 @@ const FeaturedBookSection = () => {
   }, []);
   const fetchRecommendedList = async () => {
     const result = await fetchRecommendedBook();
-    if (result) {
+    if (result.data) {
       return result;
     }
-    return [];
+    throw result.error;
   };
   const fetchPopularList = async () => {
     const result = await fetchPopularBook();
-    if (result) {
+    if (result.data) {
       return result;
     }
-    return [];
+    throw result.error;
   };
   return (
     <div className="flex flex-col gap-4 items-center w-full xl:my-16">
       <div className="xl:text-3xl">Featured Books</div>
       <div className="grid grid-cols-2">
         <Button
-        className="cursor-pointer"
+          className="cursor-pointer"
           variant={mode == 0 ? "secondary" : "primary"}
           onClick={() => {
             setMode(0);
@@ -85,7 +92,7 @@ const FeaturedBookSection = () => {
           Recommended
         </Button>
         <Button
-        className="cursor-pointer"
+          className="cursor-pointer"
           variant={mode == 1 ? "secondary" : "primary"}
           onClick={() => {
             setMode(1);
@@ -100,7 +107,7 @@ const FeaturedBookSection = () => {
             {recommendedIsLoading ? (
               <FallbackGrid itemCount={8} />
             ) : recommendedList === undefined || recommendedList.length == 0 ? (
-              <NoBookGrid text="Nothing Is Recommended At The Moment"/>
+              <NoBookGrid text="Nothing Is Recommended At The Moment" />
             ) : (
               <FeaturedGrid bookList={recommendedList} />
             )}
@@ -111,7 +118,7 @@ const FeaturedBookSection = () => {
             {popularIsLoading ? (
               <FallbackGrid itemCount={8} />
             ) : popularList === undefined || popularList.length == 0 ? (
-              <NoBookGrid text="Nothing Is Popular At The Moment"/>
+              <NoBookGrid text="Nothing Is Popular At The Moment" />
             ) : (
               <FeaturedGrid bookList={popularList} />
             )}

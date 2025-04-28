@@ -4,8 +4,8 @@ import { fetchBooksByQuery } from "@/api/get/book";
 import { useQuery } from "@tanstack/react-query";
 const BookQueryContext = createContext();
 
-export const QueryProvider = ({ children }) => {
-  const { pagingOptions, bookSortOptions } = useSearch();
+export const BookQueryProvider = ({ children }) => {
+  const { pagingOptions, bookSortOptions, optionsStatus } = useSearch();
   const [queryState, setQueryState] = useState({
     selectedAuthor: null,
     selectedCategory: null,
@@ -14,6 +14,7 @@ export const QueryProvider = ({ children }) => {
     pagingOption: null,
     currentPage: null,
     maxPage: null,
+    maxItems: null,
   });
 
   const FetchBooks = async () => {
@@ -33,19 +34,18 @@ export const QueryProvider = ({ children }) => {
       pagingOption[0],
       currentPage
     );
-    if (bookList) {
+    if (bookList.data) {
       setQueryState((prev) => ({
         ...prev,
         maxPage: bookList.max_page,
+        maxItems: bookList.max_items,
       }));
       return bookList.items;
-    }
-    else{
-      return []
-    }
+    } 
+    throw bookList.error
   };
 
-  const { data: books, isLoading: booksIsLoading } = useQuery({
+  const { data: books, isLoading, status } = useQuery({
     queryKey: [
       "book-list",
       {
@@ -54,13 +54,18 @@ export const QueryProvider = ({ children }) => {
         selectedRating: queryState.selectedRating,
         sortOption: queryState.sortOption,
         pagingOption: queryState.pagingOption,
-        currentPage: queryState.currentPage
-      }
+        currentPage: queryState.currentPage,
+      },
     ],
     queryFn: () => FetchBooks(),
-    enabled: queryState.sortOption != null
+    enabled: optionsStatus == "success",
+    retry: 3,
+    retryDelay: 2000,
+    refetchOnMount: "always",
+    staleTime:  5 * 60 * 1000,    
   });
-
+  const booksStatus = optionsStatus == "error" ? "error" : status
+  const booksIsLoading = optionsStatus == "pending" || booksStatus == "pending"
   useEffect(() => {
     const defaultSortOption = bookSortOptions?.find(
       (opt) => opt[0] == "on-sale"
@@ -73,6 +78,15 @@ export const QueryProvider = ({ children }) => {
     }
   }, [bookSortOptions]);
   useEffect(() => {
+    const defaultPaging = pagingOptions?.find((opt) => opt[0] == "20");
+    if (defaultPaging != null) {
+      setQueryState((prev) => ({
+        ...prev,
+        pagingOption: defaultPaging,
+      }));
+    }
+  }, [pagingOptions]);
+  useEffect(() => {
     setQueryState((prev) => ({
       ...prev,
       currentPage: 1,
@@ -84,19 +98,16 @@ export const QueryProvider = ({ children }) => {
     queryState.sortOption,
     queryState.pagingOption,
   ]);
-  useEffect(() => {
-    const defaultPaging = pagingOptions?.find((opt) => opt[0] == "20");
-    if (defaultPaging != null) {
-      setQueryState((prev) => ({
-        ...prev,
-        pagingOption: defaultPaging,
-      }));
-    }
-  }, [pagingOptions]);
 
   return (
     <BookQueryContext.Provider
-      value={{ ...queryState, books, booksIsLoading, setQueryState }}
+      value={{
+        ...queryState,
+        books,
+        booksIsLoading,
+        booksStatus,
+        setQueryState,
+      }}
     >
       {children}
     </BookQueryContext.Provider>

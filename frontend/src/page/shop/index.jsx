@@ -1,9 +1,11 @@
+import { useLocation } from "react-router-dom";
 import FilterSection from "./filterSection";
 import ListSection from "./listSection";
 import {
-  QueryProvider,
+  BookQueryProvider,
   useBookQuery,
-} from "@/components/context/useBookQueryContext";
+} from "@/components/context/useBooksQueryContext";
+import { SearchProvider } from "@/components/context/useSearch";
 
 const ShopTitle = () => {
   const { selectedAuthor, selectedCategory, selectedRating } = useBookQuery();
@@ -29,13 +31,15 @@ const ShopTitle = () => {
 };
 const ShopPage = () => {
   return (
-    <QueryProvider>
-      <ShopTitle />
-      <div className="mb-16 grid grid-cols-[14%_auto] gap-4">
-        <FilterSection />
-        <ListSection />
-      </div>
-    </QueryProvider>
+    <SearchProvider>
+      <BookQueryProvider>
+        <ShopTitle />
+        <div className="mb-16 grid grid-cols-[14%_auto] gap-4">
+          <FilterSection />
+          <ListSection />
+        </div>
+      </BookQueryProvider>
+    </SearchProvider>
   );
 };
 

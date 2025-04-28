@@ -1,62 +1,82 @@
 import SkeletonLoader from "@/components/fallback/skeletonLoader";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import QuantityButton from "@/components/quantityButton";
 
-const BookDetailSection = ({ id = undefined }) => {
-  const { data: book, isLoading } = useQuery({
-    queryKey: [`product-${id}`],
-    queryFn: () => fetchBookDetail(),
-  });
-
-  const fetchBookDetail = async () => {
-    if (id) {
-      return;
-    } else {
-      return undefined;
-    }
-  };
-  var bookIsUnavail = isLoading || book === undefined;
+const BookDetail = ({ book = undefined, bookIsLoading = true }) => {
   return (
     <>
-      <div className="py-8 mb-12 border-b-2 border-gray-200 xl:text-2xl font-bold">
-        {bookIsUnavail ? (
-          <SkeletonLoader width={"25"}/>
+      <div className="">
+        <img
+          src={"/assets/book-placeholder.png"}
+          alt="book-image"
+          className="object-center w-[24rem] bg-gray-100 rounded-s-md"
+        />
+        {bookIsLoading ? (
+          <SkeletonLoader width={"24"} className="ms-auto mt-4" />
         ) : (
-          <>{book.category_name}</>
+          <div className="text-right text-gray-400">
+            By (author) <span className="font-bold">{book.author_name}</span>{" "}
+          </div>
         )}
       </div>
-      <div className="grid grid-cols-5 gap-4">
-        <div className="col-span-3 border-1 border-gray-200 rounded-md flex gap-16">
-          <div>
-            <img
-              src={"/assets/book-placeholder.png"}
-              alt="book-image"
-              className="object-center w-full h-64 bg-gray-100 rounded-s-md"
-            />
-            {bookIsUnavail ? (
-              <SkeletonLoader width={"24"} className="ms-auto mt-2"/>
-            ) : (
-              <div className="text-right text-gray-400">
-                By (author){" "}
-                <span className="font-bold">{book.author_name}</span>{" "}
-              </div>
+      <div className="mt-6 min-h-80 flex flex-col gap-6 w-full me-4">
+        {bookIsLoading ? (
+          <SkeletonLoader height={"6"} width={"25"} />
+        ) : (
+          <div className="text-xl font-bold">{book.book_title}</div>
+        )}
+        {bookIsLoading ? (
+          <>
+            {Array(6)
+              .fill(0)
+              .map((v) => (
+                <SkeletonLoader width={"full"} />
+              ))}
+          </>
+        ) : (
+          <div className="text-xl">{book.book_summary}</div>
+        )}
+      </div>
+    </>
+  );
+};
+const AddToCart = ({ book = undefined, bookIsLoading = true }) => {
+  return (
+    <>
+      <div className="bg-gray-200 p-7">
+        {bookIsLoading ? (
+          <SkeletonLoader width="1/3" />
+        ) : (
+          <div className="">
+            {book.book_price != book.final_price && (
+              <span className="text-gray-400 line-through me-3">
+                {book.book_price}
+              </span>
             )}
+            <span className="text-xl font-bold">{book.final_price}</span>
           </div>
-          <div className="mt-6 flex flex-col gap-6 w-full">
-            {bookIsUnavail ? <SkeletonLoader height={"6"} width={"25"}/>:<div className="text-xl font-bold">{book.book_title}</div>}
-            {bookIsUnavail ? <>
-                <SkeletonLoader width={"1/2"}/>
-                <SkeletonLoader width={"1/2"}/>
-                <SkeletonLoader width={"1/2"}/>
-                <SkeletonLoader width={"1/2"}/>
-                <SkeletonLoader width={"1/2"}/>
-            </>:<div className="text-xl font-bold">{book.book_summary}</div>}
-          </div>
+        )}
+      </div>
+      <div className="p-7">
+        Quantity
+        <QuantityButton className="w-full mt-3 mb-5" />
+        <div className="select-non cursor-pointer transition bg-gray-200 hover:bg-gray-500 text-center font-bold text-2xl p-2 my-10">
+          Add to cart
         </div>
-        <div className=" col-span-2 border-1 border-gray-200 rounded-md">
-                
-        </div>
+      </div>
+    </>
+  );
+};
 
+const BookDetailSection = ({ book = undefined, bookIsLoading = true }) => {
+  return (
+    <>
+      <div className="grid grid-cols-7 gap-4">
+        <div className="col-span-5 flex border-1 border-gray-200 rounded-md gap-16">
+          <BookDetail book={book} bookIsLoading={bookIsLoading} />
+        </div>
+        <div className="h-fit divide-x-2 flex flex-col col-span-2 border-1 border-gray-200 rounded-md">
+          <AddToCart book={book} bookIsLoading={bookIsLoading} />
+        </div>
       </div>
     </>
   );

@@ -1,8 +1,7 @@
 import SkeletonLoader from "@/components/fallback/skeletonLoader";
-import { Button } from "@/components/ui/button";
+import QuantityButton from "@/components/quantityButton";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { MinusIcon, PlusIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const CartProduct = ({
@@ -31,16 +30,6 @@ const CartProduct = ({
   );
 };
 
-const QuantityBtn = ({ quantity = 0 }) => {
-  return (
-    <div className="flex items-center bg-gray-200 w-fit p-2">
-      <MinusIcon />
-      <div className="mx-4">{quantity}</div>
-      <PlusIcon />
-    </div>
-  );
-};
-
 const CartRow = ({ book = undefined }) => {
   return (
     <div className={cn("col-span-4 grid grid-cols-subgrid px-6")}>
@@ -56,7 +45,7 @@ const CartRow = ({ book = undefined }) => {
         <SkeletonLoader width={"20"} />
       </div>
       <div className={cn("flex flex-col h-full justify-center")}>
-        <QuantityBtn />
+        <QuantityButton />
       </div>
       <div
         className={cn(

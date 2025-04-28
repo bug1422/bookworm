@@ -1,4 +1,4 @@
-import { useBookQuery } from "@/components/context/useBookQueryContext";
+import { useBookQuery } from "@/components/context/useBooksQueryContext";
 import { useSearch } from "@/components/context/useSearch";
 import { cn } from "@/lib/utils";
 import {
