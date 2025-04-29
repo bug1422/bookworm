@@ -28,7 +28,7 @@ class BookRepository(BaseRepository[Book]):
             Book.book_price - on_sale_sub.c.max_discount_price
         ).label("discount_offset")
         final_price = query_case((on_sale_sub.c.max_discount_price > Book.book_price,
-                            on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
+                                  on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
         query: Select = select(
             Book,
             discount_offset,
@@ -84,9 +84,12 @@ class BookRepository(BaseRepository[Book]):
 
     async def get_book_detail(
         self, book_id: int
-    ) -> Tuple[Book, Decimal, int, float]:
+    ) -> Tuple[Book, Decimal, int, float] | None:
         on_sale_sub = self.__get_on_sale_subquery(book_id)
         rating_sub = self.__get_review_subquery(book_id)
+        discount_offset = (
+            Book.book_price - on_sale_sub.c.max_discount_price
+        ).label("discount_offset")
         final_price = query_case(
             (
                 on_sale_sub.c.max_discount_price > Book.book_price,
@@ -94,18 +97,25 @@ class BookRepository(BaseRepository[Book]):
             ),
             else_=Book.book_price,
         ).label("final_price")
-        query: Select = (
-            select(
-                Book,
-                final_price,
-                rating_sub.c.total_review,
-                rating_sub.c.average_rating,
-            )
-            .join(Author)
-            .join(Category)
-            .join(rating_sub, Book.id == rating_sub.c.book_id)
-            .where(Book.id == book_id)
+        query: Select = select(
+            Book,
+            discount_offset,
+            final_price,
+            rating_sub.c.total_review,
+            rating_sub.c.average_rating,
         )
+        query = query.join(Author)
+        query = query.join(Category)
+        query = query.join(
+            on_sale_sub,
+            onclause=on_sale_sub.c.book_id == Book.id,
+            isouter=True,
+        )
+        query = query.join(
+            rating_sub, onclause=rating_sub.c.book_id == Book.id, isouter=True
+        )
+        query = query.where(
+            Book.id == book_id)
         book = self.session.exec(query).first()
         return book
 

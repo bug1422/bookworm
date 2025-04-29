@@ -48,7 +48,7 @@ class BookSearchOutput(BookOutput):
     discount_offset: Optional[Decimal] = Field(default=None)
 
 
-class BookDetailOutput(BookOutput):
+class BookDetailOutput(BookSearchOutput):
     book_summary: str
     review_count_by_rating: dict[int, int]
 

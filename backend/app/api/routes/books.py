@@ -5,6 +5,7 @@ from app.services.review import ReviewService
 from app.models.response import AppResponse
 from app.models.book import BookQuery
 from app.models.review import ReviewQuery,ReviewInput
+from app.models.exception import NotFoundException
 
 router = APIRouter(prefix="/books", tags=["book"])
 
@@ -70,10 +71,16 @@ async def get_book_detail(
 ):
     book_res = await book_service.get_book_detail(book_id, review_service)
     if not book_res.is_success:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(book_res.exception),
-        )
+        if isinstance(book_res.exception,NotFoundException):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=str(book_res.exception),
+            )
+        else:
+             raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=str(book_res.exception),
+            )
     return AppResponse(detail=book_res.result)
 
 

@@ -1,6 +1,7 @@
 from app.core.image import get_image_url
 from app.repository.book import BookRepository
 from app.models.paging import PagingResponse
+from app.models.exception import NotFoundException
 from app.models.book import (
     BookQuery,
     Book,
@@ -95,21 +96,24 @@ class BookService:
     async def get_book_detail(
         self, book_id: int, review_service: ReviewService
     ) -> BookDetailOutput:
+        book_detail = await self.repository.get_book_detail(book_id)
+        if not book_detail:
+            raise NotFoundException("Book detail")
         (
             book,
             final_price,
+            discount_offset,
             total_review,
             avg_rating,
-        ) = await self.repository.get_book_detail(book_id)
+        ) = book_detail
         review_count_result = await review_service.get_review_count_by_rating(
             book_id
         )
-        if not book:
-            raise Exception("Book not found")
-        elif not review_count_result.is_success:
+        if not review_count_result.is_success:
             raise review_count_result.exception
         return self.__map_to_detail(
             book,
+            discount_offset,
             final_price,
             total_review,
             avg_rating,
@@ -160,14 +164,15 @@ class BookService:
     def __map_to_detail(
         self,
         book: Book,
+        discount_offset: Decimal,
         final_price: Decimal,
         total_review: int,
         avg_rating: float,
         review_count_by_rating,
     ) -> BookDetailOutput:
         return BookDetailOutput(
-            **self.__map_to_preview(
-                book, final_price, total_review, avg_rating
+            **self.__map_to_search_result(
+                book, discount_offset, final_price, total_review, avg_rating
             ).model_dump(),
             book_summary=book.book_summary,
             review_count_by_rating=review_count_by_rating,
