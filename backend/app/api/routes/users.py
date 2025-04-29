@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Form
 from app.models.response import AppResponse
-from app.models.user import UserLogin, UserSignup
+from app.models.exception import NotFoundException
+from app.models.user import UserLogin, UserSignup, UserInfo
 from app.models.token import TokenData
 from app.services.user import UserService
 from app.api.deps import get_user_service, get_access_token_data, get_refresh_token_data
@@ -123,18 +124,22 @@ async def logout(
     return AppResponse(message="User logout")
 
 
-@router.get("/me", response_model=AppResponse, status_code=status.HTTP_200_OK)
+@router.get("/me", response_model=AppResponse[UserInfo], status_code=status.HTTP_200_OK)
 async def get_user_info(
     access_token_data: TokenData = Depends(get_access_token_data),
     service: UserService = Depends(get_user_service),
 ):
     user_res = await service.get_user_info(access_token_data.id)
-    if user_res.is_success:
-        return AppResponse(
-            message="User Info",
-            detail=user_res.result,
-        )
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="No user found"
-        )
+    if not user_res.is_success:
+        if isinstance(user_res.exception,NotFoundException):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="No user found"
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="internal error"
+            )
+    return AppResponse(
+        message="User Info",
+        detail=user_res.result,
+    )

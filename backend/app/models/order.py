@@ -1,7 +1,7 @@
 from sqlmodel import SQLModel, Relationship, Field
 from datetime import datetime, timezone
 from decimal import Decimal
-from typing import Optional
+from typing import Optional, Annotated
 from pydantic import conlist, field_validator
 from app.models.order_item import OrderItemInput, OrderItemValidateOutput
 
@@ -16,7 +16,7 @@ class OrderBase(SQLModel):
 
 
 class OrderInput(SQLModel):
-    items: conlist(OrderItemInput, min_length=1) = Field(default=[])
+    items: Annotated[list[OrderItemInput], conlist(OrderItemInput, min_length=1)] = Field(default=[])
 
     @field_validator("items")
     @classmethod
@@ -26,7 +26,7 @@ class OrderInput(SQLModel):
 
 
 class OrderValidateOutput(SQLModel):
-    item_outputs: list[OrderItemValidateOutput] = Field(default=[])
+    item_outputs: list[OrderItemValidateOutput] | None = Field(default=None)
 
 
 class Order(OrderBase, table=True):

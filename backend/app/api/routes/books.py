@@ -3,14 +3,15 @@ from app.api.deps import get_book_service, get_review_service
 from app.services.book import BookService
 from app.services.review import ReviewService
 from app.models.response import AppResponse
-from app.models.book import BookQuery
-from app.models.review import ReviewQuery,ReviewInput
+from app.models.paging import PagingResponse
+from app.models.book import BookQuery, BookSearchOutput, BookDetailOutput
+from app.models.review import ReviewQuery,ReviewInput, ReviewDetail
 from app.models.exception import NotFoundException
 
 router = APIRouter(prefix="/books", tags=["book"])
 
 
-@router.get("/", response_model=AppResponse, status_code=status.HTTP_200_OK)
+@router.get("/", response_model=AppResponse[PagingResponse[BookSearchOutput]], status_code=status.HTTP_200_OK)
 async def get_books(
     query: BookQuery = Query(...),
     service: BookService = Depends(get_book_service),
@@ -23,8 +24,7 @@ async def get_books(
         )
     return AppResponse(detail=book_res.result)
 
-
-@router.get("/on-sale", response_model=AppResponse, status_code=status.HTTP_200_OK)
+@router.get("/on-sale", response_model=AppResponse[list[BookSearchOutput]], status_code=status.HTTP_200_OK)
 async def get_on_sale_books(
     take: int = 10, service: BookService = Depends(get_book_service)
 ):
@@ -37,7 +37,7 @@ async def get_on_sale_books(
     return AppResponse(detail=book_res.result)
 
 
-@router.get("/featured/recommended", response_model=AppResponse, status_code=status.HTTP_200_OK)
+@router.get("/featured/recommended", response_model=AppResponse[list[BookSearchOutput]], status_code=status.HTTP_200_OK)
 async def get_recommended_books(
     take: int = 8, service: BookService = Depends(get_book_service)
 ):
@@ -50,7 +50,7 @@ async def get_recommended_books(
     return AppResponse(detail=book_res.result)
 
 
-@router.get("/featured/popular", response_model=AppResponse, status_code=status.HTTP_200_OK)
+@router.get("/featured/popular", response_model=AppResponse[list[BookSearchOutput]], status_code=status.HTTP_200_OK)
 async def get_popular_books(
     take: int = 8, service: BookService = Depends(get_book_service)
 ):
@@ -63,7 +63,7 @@ async def get_popular_books(
     return AppResponse(detail=book_res.result)
 
 
-@router.get("/{book_id}", response_model=AppResponse, status_code=status.HTTP_200_OK)
+@router.get("/{book_id}", response_model=AppResponse[BookDetailOutput], status_code=status.HTTP_200_OK)
 async def get_book_detail(
     book_id: int,
     book_service: BookService = Depends(get_book_service),
@@ -84,7 +84,7 @@ async def get_book_detail(
     return AppResponse(detail=book_res.result)
 
 
-@router.get("/{book_id}/reviews", response_model=AppResponse, status_code=status.HTTP_200_OK)
+@router.get("/{book_id}/reviews", response_model=AppResponse[PagingResponse[ReviewDetail]], status_code=status.HTTP_200_OK)
 async def get_book_review(
     book_id: int,
     query: ReviewQuery = Query(...),
@@ -112,5 +112,4 @@ async def add_review(
         raise HTTPException(status_code=status, detail=add_res.exception)
     return AppResponse(
         message="Review added",
-        detail=add_res.result,
     )

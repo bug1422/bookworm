@@ -14,11 +14,10 @@ class UserSignup(UserLogin):
     is_admin: bool
 
 class UserInfo(SQLModel):
-    email: str | None = None
+    email: str | None = Field(default=None)
     first_name: str = Field(max_length=50, nullable=False)
     last_name: str = Field(max_length=50, nullable=True)
     admin: bool
-
 
 class UserBase(SQLModel):
     first_name: str = Field(max_length=50, nullable=False)

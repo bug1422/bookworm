@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from app.models.response import AppResponse
+from app.models.search_option import SearchOptions
 from app.services.search_option import SearchOptionSerivce
 from app.api.deps import get_search_option_service
 
 router = APIRouter(prefix="/search-option", tags=["options"])
 
 
-@router.options("/", response_model=AppResponse, status_code=status.HTTP_200_OK)
+@router.options("/", response_model=AppResponse[SearchOptions], status_code=status.HTTP_200_OK)
 async def get_book_search_options(
     service: SearchOptionSerivce = Depends(get_search_option_service),
 ):

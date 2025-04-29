@@ -13,7 +13,7 @@ class ServiceResponse(Generic[P]):
 
     @staticmethod
     def success(result: P):
-        return ServiceResponse(is_success=True, result=result)
+        return ServiceResponse[P](is_success=True, result=result)
 
     @staticmethod
     def fail(exception):

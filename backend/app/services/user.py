@@ -1,5 +1,6 @@
 from app.repository.user import UserRepository
 from app.models.user import User, UserInfo
+from app.models.exception import NotFoundException
 from app.services.wrapper import async_res_wrapper
 from app.core.security import pwd_context
 
@@ -14,7 +15,7 @@ class UserService:
         if user:
             return UserInfo(**user.model_dump())
         else:
-            raise Exception("No user found")
+            raise NotFoundException("User info")
 
     @async_res_wrapper
     async def get_by_email_and_password(
@@ -42,4 +43,4 @@ class UserService:
         )
         self.repository.add(user)
         self.repository.commit()
-        return user
+        return 
