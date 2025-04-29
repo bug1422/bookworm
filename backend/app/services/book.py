@@ -101,8 +101,8 @@ class BookService:
             raise NotFoundException("Book detail")
         (
             book,
-            final_price,
             discount_offset,
+            final_price,
             total_review,
             avg_rating,
         ) = book_detail
@@ -143,7 +143,7 @@ class BookService:
             author_name=book.author.author_name,
             final_price=final_price,
             rating_star=avg_rating,
-            total_review=total_review,
+            total_review=total_review if total_review else 0,
         )
 
     def __map_to_search_result(

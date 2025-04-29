@@ -27,7 +27,7 @@ class BookRepository(BaseRepository[Book]):
         discount_offset = (
             Book.book_price - on_sale_sub.c.max_discount_price
         ).label("discount_offset")
-        final_price = query_case((on_sale_sub.c.max_discount_price > Book.book_price,
+        final_price = query_case((on_sale_sub.c.max_discount_price != None,
                                   on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
         query: Select = select(
             Book,
@@ -84,19 +84,14 @@ class BookRepository(BaseRepository[Book]):
 
     async def get_book_detail(
         self, book_id: int
-    ) -> Tuple[Book, Decimal, int, float] | None:
+    ) -> Tuple[Book, Decimal, Decimal, int, float] | None:
         on_sale_sub = self.__get_on_sale_subquery(book_id)
         rating_sub = self.__get_review_subquery(book_id)
         discount_offset = (
             Book.book_price - on_sale_sub.c.max_discount_price
         ).label("discount_offset")
-        final_price = query_case(
-            (
-                on_sale_sub.c.max_discount_price > Book.book_price,
-                on_sale_sub.c.max_discount_price,
-            ),
-            else_=Book.book_price,
-        ).label("final_price")
+        final_price = query_case((on_sale_sub.c.max_discount_price.isnot(None),
+            on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
         query: Select = select(
             Book,
             discount_offset,
