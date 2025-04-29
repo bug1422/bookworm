@@ -104,7 +104,7 @@ const CartPage = () => {
           <div className="font-bold pb-4 border-b-2 border-gray-300 w-full text-center">
             Cart Totals
           </div>
-          <div className="my-10 text-3xl font-bold">$99.97</div>
+          <div className="my-10 text-3xl font-bold">0</div>
           <div
             variant="secondary"
             className="w-3/4 font-bold mb-4 rounded-sm bg-gray-200 text-center p-2 hover:bg-gray-500 hover:text-white select-none cursor-pointer transition duration-100"

@@ -2,15 +2,18 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./App.css";
 import RouteContext from "./route";
 import { Toaster } from "./components/ui/sonner";
+import { AuthContextProvider } from "./components/context/useAuthContext";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 function App() {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <RouteContext />
+        <AuthContextProvider>
+          <RouteContext />
+        </AuthContextProvider>
       </QueryClientProvider>
-      <Toaster/>
+      <Toaster />
     </>
   );
 }

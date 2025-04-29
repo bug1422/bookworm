@@ -1,41 +1,28 @@
-import axios from "axios";
-import { api, getErrorReponse } from "..";
+import { api, getDataResponse, getErrorReponse } from "..";
 
 export const fetchOnSaleBook = async () => {
   try {
     const response = await api.get("/books/on-sale");
-    return {
-      data: response.data?.detail,
-    };
+    return getDataResponse(response)
   } catch (error) {
-    return {
-      error: error,
-    };
+    return getErrorReponse(error);
   }
 };
 export const fetchRecommendedBook = async () => {
   try {
     const response = await api.get("/books/featured/recommended");
-    return {
-      data: response.data?.detail,
-    };
+    return getDataResponse(response)
   } catch (error) {
-    return {
-      error: error,
-    };
+    return getErrorReponse(error);
   }
 };
 
 export const fetchPopularBook = async () => {
   try {
     const response = await api.get("/books/featured/popular");
-    return {
-      data: response.data?.detail,
-    };
+    return getDataResponse(response)
   } catch (error) {
-    return {
-      error: error,
-    };
+    return getErrorReponse(error);
   }
 };
 
@@ -58,13 +45,9 @@ export const fetchBooksByQuery = async (
         rating_star: ratingStar,
       },
     });
-    return {
-      data: response.data?.detail,
-    };
+    return getDataResponse(response)
   } catch (error) {
-    return {
-      error: error,
-    };
+    return getErrorReponse(error);
   }
 };
 
@@ -73,13 +56,9 @@ export const fetchBookDetail = async (bookId) => {
     if (bookId === undefined || bookId === null)
       throw Error("book id doesn't exist");
     const response = await api.get(`/books/${bookId}`);
-    return {
-      data: response.data?.detail,
-    };
+    return getDataResponse(response)
   } catch (error) {
-    return {
-      error: error,
-    };
+    return getErrorReponse(error);
   }
 };
 export const fetchBookReviewsByQuery = async (
@@ -98,14 +77,9 @@ export const fetchBookReviewsByQuery = async (
         rating_star: ratingStar,
       },
     });
-    return {
-      data: response.data?.detail,
-    };
+    return getDataResponse(response)
   } catch (error) {
-    console.log(error);
-    return {
-      error: error,
-    };
+    return getErrorReponse(error);
   }
 };
 
@@ -116,9 +90,7 @@ export const addBookReview = async (bookId, title, details, ratingStar) => {
       review_details: details ?? "",
       rating_star: ratingStar,
     });
-    return {
-      data: response.data?.detail,
-    };
+    return getDataResponse(response)
   } catch (error) {
     return getErrorReponse(error);
   }

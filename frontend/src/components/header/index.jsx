@@ -1,14 +1,27 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import SignInDialog from "./signin";
 import { cn } from "@/lib/utils";
+import { useAuth } from "../context/useAuthContext";
+import SpinningCircle from "../icons/loading";
 
 const Header = () => {
   const location = useLocation();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { userInfo, userIsLoading, isAuthenticated } = useAuth();
   const Nav = ({ children, link }) => {
-    return <div className={cn(location.pathname.includes(link) && "underline decoration-2", "select-none cursor-pointer")} onClick={()=>{
-        navigate(link)
-    }}>{children}</div>;
+    return (
+      <div
+        className={cn(
+          location.pathname.includes(link) && "underline decoration-2",
+          "select-none cursor-pointer"
+        )}
+        onClick={() => {
+          navigate(link);
+        }}
+      >
+        {children}
+      </div>
+    );
   };
   return (
     <header className="h-[10vh] py-3 flex flex-row justify-between w-full bg-gray-200">
@@ -21,7 +34,13 @@ const Header = () => {
         <Nav link="/shop">Shop</Nav>
         <Nav link="/about">About</Nav>
         <Nav link="/cart">Cart</Nav>
-        <SignInDialog/>
+        {userIsLoading ? (
+          <SpinningCircle size={10} />
+        ) : isAuthenticated ? (
+          <>{userInfo.last_name} {userInfo.first_name}</>
+        ) : (
+          <SignInDialog />
+        )}
         {/* last is a pop up sign in */}
       </div>
     </header>

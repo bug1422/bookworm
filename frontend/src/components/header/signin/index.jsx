@@ -21,14 +21,19 @@ import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { login } from "@/api/get/user";
+import { useState } from "react";
+import { useAuth } from "@/components/context/useAuthContext";
+import { useNavigate } from "react-router-dom";
 const signInSchema = Yup.object({
   email: Yup.string().email("Must be email").required("Can't be empty"),
   password: Yup.string()
     .min(3, "Must be longer than 3")
     .required("Can't be empty"),
 });
-
 const SignInForm = () => {
+  const navigate = useNavigate()
+  const { signin } = useAuth();
+  const [signinError, setSigninError] = useState(null);
   const form = useForm({
     resolver: yupResolver(signInSchema),
     defaultValues: {
@@ -37,8 +42,9 @@ const SignInForm = () => {
     },
   });
 
-  const onSubmit = (data) => {
-    login(data.email,data.password)
+  const onSubmit = async (data) => {
+    await signin(data.email, data.password)
+    //Close popup
   };
   return (
     <>
@@ -88,8 +94,15 @@ const SignInForm = () => {
               </FormItem>
             )}
           />
-          <DialogFooter>
-            <Button type="submit" className="hover:cursor-pointer">Submit</Button>
+          <DialogFooter className="flex items-center">
+            {signinError != null && (
+              <div className="me-auto text-red-600 font-bold italic">
+                {signinError}
+              </div>
+            )}
+            <Button type="submit" className="hover:cursor-pointer">
+              Submit
+            </Button>
           </DialogFooter>
         </form>
       </FormProvider>

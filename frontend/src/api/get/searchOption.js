@@ -1,14 +1,10 @@
-import { api } from "..";
+import { api, getErrorReponse, getDataResponse } from "..";
 
 export const fetchSearchOption = async () => {
   try {
     const response = await api.options("/search-option");
-    return {
-      data: response.data?.detail 
-    }
+    return getDataResponse(response)
   } catch (error) {
-    return {
-      error: error
-    }
+    return getErrorReponse(error)
   }
 };

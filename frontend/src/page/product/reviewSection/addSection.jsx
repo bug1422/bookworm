@@ -37,6 +37,7 @@ import { toastError, toastSuccess } from "@/components/toast";
 const addReviewSchema = Yup.object({
   title: Yup.string()
     .required("Title is required")
+    .max(120, "Title exceeds allowed length")
     .notOneOf([""], "Title cannot be an empty string"),
   details: Yup.string().notRequired(),
   ratingStar: Yup.number()

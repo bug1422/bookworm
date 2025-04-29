@@ -1,22 +1,35 @@
-import { api } from ".."
+import { api, getDataResponse, getErrorReponse } from "..";
 
-export function login(email,password) {
-    const formData = new FormData()
-    formData.append('email', email)
-    formData.append('password', password)
-    api.post("/user/login",formData,
-    {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    }
-    )
-    .then((v) => {
-        // handle storing api_key later
-        console.log(v)
-    })
-    .catch((e) => {
-        console.log(e)
-    })
+export const loginUser = async (email, password) => {
+  try {
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+    const response = await api.post("/users/login", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return getDataResponse(response);
+  } catch (error) {
+    return getErrorReponse(error);
+  }
+};
 
-}
+export const logoutUser = async () => {
+  try {
+    const response = await api.get("/users/logout");
+    return getDataResponse(response);
+  } catch (error) {
+    return getErrorReponse(error);
+  }
+};
+
+export const fetchUserInfo = async () => {
+  try {
+    const response = await api.get("/users/me");
+    return getDataResponse(response);
+  } catch (error) {
+    return getErrorReponse(error);
+  }
+};
