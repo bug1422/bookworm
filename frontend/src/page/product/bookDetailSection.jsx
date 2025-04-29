@@ -6,7 +6,11 @@ const BookDetail = ({ book = undefined, bookIsLoading = true }) => {
     <>
       <div className="">
         <img
-          src={"/assets/book-placeholder.png"}
+          src={`${import.meta.env.VITE_BACKEND_URL}${book.book_cover_photo}`}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "/assets/book-placeholder.png";
+          }}
           alt="book-image"
           className="object-center w-[24rem] bg-gray-100 rounded-s-md"
         />
@@ -47,12 +51,16 @@ const AddToCart = ({ book = undefined, bookIsLoading = true }) => {
           <SkeletonLoader width="1/3" />
         ) : (
           <div className="">
-            {book.book_price != book.final_price && (
-              <span className="text-gray-400 line-through me-3">
-                {book.book_price}
-              </span>
+            {book.final_price == null ? (
+              <span className="text-xl font-bold">{book.book_price}</span>
+            ) : (
+              <>
+                <span className="text-gray-400 line-through me-3">
+                  {book.book_price}
+                </span>
+                <span className="text-xl font-bold">{book.final_price}</span>
+              </>
             )}
-            <span className="text-xl font-bold">{book.final_price}</span>
           </div>
         )}
       </div>

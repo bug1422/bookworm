@@ -22,7 +22,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { ChevronsUpDown } from "lucide-react";
+import { CheckCircleIcon, ChevronsUpDown, XCircleIcon } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { cn } from "@/lib/utils";
@@ -31,6 +31,8 @@ import { useState } from "react";
 import { addBookReview } from "@/api/get/book";
 import { useReviewQuery } from "@/components/context/useReviewQueryContext";
 import SpinningCircle from "@/components/icons/loading";
+import { toast } from "sonner";
+import { toastError, toastSuccess } from "@/components/toast";
 
 const addReviewSchema = Yup.object({
   title: Yup.string()
@@ -44,14 +46,14 @@ const addReviewSchema = Yup.object({
 });
 const AddReviewForm = () => {
   const { ratingList, isOptionLoading } = useSearch();
-  const { bookId } = useReviewQuery();
+  const { bookId, refetchReviews } = useReviewQuery();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const form = useForm({
     resolver: yupResolver(addReviewSchema),
     defaultValues: {
       title: null,
-      details: null,
+      details: "",
       ratingStar: null,
     },
   });
@@ -65,6 +67,16 @@ const AddReviewForm = () => {
         data.ratingStar
       );
       console.log(response);
+      if (response.error) {
+        toastError("Review failed", response.message);
+      } else {
+        toastSuccess(
+          "Review submitted",
+          "Thank you for giving out your opinion."
+        );
+        refetchReviews()
+        form.reset({}, { keepErrors: false, keepDirty: false, keepValues: false });
+      }
     }
     setLoading(false);
   };

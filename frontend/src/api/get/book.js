@@ -1,4 +1,5 @@
-import { api } from "..";
+import axios from "axios";
+import { api, getErrorReponse } from "..";
 
 export const fetchOnSaleBook = async () => {
   try {
@@ -67,9 +68,10 @@ export const fetchBooksByQuery = async (
   }
 };
 
-export  const fetchBookDetail= async(bookId) => {
+export const fetchBookDetail = async (bookId) => {
   try {
-    if (bookId === undefined|| bookId === null) throw Error("book id doesn't exist")
+    if (bookId === undefined || bookId === null)
+      throw Error("book id doesn't exist");
     const response = await api.get(`/books/${bookId}`);
     return {
       data: response.data?.detail,
@@ -79,7 +81,7 @@ export  const fetchBookDetail= async(bookId) => {
       error: error,
     };
   }
-}
+};
 export const fetchBookReviewsByQuery = async (
   bookId,
   ratingStar,
@@ -110,18 +112,14 @@ export const fetchBookReviewsByQuery = async (
 export const addBookReview = async (bookId, title, details, ratingStar) => {
   try {
     const response = await api.post(`/books/${bookId}/reviews`, {
-      bookId,
-      title,
-      details,
-      ratingStar,
+      review_title: title,
+      review_details: details ?? "",
+      rating_star: ratingStar,
     });
     return {
       data: response.data?.detail,
     };
   } catch (error) {
-    console.log(error);
-    return {
-      error: error,
-    };
+    return getErrorReponse(error);
   }
 };

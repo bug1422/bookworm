@@ -35,18 +35,22 @@ export const BookQueryProvider = ({ children }) => {
       currentPage
     );
     if (bookList.data) {
-      const data = bookList.data
+      const data = bookList.data;
       setQueryState((prev) => ({
         ...prev,
         maxPage: data.max_page,
         maxItems: data.max_items,
       }));
       return data.items;
-    } 
-    throw bookList.error
+    }
+    throw bookList.error;
   };
 
-  const { data: books, isLoading, status } = useQuery({
+  const {
+    data: books,
+    isLoading,
+    status,
+  } = useQuery({
     queryKey: [
       "book-list",
       {
@@ -63,15 +67,15 @@ export const BookQueryProvider = ({ children }) => {
     retry: 3,
     retryDelay: 2000,
     refetchOnMount: "always",
-    staleTime:  5 * 60 * 1000,    
+    staleTime: 5 * 60 * 1000,
   });
-  const booksStatus = optionsStatus == "error" ? "error" : status
-  const booksIsLoading = optionsStatus == "pending" || booksStatus == "pending"
+  const booksStatus = optionsStatus == "error" ? "error" : status;
+  const booksIsLoading = optionsStatus == "pending" || booksStatus == "pending";
   useEffect(() => {
     const defaultSortOption = bookSortOptions?.find(
       (opt) => opt[0] == "on-sale"
     );
-    if (defaultSortOption != null) {
+    if (queryState.sortOption == null && defaultSortOption != null) {
       setQueryState((prev) => ({
         ...prev,
         sortOption: defaultSortOption,
@@ -80,7 +84,7 @@ export const BookQueryProvider = ({ children }) => {
   }, [bookSortOptions]);
   useEffect(() => {
     const defaultPaging = pagingOptions?.find((opt) => opt[0] == "20");
-    if (defaultPaging != null) {
+    if (queryState.pagingOption == null && defaultPaging != null) {
       setQueryState((prev) => ({
         ...prev,
         pagingOption: defaultPaging,

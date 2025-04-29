@@ -1,10 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useSearch } from "./useSearch";
 import { fetchBookReviewsByQuery } from "@/api/get/book";
 const ReviewQueryContext = createContext();
 
 export const ReviewQueryProvider = ({ children }) => {
+  const queryClient = useQueryClient()
   const { pagingOptions, reviewSortOptions, optionsStatus } = useSearch();
   const [queryState, setQueryState] = useState({
     bookId: null,
@@ -43,26 +44,31 @@ export const ReviewQueryProvider = ({ children }) => {
     throw reviewList.error
   };
 
+  const queryKey = [
+    "review-list-" + queryState.bookId,
+    {
+      selectedRating: queryState.selectedRating,
+      sortOption: queryState.sortOption,
+      pagingOption: queryState.pagingOption,
+      currentPage: queryState.currentPage,
+    },
+  ]
   const {
     data: reviews,
     isLoading,
     status,
   } = useQuery({
-    queryKey: [
-      "review-list-" + queryState.bookId,
-      {
-        selectedRating: queryState.selectedRating,
-        sortOption: queryState.sortOption,
-        pagingOption: queryState.pagingOption,
-        currentPage: queryState.currentPage,
-      },
-    ],
+    queryKey: queryKey,
     queryFn: () => FetchReviews(),
     enabled: optionsStatus == "success" && queryState.bookId !== null,
     retryOnMount: true,
     retry: 3,
     retryDelay: 2000,
   });
+
+  const refetchReviews = async () => {
+    queryClient.invalidateQueries(queryKey)
+  }
   const reviewsStatus = optionsStatus == "error" ? "error" : status;
   const reviewsIsLoading =
     optionsStatus == "pending" || reviewsStatus == "pending";
@@ -108,9 +114,9 @@ export const ReviewQueryProvider = ({ children }) => {
         reviewsIsLoading,
         reviewsStatus,
         setQueryState,
+        refetchReviews
       }}
     >
-      {reviewsStatus}
       {children}
     </ReviewQueryContext.Provider>
   );

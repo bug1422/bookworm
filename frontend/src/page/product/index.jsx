@@ -61,7 +61,7 @@ const ProductPage = () => {
       ) : status == "error" ? (
         <ProductError text="Product is down at the moment" />
       ) : (
-        <>
+        <div className="my-6">
           <div className="py-8 mb-12 border-b-2 border-gray-200 xl:text-2xl font-bold">
             {isLoading ? (
               <SkeletonLoader width={"25"} />
@@ -73,7 +73,7 @@ const ProductPage = () => {
           <ReviewQueryProvider>
             <ReviewSection book={book} bookIsLoading={isLoading} />
           </ReviewQueryProvider>
-        </>
+        </div>
       )}
     </SearchProvider>
   );
