@@ -8,6 +8,46 @@ from app.core.config import settings
 from datetime import timedelta
 from app.core.security import create_token
 
+
+def create_access_token(user, response: Response):
+    access_token_expires = timedelta(
+        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+    )
+    access_token = create_token(
+        f"{user.last_name} {user.first_name}",
+        {"id": user.id},
+        access_token_expires,
+    )
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        expires=access_token_expires,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+    )
+
+
+def create_refresh_token(user, response: Response):
+    refresh_token_expires = timedelta(
+        minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES
+    )
+    refresh_token = create_token(
+        f"{user.last_name} {user.first_name}",
+        {"id": user.id},
+        refresh_token_expires,
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        expires=refresh_token_expires,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        path=f"{settings.API_V1_STR}/users/refresh-token"
+    )
+
+
 router = APIRouter(prefix="/users", tags=["user"], dependencies=[])
 
 
@@ -35,6 +75,7 @@ async def signup(
         message="User created"
     )
 
+
 @router.post("/login", status_code=status.HTTP_200_OK)
 async def login(
     response: Response,
@@ -56,43 +97,7 @@ async def login(
     )
 
 
-def create_access_token(user, response: Response):
-    access_token_expires = timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
-    )
-    access_token = create_token(
-        f"{user.last_name} {user.first_name}",
-        {"id": user.id},
-        access_token_expires,
-    )
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        expires=access_token_expires,
-        httponly=True,
-        secure=True,
-        samesite="lax",
-    )
-
-def create_refresh_token(user, response: Response):
-    refresh_token_expires = timedelta(
-        minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES
-    )
-    refresh_token = create_token(
-        f"{user.last_name} {user.first_name}",
-        {"id": user.id},
-        refresh_token_expires,
-    )
-    response.set_cookie(
-        key="refresh_token",
-        value=refresh_token,
-        expires=refresh_token_expires,
-        httponly=True,
-        secure=True,
-        samesite="lax",
-    )
-
-@router.get("/refresh", status_code=status.HTTP_200_OK)
+@router.get("/refresh-token", status_code=status.HTTP_200_OK)
 async def refresh_token(
         response: Response,
         refresh_token_data: TokenData = Depends(get_refresh_token_data),
