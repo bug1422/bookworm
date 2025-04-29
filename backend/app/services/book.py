@@ -142,7 +142,7 @@ class BookService:
             category_name=book.category.category_name,
             author_name=book.author.author_name,
             final_price=final_price,
-            rating_star=avg_rating,
+            rating_star=round(avg_rating,1),
             total_review=total_review if total_review else 0,
         )
 
