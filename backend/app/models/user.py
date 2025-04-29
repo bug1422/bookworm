@@ -3,10 +3,15 @@ from pydantic import EmailStr
 from typing import Optional
 
 
+    
 class UserLogin(SQLModel):
     email: str
     password: str
 
+class UserSignup(UserLogin):
+    first_name: str
+    last_name: str
+    is_admin: bool
 
 class UserInfo(SQLModel):
     email: str | None = None

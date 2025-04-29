@@ -1,6 +1,7 @@
 from app.repository.user import UserRepository
 from app.models.user import User, UserInfo
 from app.services.wrapper import async_res_wrapper
+from app.core.security import pwd_context 
 
 
 class UserService:
@@ -25,7 +26,27 @@ class UserService:
         else:
             raise Exception("Incorrect email or password")
 
+    @async_res_wrapper
+    async def create_account(
+        self, first_name: str, last_name: str, admin: bool, email: str, password: str
+    ) -> User:
+        user = await self.repository.get_by_email(email)
+        if user:
+            raise Exception("Email has already been used")
+        user = User(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            password=self.hash_password(password),
+            admin=admin
+            )
+        self.repository.add(user)
+        self.repository.commit()
+        return user
+
+    def hash_password(self,plain) -> str:
+        return pwd_context.hash(plain)
+
     def verify_password(self, plain, hashed) -> bool:
-        from app.core.security import pwd_context
 
         return pwd_context.verify(plain, hashed)

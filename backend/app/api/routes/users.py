@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Form
 from app.models.response import AppResponse
-from app.models.user import UserLogin
+from app.models.user import UserLogin, UserSignup
 from app.models.token import TokenData
 from app.services.user import UserService
 from app.api.deps import get_user_service, get_access_token_data, get_refresh_token_data
@@ -10,6 +10,30 @@ from app.core.security import create_token
 
 router = APIRouter(prefix="/users", tags=["user"], dependencies=[])
 
+
+@router.post("/signup", status_code=status.HTTP_201_CREATED)
+async def signup(
+    response: Response,
+    form_data: UserSignup = Form(),
+    service: UserService = Depends(get_user_service),
+):
+    user_res = await service.create_account(
+        form_data.first_name,
+        form_data.last_name,
+        form_data.is_admin,
+        form_data.email,
+        form_data.password,
+    )
+    if not user_res.is_success:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(user_res.exception),
+        )
+    create_access_token(user_res.result, response)
+    create_refresh_token(user_res.result, response)
+    return AppResponse(
+        message="User created"
+    )
 
 @router.post("/login", status_code=status.HTTP_200_OK)
 async def login(
@@ -23,9 +47,16 @@ async def login(
     if not user_res.is_success:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=str(user.exception),
+            detail=str(user_res.exception),
         )
-    user = user_res.result
+    create_access_token(user_res.result, response)
+    create_refresh_token(user_res.result, response)
+    return AppResponse(
+        message="User autheticated"
+    )
+
+
+def create_access_token(user, response: Response):
     access_token_expires = timedelta(
         minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
     )
@@ -42,6 +73,8 @@ async def login(
         secure=True,
         samesite="lax",
     )
+
+def create_refresh_token(user, response: Response):
     refresh_token_expires = timedelta(
         minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES
     )
@@ -58,10 +91,6 @@ async def login(
         secure=True,
         samesite="lax",
     )
-    return AppResponse(
-        message="User autheticated"
-    )
-
 
 @router.get("/refresh", status_code=status.HTTP_200_OK)
 async def refresh_token(
@@ -69,27 +98,12 @@ async def refresh_token(
         refresh_token_data: TokenData = Depends(get_refresh_token_data),
         service: UserService = Depends(get_user_service)
 ):
-    access_token_expires = timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
-    )
     user_res = await service.get_user_info(refresh_token_data.id)
+    create_access_token(user_res.result, response)
     if not user_res.is_success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="No user found"
         )
-    access_token = create_token(
-        f"{user_res.result.last_name} {user_res.result.first_name}",
-        {"id": user_res.result.id},
-        access_token_expires,
-    )
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        expires=access_token_expires,
-        httponly=True,
-        secure=True,
-        samesite="lax",
-    )
     return AppResponse(
         message="User token refreshed"
     )

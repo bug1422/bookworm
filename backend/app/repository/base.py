@@ -15,16 +15,16 @@ class BaseRepository(Generic[T]):
             select(self.model).where(self.model.id == id)
         ).first()
 
-    async def add(self, entity: T) -> T:
+    def add(self, entity: T) -> T:
         self.session.add(entity)
 
-    async def add_range(self, items: list[T]):
+    def add_range(self, items: list[T]):
         self.session.add_all(items)
 
-    async def update(self, entity: T) -> T:
+    def update(self, entity: T) -> T:
         self.session.add(entity)
 
-    async def delete(self, entity: T) -> None:
+    def delete(self, entity: T) -> None:
         self.session.delete(entity)
 
     def rollback(self):
