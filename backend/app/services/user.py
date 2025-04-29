@@ -1,7 +1,7 @@
 from app.repository.user import UserRepository
 from app.models.user import User, UserInfo
 from app.services.wrapper import async_res_wrapper
-from app.core.security import pwd_context 
+from app.core.security import pwd_context
 
 
 class UserService:
@@ -21,7 +21,7 @@ class UserService:
         self, email: str, password: str
     ) -> User | None:
         user = await self.repository.get_by_email(email)
-        if user and self.verify_password(password, user.password):
+        if user and pwd_context.verify(password, user.password):
             return user
         else:
             raise Exception("Incorrect email or password")
@@ -37,16 +37,9 @@ class UserService:
             first_name=first_name,
             last_name=last_name,
             email=email,
-            password=self.hash_password(password),
+            password=pwd_context.hash(password),
             admin=admin
-            )
+        )
         self.repository.add(user)
         self.repository.commit()
         return user
-
-    def hash_password(self,plain) -> str:
-        return pwd_context.hash(plain)
-
-    def verify_password(self, plain, hashed) -> bool:
-
-        return pwd_context.verify(plain, hashed)
