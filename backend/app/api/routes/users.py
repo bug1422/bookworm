@@ -98,7 +98,7 @@ async def login(
     )
 
 
-@router.get("/refresh-token", status_code=status.HTTP_200_OK)
+@router.get("/refresh", status_code=status.HTTP_200_OK)
 async def refresh_token(
         response: Response,
         refresh_token_data: TokenData = Depends(get_refresh_token_data),
