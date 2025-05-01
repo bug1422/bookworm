@@ -41,7 +41,7 @@ api.interceptors.response.use(
       originalReq._retry = true;
       isRefreshing = true;
       try {
-        await api.get("/users/refresh");
+        await api.get("/users/refresh-token");
         isRefreshing = false;
         return api(originalReq);
       } catch (refreshError) {

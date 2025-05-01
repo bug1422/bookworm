@@ -7,7 +7,7 @@ import SpinningCircle from "../icons/loading";
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { userInfo, userIsLoading, isAuthenticated } = useAuth();
+  const { user, userIsLoading, isAuthenticated } = useAuth();
   const Nav = ({ children, link }) => {
     return (
       <div
@@ -37,7 +37,7 @@ const Header = () => {
         {userIsLoading ? (
           <SpinningCircle size={10} />
         ) : isAuthenticated ? (
-          <>{userInfo.last_name} {userInfo.first_name}</>
+          <>{user.last_name} {user.first_name}</>
         ) : (
           <SignInDialog />
         )}

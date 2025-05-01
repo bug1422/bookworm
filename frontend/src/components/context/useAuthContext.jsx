@@ -1,48 +1,50 @@
 import { api } from "@/api";
 import { fetchUserInfo, loginUser, logoutUser } from "@/api/get/user";
-import { useQuery } from "@tanstack/react-query";
-import { toastError, toastSuccess } from "../toast";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext, createContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [isLoading, setLoading] = useState(false);
-  const isAuthenticated = user !== null;
-
-  const getUserInfo = async () => {
-    setLoading(true);
+  const queryClient = useQueryClient()
+  const FetchCurrentUser = async () => {
     const response = await fetchUserInfo();
-    if (response.data) {
-      setUser(response.data);
+    if (response.error) {
+      return null;
+    } else {
+      return response.data;
     }
-    setLoading(false);
   };
+  const queryKey = "user-info"
+  const { data: user, isLoading: userIsLoading } = useQuery({
+    queryKey: [queryKey],
+    queryFn: () => FetchCurrentUser(),
+    enabled: true,
+  });
+  const isAuthenticated = user !== undefined && user !== null;
+
+
+
   const signin = async (email, password) => {
     const response = await loginUser(email, password);
-    console.log(response)
     if (response.error) {
-      throw Error(response.message)
+      throw Error(response.message);
     }
+    queryClient.invalidateQueries(queryKey)
   };
+
   const signout = async () => {
-    const response = await logoutUser(email, password);
+    const response = await logoutUser();
     if (response.error) {
-      toastError("Signout failed", response.message);
-    } else {
-      toastSuccess("Signout success");
+      throw Error(response.message);
     }
   };
-  useEffect(() => {
-    getUserInfo();
-  }, []);
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated,
-        userInfo: user,
-        userIsLoading: isLoading,
+        user,
+        userIsLoading,
         signin,
         signout,
       }}
