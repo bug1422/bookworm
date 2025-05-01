@@ -20,18 +20,18 @@ import { Input } from "@/components/ui/input";
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { login } from "@/api/get/user";
 import { useState } from "react";
 import { useAuth } from "@/components/context/useAuthContext";
 import { useNavigate } from "react-router-dom";
+import { toastSuccess } from "@/components/toast";
 const signInSchema = Yup.object({
   email: Yup.string().email("Must be email").required("Can't be empty"),
   password: Yup.string()
     .min(3, "Must be longer than 3")
     .required("Can't be empty"),
 });
-const SignInForm = () => {
-  const navigate = useNavigate()
+const SignInForm = ({handleSignInSuccess}) => {
+  const navigate = useNavigate();
   const { signin } = useAuth();
   const [signinError, setSigninError] = useState(null);
   const form = useForm({
@@ -43,7 +43,13 @@ const SignInForm = () => {
   });
 
   const onSubmit = async (data) => {
-    await signin(data.email, data.password)
+    try {
+      await signin(data.email, data.password);
+      toastSuccess("Signin success");
+      handleSignInSuccess()
+    } catch (e) {
+      setSigninError(e.message)
+    }
     //Close popup
   };
   return (
@@ -111,13 +117,18 @@ const SignInForm = () => {
 };
 
 const SignInDialog = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSignInSuccess = () => {
+    setIsOpen(false); // Close the dialog after successful sign-in
+  };
   return (
-    <Dialog>
+    <Dialog  open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <div className="select-none cursor-pointer">Sign In</div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
-        <SignInForm />
+        <SignInForm handleSignInSuccess={handleSignInSuccess}/>
       </DialogContent>
     </Dialog>
   );

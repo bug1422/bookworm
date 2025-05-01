@@ -9,6 +9,7 @@ export const loginUser = async (email, password) => {
       headers: {
         "Content-Type": "multipart/form-data",
       },
+      skipRefresh: true
     });
     return getDataResponse(response);
   } catch (error) {

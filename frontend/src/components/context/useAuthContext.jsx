@@ -2,15 +2,14 @@ import { api } from "@/api";
 import { fetchUserInfo, loginUser, logoutUser } from "@/api/get/user";
 import { useQuery } from "@tanstack/react-query";
 import { toastError, toastSuccess } from "../toast";
-
-const { useContext, createContext, useState, useEffect } = require("react");
+import { useContext, createContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setLoading] = useState(false);
-  const isAuthenticated = user !== undefined;
+  const isAuthenticated = user !== null;
 
   const getUserInfo = async () => {
     setLoading(true);
@@ -22,10 +21,9 @@ export const AuthContextProvider = ({ children }) => {
   };
   const signin = async (email, password) => {
     const response = await loginUser(email, password);
+    console.log(response)
     if (response.error) {
-      toastError("Signin failed", response.message);
-    } else {
-      toastSuccess("Signin success");
+      throw Error(response.message)
     }
   };
   const signout = async () => {

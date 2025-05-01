@@ -18,7 +18,7 @@ export const getErrorReponse = (error) => {
   if (axios.isAxiosError(error)) {
     return {
       error: error,
-      message: error.response?.data?.message || error.message,
+      message: error.response?.data?.detail || error.message,
     };
   } else {
     return {
@@ -33,12 +33,15 @@ api.interceptors.response.use(
   (res) => res,
   async (err) => {
     const originalReq = err.config;
+    if (originalReq.skipRefresh) {
+      return Promise.reject(err);
+    }
     if (err.response?.status === 401 && !originalReq._retry) {
       if (isRefreshing) return Promise.reject(err);
       originalReq._retry = true;
       isRefreshing = true;
       try {
-        await api.post("/users/refresh");
+        await api.get("/users/refresh");
         isRefreshing = false;
         return api(originalReq);
       } catch (refreshError) {
