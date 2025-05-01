@@ -25,7 +25,7 @@ def create_access_token(user, response: Response):
         expires=access_token_expires,
         httponly=True,
         secure=True,
-        samesite="lax",
+        samesite="none",
     )
 
 
@@ -44,7 +44,7 @@ def create_refresh_token(user, response: Response):
         expires=refresh_token_expires,
         httponly=True,
         secure=True,
-        samesite="lax",
+        samesite="none",
         path=f"{settings.API_V1_STR}/users/refresh-token"
     )
 
@@ -98,7 +98,7 @@ async def login(
     )
 
 
-@router.get("/refresh", status_code=status.HTTP_200_OK)
+@router.get("/refresh-token", status_code=status.HTTP_200_OK)
 async def refresh_token(
         response: Response,
         refresh_token_data: TokenData = Depends(get_refresh_token_data),
