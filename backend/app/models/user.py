@@ -14,6 +14,7 @@ class UserSignup(UserLogin):
     is_admin: bool
 
 class UserInfo(SQLModel):
+    id: Optional[int] = Field(default=None)
     email: str | None = Field(default=None)
     first_name: str = Field(max_length=50, nullable=False)
     last_name: str = Field(max_length=50, nullable=True)

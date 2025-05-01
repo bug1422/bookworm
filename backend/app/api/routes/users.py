@@ -25,7 +25,7 @@ def create_access_token(user, response: Response):
         expires=access_token_expires,
         httponly=True,
         secure=True,
-        samesite="lax",
+        samesite="none",
     )
 
 
@@ -44,7 +44,7 @@ def create_refresh_token(user, response: Response):
         expires=refresh_token_expires,
         httponly=True,
         secure=True,
-        samesite="lax",
+        samesite="none",
         path=f"{settings.API_V1_STR}/users/refresh-token"
     )
 
@@ -98,18 +98,18 @@ async def login(
     )
 
 
-@router.get("/refresh", status_code=status.HTTP_200_OK)
+@router.get("/refresh-token", status_code=status.HTTP_200_OK)
 async def refresh_token(
         response: Response,
         refresh_token_data: TokenData = Depends(get_refresh_token_data),
         service: UserService = Depends(get_user_service)
 ):
     user_res = await service.get_user_info(refresh_token_data.id)
-    create_access_token(user_res.result, response)
     if not user_res.is_success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="No user found"
         )
+    create_access_token(user_res.result, response)
     return AppResponse(
         message="User token refreshed"
     )
@@ -131,7 +131,7 @@ async def get_user_info(
 ):
     user_res = await service.get_user_info(access_token_data.id)
     if not user_res.is_success:
-        if isinstance(user_res.exception,NotFoundException):
+        if isinstance(user_res.exception, NotFoundException):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="No user found"
             )
