@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useSearch } from "./useSearch";
-import { fetchBookReviewsByQuery } from "@/api/get/book";
+import { fetchBookReviewsByQuery } from "@/api/book";
 const ReviewQueryContext = createContext();
 
 export const ReviewQueryProvider = ({ children }) => {

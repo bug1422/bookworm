@@ -1,4 +1,4 @@
-import { api, getErrorReponse, getDataResponse } from "..";
+import { api, getErrorReponse, getDataResponse } from ".";
 
 export const fetchSearchOption = async () => {
   try {

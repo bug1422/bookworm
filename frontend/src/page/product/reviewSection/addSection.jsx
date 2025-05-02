@@ -28,7 +28,7 @@ import * as Yup from "yup";
 import { cn } from "@/lib/utils";
 import SkeletonLoader from "@/components/fallback/skeletonLoader";
 import { useState } from "react";
-import { addBookReview } from "@/api/get/book";
+import { addBookReview } from "@/api/book";
 import { useReviewQuery } from "@/components/context/useReviewQueryContext";
 import SpinningCircle from "@/components/icons/loading";
 import { toast } from "sonner";
@@ -69,7 +69,7 @@ const AddReviewForm = () => {
       );
       console.log(response);
       if (response.error) {
-        toastError("Review failed", response.message);
+        toastError("Review failed", response.errorMessage);
       } else {
         toastSuccess(
           "Review submitted",

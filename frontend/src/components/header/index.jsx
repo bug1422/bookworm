@@ -1,8 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import SignInDialog from "./signin";
 import { cn } from "@/lib/utils";
 import { useAuth } from "../context/useAuthContext";
 import SpinningCircle from "../icons/loading";
+import { SignInDialog } from "./signin";
 
 const Header = () => {
   const location = useLocation();

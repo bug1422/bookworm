@@ -20,17 +20,18 @@ import { Input } from "@/components/ui/input";
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/components/context/useAuthContext";
 import { useNavigate } from "react-router-dom";
 import { toastSuccess } from "@/components/toast";
+import eventBus from "@/lib/eventBus";
 const signInSchema = Yup.object({
   email: Yup.string().email("Must be email").required("Can't be empty"),
   password: Yup.string()
     .min(3, "Must be longer than 3")
     .required("Can't be empty"),
 });
-const SignInForm = ({handleSignInSuccess}) => {
+const SignInForm = ({ handleSignInSuccess }) => {
   const navigate = useNavigate();
   const { signin } = useAuth();
   const [signinError, setSigninError] = useState(null);
@@ -46,9 +47,10 @@ const SignInForm = ({handleSignInSuccess}) => {
     try {
       await signin(data.email, data.password);
       toastSuccess("Signin success");
-      handleSignInSuccess()
+      handleSignInSuccess();
     } catch (e) {
-      setSigninError(e.message)
+      console.log(e)
+      setSigninError(e.message);
     }
     //Close popup
   };
@@ -116,22 +118,30 @@ const SignInForm = ({handleSignInSuccess}) => {
   );
 };
 
-const SignInDialog = () => {
-  const [isOpen, setIsOpen] = useState(false);
+export const DialogOpenEvent = "dialogOpen";
 
+export const SignInDialog = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  useEffect(() => {
+    const handleDialogOpen = () => {
+      setIsOpen(true);
+    };
+    eventBus.addEventListener(DialogOpenEvent, handleDialogOpen);
+    return () => {
+      eventBus.removeEventListener(DialogOpenEvent, handleDialogOpen);
+    };
+  }, []);
   const handleSignInSuccess = () => {
     setIsOpen(false); // Close the dialog after successful sign-in
   };
   return (
-    <Dialog  open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <div className="select-none cursor-pointer">Sign In</div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
-        <SignInForm handleSignInSuccess={handleSignInSuccess}/>
+        <SignInForm handleSignInSuccess={handleSignInSuccess} />
       </DialogContent>
     </Dialog>
   );
 };
-
-export default SignInDialog;

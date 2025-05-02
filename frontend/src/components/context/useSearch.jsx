@@ -1,4 +1,4 @@
-import { fetchSearchOption } from "@/api/get/searchOption";
+import { fetchSearchOption } from "@/api/searchOption";
 import { useQuery } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState } from "react";
 

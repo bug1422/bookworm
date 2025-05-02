@@ -1,4 +1,4 @@
-import { fetchPopularBook, fetchRecommendedBook } from "@/api/get/book";
+import { fetchPopularBook, fetchRecommendedBook } from "@/api/book";
 import BookCard from "@/components/card/book";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";

@@ -10,6 +10,7 @@ export const api = axios.create({
 
 export const getDataResponse = (response) => {
   return {
+    successMessage: response.data?.message,
     data: response.data?.detail,
   };
 };
@@ -18,12 +19,12 @@ export const getErrorReponse = (error) => {
   if (axios.isAxiosError(error)) {
     return {
       error: error,
-      message: error.response?.data?.detail || error.message,
+      errorMessage: error.response?.data?.detail || error.message,
     };
   } else {
     return {
       error: error,
-      message: "UnexpectedError",
+      errorMessage: "UnexpectedError",
     };
   }
 };

@@ -1,7 +1,7 @@
-import { api } from "@/api";
-import { fetchUserInfo, loginUser, logoutUser } from "@/api/get/user";
+import { fetchUserInfo, loginUser, logoutUser } from "@/api/user";
+import { checkConflictingCart } from "@/lib/cart";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useContext, createContext, useState, useEffect } from "react";
+import { useContext, createContext, useEffect } from "react";
 
 const AuthContext = createContext();
 
@@ -23,20 +23,27 @@ export const AuthContextProvider = ({ children }) => {
   });
   const isAuthenticated = user !== undefined && user !== null;
 
+  useEffect(()=>{
+    if(user != undefined){
+      checkConflictingCart(user)
+    }
+  },[user])
 
 
   const signin = async (email, password) => {
     const response = await loginUser(email, password);
+    console.log(response)
     if (response.error) {
-      throw Error(response.message);
+      throw Error(response.errorMessage);
     }
     queryClient.invalidateQueries(queryKey)
+    mergeCart(user)
   };
 
   const signout = async () => {
     const response = await logoutUser();
     if (response.error) {
-      throw Error(response.message);
+      throw Error(response.errorMessage);
     }
   };
   return (

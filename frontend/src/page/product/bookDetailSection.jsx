@@ -1,5 +1,9 @@
+import { useAuth } from "@/components/context/useAuthContext";
 import SkeletonLoader from "@/components/fallback/skeletonLoader";
 import QuantityButton from "@/components/quantityButton";
+import { toastError, toastSuccess } from "@/components/toast";
+import { addToCart, MaxQuantity, MinQuantity } from "@/lib/cart";
+import { useState } from "react";
 
 const BookDetail = ({ book = undefined, bookIsLoading = true }) => {
   return (
@@ -44,6 +48,23 @@ const BookDetail = ({ book = undefined, bookIsLoading = true }) => {
   );
 };
 const AddToCart = ({ book = undefined, bookIsLoading = true }) => {
+  const { user } = useAuth();
+  const [quantity, setQuantity] = useState(1);
+  const addBookToCart = () => {
+    if (book != undefined) {
+      const item = addToCart(user, book.id, quantity);
+      toastSuccess(
+        "Added to cart",
+        `Book ${
+          book.book_title.length <= 8
+            ? book.book_title
+            : book.book_title.substring(0, 8) + "..."
+        } has been added. \nTotal quantity: ${item.quantity}`
+      );
+    } else {
+      toastError("Failt to add", "Can't get book");
+    }
+  };
   return (
     <>
       <div className="bg-gray-200 p-7">
@@ -66,8 +87,28 @@ const AddToCart = ({ book = undefined, bookIsLoading = true }) => {
       </div>
       <div className="p-7">
         Quantity
-        <QuantityButton className="w-full mt-3 mb-5" />
-        <div className="select-non cursor-pointer transition bg-gray-200 hover:bg-gray-500 text-center font-bold text-2xl p-2 my-10">
+        <QuantityButton
+          className="w-full mt-3 mb-5"
+          quantity={quantity}
+          onIncrease={() => {
+            setQuantity((prev) => {
+              if (prev != MaxQuantity) return prev + 1;
+              return prev;
+            });
+          }}
+          onDecrease={() => {
+            setQuantity((prev) => {
+              if (prev != MinQuantity) return prev - 1;
+              return prev;
+            });
+          }}
+        />
+        <div
+          onClick={() => {
+            addBookToCart();
+          }}
+          className="select-non cursor-pointer transition bg-gray-200 hover:bg-gray-500 text-center font-bold text-2xl p-2 my-10"
+        >
           Add to cart
         </div>
       </div>

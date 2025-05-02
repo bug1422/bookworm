@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import {
   fetchOnSaleBook,
   fetchOnSaleBook as getOnSaleBooks,
-} from "@/api/get/book";
+} from "@/api/book";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";

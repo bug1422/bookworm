@@ -4,7 +4,7 @@ import ReviewSection from "./reviewSection";
 import { useQuery } from "@tanstack/react-query";
 import SkeletonLoader from "@/components/fallback/skeletonLoader";
 import { SearchProvider } from "@/components/context/useSearch";
-import { fetchBookDetail } from "@/api/get/book";
+import { fetchBookDetail } from "@/api/book";
 import { ReviewQueryProvider } from "@/components/context/useReviewQueryContext";
 import SpinningCircle from "@/components/icons/loading";
 

@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { useSearch } from "./useSearch";
-import { fetchBooksByQuery } from "@/api/get/book";
+import { fetchBooksByQuery } from "@/api/book";
 import { useQuery } from "@tanstack/react-query";
 const BookQueryContext = createContext();
 

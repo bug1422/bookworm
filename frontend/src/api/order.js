@@ -1,0 +1,34 @@
+import { api, getDataResponse, getErrorReponse } from ".";
+const routePath = "/orders";
+
+export const validateCart = async (items) => {
+  try {
+    const body = items.map((v) => {
+      return {
+        book_id: v.bookId,
+        quantity: v.quantity,
+      };
+    });
+    const response = await api.post(routePath + "/validate", body);
+    return getDataResponse(response);
+  } catch (error) {
+    return getErrorReponse(error);
+  }
+};
+
+export const createOrder = async (items) => {
+  try {
+    const body = items.map((v) => {
+      return {
+        book_id: v.bookId,
+        discount_id: v.discountId,
+        cart_price: v.cartPrice,
+        quantity: v.quantity,
+      };
+    });
+    const response = await api.post(routePath, body);
+    return getDataResponse(response);
+  } catch (error) {
+    return getErrorReponse(error);
+  }
+};
