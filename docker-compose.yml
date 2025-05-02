@@ -17,7 +17,7 @@ services:
       - data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     environment:
-      POSTGRES_DB: ${DOCKER_POSTGRES_SERVER?error}
+      POSTGRES_DB: ${POSTGRES_STAGING_DB?error}
       POSTGRES_USER: ${POSTGRES_USER?error}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?error}
     ports:
