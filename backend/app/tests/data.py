@@ -66,8 +66,8 @@ def get_reviews(books):
     Review(book_id=books[0].id, review_title=".", review_details="...", rating_star=4),
 ]
 
-def get_order_item_input(book_id,discount_id, cart_price,quantity):
-    return OrderItemInput(book_id=book_id,discount_id=discount_id,cart_price=cart_price,quantity=quantity)
+def get_order_item_input(book_id,quantity):
+    return OrderItemInput(book_id=book_id,quantity=quantity)
 
 def get_order_input(input_items):
     return OrderInput(items=input_items)

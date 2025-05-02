@@ -90,16 +90,14 @@ def seed_cart_item(db_session, seed_discounts):
     db_session.add(discount)
     db_session.commit()
     db_session.refresh(discount)
-    yield book.id, discount.id, discount.discount_price
+    yield book.id
 
 
 @pytest.fixture(scope="function")
 def get_cart_item(seed_cart_item):
-    book_id, discount_id, discount_price = seed_cart_item
+    book_id = seed_cart_item
     return get_order_item_input(
         book_id=book_id,
-        discount_id=discount_id,
-        cart_price=discount_price,
         quantity=2
     )
 

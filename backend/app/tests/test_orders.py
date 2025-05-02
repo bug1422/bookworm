@@ -13,8 +13,6 @@ def get_order_body(items: list[OrderItemInput]):
     body = [
             {
                 "book_id": item.book_id,
-                "discount_id": item.discount_id,
-                "cart_price": float(item.cart_price),
                 "quantity": item.quantity
             }
             for item in items

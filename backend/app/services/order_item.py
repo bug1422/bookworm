@@ -29,7 +29,7 @@ class OrderItemService:
         mapped_items = [
             OrderItem(
                 quantity=item.quantity,
-                price=item.final_price,
+                price=item.total_price,
                 book_id=item.book_id,
                 order_id=order_id,
             )
@@ -45,10 +45,7 @@ class OrderItemService:
         book_flag = self.__validate_book(item_input, validated_item)
         if book_flag:
             self.__validate_discount(item_input, validated_item)
-        if validated_item.cart_price != validated_item.final_price:
-            validated_item.exception_details.append(
-                "Price applied to cart doesn't match the final price"
-            )
+            validated_item.total_price = validated_item.final_price * validated_item.quantity
         return validated_item
 
     def __validate_quantity(
@@ -59,10 +56,12 @@ class OrderItemService:
         if item_input.quantity <= 0:
             validated_item.exception_details.append(
                 "Item quantity can't be 0 nor negative")
+            validated_item.available = False
             return False
         elif item_input.quantity > settings.MAX_ITEM_QUANTITY:
             validated_item.exception_details.append(
                 f"Item quantity can't be larger than {settings.MAX_ITEM_QUANTITY}")
+            validated_item.available = False
             return False
         else:
             return True
@@ -79,6 +78,7 @@ class OrderItemService:
         )
         if not book_res.is_success:
             validated_item.exception_details.append("Book isn't available")
+            validated_item.available = False
             return False
         else:
             validated_item.book_price = book_res.result.book_price
@@ -90,26 +90,13 @@ class OrderItemService:
         item_input: OrderItemInput,
         validated_item: OrderItemValidateOutput = OrderItemValidateOutput(),
     ) -> bool:
-        discount_res = self.discount_service.get_by_id(
-            item_input.discount_id
-        )
-        if not discount_res.is_success:
-            validated_item.exception_details.append("Discount isn't available")
+        response = self.book_service.get_book_max_discount(item_input.book_id)
+        if not response.is_success:
+            validated_item.exception_details.append(str(response.exception))
+            validated_item.available = False
             return False
-        elif discount_res.result.book_id != item_input.book_id:
-            validated_item.exception_details.append(
-                "Discount doesn't apply to this book"
-            )
-            return False
-        else:
-            now = datetime.now()
-            if discount_res.result.discount_start_date > now:
-                validated_item.exception_details.append(
-                    "Discount isn't ongoing"
-                )
-                return False
-            elif discount_res.result.discount_end_date and discount_res.result.discount_end_date < now:
-                validated_item.exception_details.append("Discount is expired")
-                return False
-        validated_item.final_price = discount_res.result.discount_price
+        final_price, start_date, end_date = response.result
+        validated_item.final_price = final_price
+        validated_item.discount_start_date = start_date
+        validated_item.discount_end_date = end_date
         return True

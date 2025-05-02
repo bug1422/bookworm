@@ -14,17 +14,18 @@ class OrderItemBase(SQLModel):
 
 class OrderItemInput(SQLModel):
     book_id: Optional[int] = Field(default=None)
-    discount_id: Optional[int] = Field(default=None)
-    cart_price: Decimal = Field(default=0, nullable=False)
     quantity: int = Field(
         default=0, nullable=False
     )
 
 
 class OrderItemValidateOutput(OrderItemInput):
-    available: bool = Field(default=False)
+    available: bool = Field(default=True)
     book_price: Optional[Decimal] = Field(default=None)
     final_price: Optional[Decimal] = Field(default=None)
+    total_price: Optional[Decimal] = Field(default=None)
+    discount_start_date: Optional[datetime] = Field(default=None)
+    discount_end_date: Optional[datetime] = Field(default=None)
     exception_details: list[str] = Field(default=[])
 
 

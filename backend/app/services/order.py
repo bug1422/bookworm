@@ -2,7 +2,7 @@ from app.services.wrapper import res_wrapper
 from app.services.order_item import OrderItemService
 from app.services.user import UserService
 from app.repository.order import OrderRepository
-from app.models.order import Order, OrderInput, OrderItemInput, OrderValidateOutput
+from app.models.order import Order, OrderItemValidateOutput, OrderItemInput, OrderValidateOutput
 from app.models.exception import OrderValidationException
 
 class OrderService:
@@ -21,7 +21,7 @@ class OrderService:
         user_res = self.user_service.get_user_info(user_id)
         if not user_res.is_success:
             raise user_res.exception
-        validated_items = []
+        validated_items: list[OrderItemValidateOutput] = []
         is_valid: bool = True
         for item in order_items:
             validated_item = self.item_service.validate_item(item)
@@ -33,7 +33,7 @@ class OrderService:
             self.repository.rollback()
             raise OrderValidationException("Failed to checkout", order_output=OrderValidateOutput(validated_items=validated_item))
             # rollback
-        total_price = sum([item.final_price for item in validated_items])
+        total_price = sum([item.total_price for item in validated_items])
         order = Order(user_id = user_id, order_amount=total_price)
         self.repository.add(order)
         self.repository.flush()

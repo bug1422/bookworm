@@ -119,6 +119,10 @@ class BookService:
             avg_rating,
             review_count_result.result,
         )
+        
+    @res_wrapper
+    def get_book_max_discount(self,book_id:int):
+        return self.repository.get_book_max_discount(book_id)
 
     def get_sort_option(
         self,
