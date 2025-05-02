@@ -42,6 +42,11 @@ class BookOutput(SQLModel):
     final_price: Optional[Decimal] = Field(default=None)
     total_review: Optional[int] = Field(default=0)
     rating_star: Optional[float] = Field(default=None)
+    
+    class Config:
+        json_encoders = {
+            Decimal: lambda v: float(v)
+        }
 
 
 class BookSearchOutput(BookOutput):

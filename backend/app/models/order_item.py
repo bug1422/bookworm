@@ -11,12 +11,17 @@ class OrderItemBase(SQLModel):
         default=0, max_digits=5, decimal_places=2, nullable=False
     )
 
+    class Config:
+        json_encoders = {
+            Decimal: lambda v: float(v)
+        }
 
 class OrderItemInput(SQLModel):
     book_id: Optional[int] = Field(default=None)
     quantity: int = Field(
         default=0, nullable=False
     )
+    
 
 
 class OrderItemValidateOutput(OrderItemInput):
@@ -27,6 +32,11 @@ class OrderItemValidateOutput(OrderItemInput):
     discount_start_date: Optional[datetime] = Field(default=None)
     discount_end_date: Optional[datetime] = Field(default=None)
     exception_details: list[str] = Field(default=[])
+
+    class Config:
+        json_encoders = {
+            Decimal: lambda v: float(v)
+        }
 
 
 class OrderItem(OrderItemBase, table=True):

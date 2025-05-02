@@ -12,6 +12,11 @@ class DiscountBase(SQLModel):
     discount_price: Decimal = Field(
         max_digits=5, decimal_places=2, nullable=False, gt=0
     )
+    
+    class Config:
+        json_encoders = {
+            Decimal: lambda v: float(v)
+        }
 
 
 class Discount(DiscountBase, table=True):

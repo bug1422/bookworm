@@ -14,6 +14,10 @@ class OrderBase(SQLModel):
         default=0, max_digits=8, decimal_places=2, nullable=False
     )
 
+    class Config:
+        json_encoders = {
+            Decimal: lambda v: float(v)
+        }
 
 class OrderInput(SQLModel, config=dict(from_attributes=False)):
     items: Annotated[List[OrderItemInput], conlist(OrderItemInput, min_length=1)] = Field(nullable=False)
