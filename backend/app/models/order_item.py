@@ -16,16 +16,19 @@ class OrderItemBase(SQLModel):
             Decimal: lambda v: float(v)
         }
 
+
 class OrderItemInput(SQLModel):
     book_id: Optional[int] = Field(default=None)
     quantity: int = Field(
         default=0, nullable=False
     )
-    
 
 
 class OrderItemValidateOutput(OrderItemInput):
     available: bool = Field(default=True)
+    book_title: Optional[str] = Field(default=None)
+    book_summary: Optional[str] = Field(default=None)
+    book_cover_photo: Optional[str] = Field(default=None,max_length=20)
     book_price: Optional[Decimal] = Field(default=None)
     final_price: Optional[Decimal] = Field(default=None)
     total_price: Optional[Decimal] = Field(default=None)

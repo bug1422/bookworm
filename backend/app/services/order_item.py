@@ -1,3 +1,4 @@
+from app.core.image import get_image_url
 from app.services.wrapper import res_wrapper
 from app.services.book import BookService
 from app.services.discount import DiscountService
@@ -81,6 +82,9 @@ class OrderItemService:
             validated_item.available = False
             return False
         else:
+            validated_item.book_title = book_res.result.book_title
+            validated_item.book_cover_photo = get_image_url("books", book_res.result.book_cover_photo)
+            validated_item.book_summary = book_res.result.book_summary
             validated_item.book_price = book_res.result.book_price
             validated_item.final_price = validated_item.book_price
             return True
