@@ -1,6 +1,5 @@
 from sqlmodel import SQLModel, Field
-from pydantic import field_validator
-from pydantic.generics import GenericModel
+from pydantic import field_validator, BaseModel
 from app.core.config import settings
 from typing import Generic, TypeVar
 
@@ -23,7 +22,7 @@ class QueryPaging(SQLModel):
         return value
 
 
-class PagingResponse(GenericModel, Generic[T]):
+class PagingResponse(BaseModel, Generic[T]):
     items: list[T]
     current_page: int
     max_page: int

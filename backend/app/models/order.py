@@ -15,18 +15,19 @@ class OrderBase(SQLModel):
     )
 
 
-class OrderInput(SQLModel):
+class OrderInput(SQLModel, config=dict(from_attributes=False)):
     items: Annotated[List[OrderItemInput], conlist(OrderItemInput, min_length=1)] = Field(nullable=False)
 
     @field_validator("items")
     @classmethod
     def validate_unique_item(cls, items: list[OrderItemInput]):
-        if len(items) != set(len([item.book_id for item in items])):
+        if len(items) != len(set([item.book_id for item in items])):
             raise ValueError("List can't contain duplicate id")
 
 
 class OrderValidateOutput(SQLModel):
-    item_outputs: list[OrderItemValidateOutput] | None = Field(default=None)
+    validated_items: list[OrderItemValidateOutput]
+    exception_details: list[str] = Field(default=[])
 
 
 class Order(OrderBase, table=True):

@@ -156,11 +156,13 @@ def get_order_item_service(
 
 def get_order_service(
     order_repository: OrderRepository = Depends(__get_order_repo),
+    user_service: UserService = Depends(get_user_service),
     item_service: OrderItemService = Depends(get_order_item_service),
 ):
     return OrderService(
         order_repository=order_repository,
         item_service=item_service,
+        user_service=user_service
     )
 
 

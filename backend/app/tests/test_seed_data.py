@@ -24,6 +24,7 @@ def seed_authors(db_session):
         db_session.refresh(author)
     yield authors
 
+
 @pytest.fixture(scope="session")
 def seed_books(seed_categories, seed_authors, db_session):
     books = get_books(seed_categories, seed_authors)
@@ -32,6 +33,7 @@ def seed_books(seed_categories, seed_authors, db_session):
     for book in books:
         db_session.refresh(book)
     yield books
+
 
 @pytest.fixture(scope="session")
 def seed_discounts(seed_books, db_session):
@@ -42,6 +44,7 @@ def seed_discounts(seed_books, db_session):
         db_session.refresh(discount)
     yield discounts
 
+
 @pytest.fixture(scope="session")
 def seed_reviews(seed_books, db_session):
     reviews = get_reviews(seed_books)
@@ -50,6 +53,7 @@ def seed_reviews(seed_books, db_session):
     for review in reviews:
         db_session.refresh(review)
     yield reviews
+
 
 @pytest.fixture(scope="session")
 def seed_add_review(db_session):
@@ -65,3 +69,29 @@ def seed_add_review(db_session):
     db_session.commit()
     db_session.refresh(book)
     yield book
+
+
+@pytest.fixture(scope="session")
+def seed_cart_item(db_session, seed_discounts):
+    category = get_new_category()
+    db_session.add(category)
+    author = get_new_author()
+    db_session.add(author)
+    db_session.commit()
+    db_session.refresh(category)
+    db_session.refresh(author)
+    book = get_new_book(category, author)
+    db_session.add(book)
+    db_session.commit()
+    db_session.refresh(book)
+    discount = get_new_discount(book)
+    db_session.add(discount)
+    db_session.commit()
+    db_session.refresh(discount)
+    cart_item = get_order_item_input(
+        book_id=book.id,
+        discount_id=discount.id,
+        cart_price=discount.discount_price,
+        quantity=2
+    )
+    yield cart_item

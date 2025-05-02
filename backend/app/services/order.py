@@ -2,7 +2,7 @@ from app.services.wrapper import async_res_wrapper
 from app.services.order_item import OrderItemService
 from app.services.user import UserService
 from app.repository.order import OrderRepository
-from app.models.order import Order, OrderInput, OrderValidateOutput
+from app.models.order import Order, OrderInput, OrderItemInput, OrderValidateOutput
 
 
 class OrderService:
@@ -48,10 +48,18 @@ class OrderService:
 
     @async_res_wrapper
     async def validate_order(
-        self, order_input: OrderInput
+        self, order_items: list[OrderItemInput]
     ) -> OrderValidateOutput:
+        exception_details = []
+        self.__validate_unique_items(order_items,exception_details)
         validated_items = [
             await self.item_service.validate_item(item)
-            for item in order_input.items
+            for item in order_items
         ]
-        return OrderValidateOutput(validated_items=validated_items)
+        return OrderValidateOutput(exception_details=exception_details,validated_items=validated_items)
+
+    def __validate_unique_items(self, order_items: list[OrderItemInput],exception_details: list[str]):
+        if len(order_items) != len(set([item.book_id for item in order_items])):
+            exception_details.append("List can't contain duplicate id")
+            return False
+        return True

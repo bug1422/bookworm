@@ -11,6 +11,7 @@ import app.models
 def pytest_configure(config):
     config.addinivalue_line("markers", "books: all book endpoint tests")
     config.addinivalue_line("markers", "reviews: all review endpoint tests")
+    config.addinivalue_line("markers", "orders: all order endpoint tests")
 
 
 settings = TestSettings()

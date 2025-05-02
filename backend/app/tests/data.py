@@ -1,5 +1,7 @@
 from app.models import Book, Category, Author, Discount, Review
+from app.models.order import OrderItemInput, OrderInput
 from datetime import datetime, timezone, timedelta
+now = datetime.now(timezone.utc)
 
 def get_categories():
     return [
@@ -38,8 +40,11 @@ def get_new_book(category,author):
     return Book(category_id=category.id, author_id=author.id, book_title="G",
                 book_summary="...", book_price=100, book_cover_photo="img.png")
 
+def get_new_discount(book):
+    return Discount(book_id=book.id, discount_start_date=now -
+             timedelta(days=1), discount_end_date=None, discount_price=20)
 
-now = datetime.now(timezone.utc)
+
 def get_discounts(books): 
     return [
     Discount(book_id=books[0].id, discount_start_date=now -
@@ -60,3 +65,9 @@ def get_reviews(books):
     Review(book_id=books[2].id, review_title=".", review_details="...", rating_star=1),
     Review(book_id=books[0].id, review_title=".", review_details="...", rating_star=4),
 ]
+
+def get_order_item_input(book_id,discount_id, cart_price,quantity):
+    return OrderItemInput(book_id=book_id,discount_id=discount_id,cart_price=cart_price,quantity=quantity)
+
+def get_order_input(input_items):
+    return OrderInput(items=input_items)

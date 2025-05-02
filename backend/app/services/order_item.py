@@ -7,6 +7,7 @@ from app.models.order_item import (
     OrderItemInput,
     OrderItemValidateOutput,
 )
+from app.core.config import settings
 from datetime import datetime, timezone
 
 
@@ -40,54 +41,75 @@ class OrderItemService:
         self, item_input: OrderItemInput
     ) -> OrderItemValidateOutput:
         validated_item = OrderItemValidateOutput(**item_input.model_dump())
-        await self.__validate_book(item_input, validated_item)
-        if len(validated_item.exception_details) == 0:
+        quantity_flag = await self.__validate_quantity(item_input, validated_item)
+        book_flag = await self.__validate_book(item_input, validated_item)
+        if book_flag:
             await self.__validate_discount(item_input, validated_item)
-
         if validated_item.cart_price != validated_item.final_price:
             validated_item.exception_details.append(
                 "Price applied to cart doesn't match the final price"
             )
-
         return validated_item
+
+    async def __validate_quantity(
+        self,
+        item_input: OrderItemInput,
+        validated_item: OrderItemValidateOutput = OrderItemValidateOutput(),
+    ) -> bool:
+        if item_input.quantity <= 0:
+            validated_item.exception_details.append(
+                "Item quantity can't be 0 nor negative")
+            return False
+        elif item_input.quantity > settings.MAX_ITEM_QUANTITY:
+            validated_item.exception_details.append(
+                f"Item quantity can't be larger than {settings.MAX_ITEM_QUANTITY}")
+            return False
+        else:
+            return True
 
     async def __validate_book(
         self,
         item_input: OrderItemInput,
         validated_item: OrderItemValidateOutput = OrderItemValidateOutput(),
-    ) -> list[str]:
-        book = (
+    ) -> bool:
+        book_res = (
             await self.book_service.get_by_id(item_input.book_id)
             if item_input.book_id != None
             else None
         )
-        if not book:
+        if not book_res.is_success:
             validated_item.exception_details.append("Book isn't available")
-        validated_item.book_price = book.book_price
-        validated_item.final_price = validated_item.book_price
-        return validated_item
+            return False
+        else:
+            validated_item.book_price = book_res.result.book_price
+            validated_item.final_price = validated_item.book_price
+            return True
 
     async def __validate_discount(
         self,
         item_input: OrderItemInput,
         validated_item: OrderItemValidateOutput = OrderItemValidateOutput(),
-    ) -> list[str]:
-        discount = await self.discount_service.get_by_id(
+    ) -> bool:
+        discount_res = await self.discount_service.get_by_id(
             item_input.discount_id
         )
-        if not discount:
+        if not discount_res.is_success:
             validated_item.exception_details.append("Discount isn't available")
-        elif discount.book_id != item_input.book_id:
+            return False
+        elif discount_res.result.book_id != item_input.book_id:
             validated_item.exception_details.append(
                 "Discount doesn't apply to this book"
             )
+            return False
         else:
-            now = datetime(timezone.utc)
-            if discount.discount_start_date > now:
+            now = datetime.now()
+            if discount_res.result.discount_start_date > now:
                 validated_item.exception_details.append(
                     "Discount isn't ongoing"
                 )
-            elif discount.discount_end_date < now:
+                return False
+            elif discount_res.result.discount_end_date and discount_res.result.discount_end_date < now:
                 validated_item.exception_details.append("Discount is expired")
-        validated_item.final_price = discount.discount_price
-        return validated_item
+                return False
+        validated_item.final_price = discount_res.result.discount_price
+        return True

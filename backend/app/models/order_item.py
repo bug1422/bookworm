@@ -17,7 +17,7 @@ class OrderItemInput(SQLModel):
     discount_id: Optional[int] = Field(default=None)
     cart_price: Decimal = Field(default=0, nullable=False)
     quantity: int = Field(
-        default=0, ge=1, le=settings.MAX_ITEM_QUANTITY, nullable=False
+        default=0, nullable=False
     )
 
 
