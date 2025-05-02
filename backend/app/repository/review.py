@@ -7,7 +7,7 @@ class ReviewRepository(BaseRepository[Review]):
     def __init__(self, session):
         super().__init__(Review, session)
 
-    async def get_review_count_by_rating(
+    def get_review_count_by_rating(
         self, book_id: int, rating_list: list[int] = []
     ) -> dict[int, int]:
         query = (
@@ -24,7 +24,7 @@ class ReviewRepository(BaseRepository[Review]):
             result[rating_start] = review_count
         return result
 
-    async def get_by_book_id(
+    def get_by_book_id(
         self, book_id: int, query_option: ReviewQuery
     ) -> Tuple[list[Review], int]:
         query = select(Review).where(Review.book_id == book_id)

@@ -1,3 +1,5 @@
+from fastapi.testclient import TestClient
+from fastapi import status
 from sqlmodel import Session, select, func
 from app.models import Book, Category, Author, Discount, Review
 from app.tests.data import *
@@ -88,10 +90,29 @@ def seed_cart_item(db_session, seed_discounts):
     db_session.add(discount)
     db_session.commit()
     db_session.refresh(discount)
-    cart_item = get_order_item_input(
-        book_id=book.id,
-        discount_id=discount.id,
-        cart_price=discount.discount_price,
+    yield book.id, discount.id, discount.discount_price
+
+
+@pytest.fixture(scope="function")
+def get_cart_item(seed_cart_item):
+    book_id, discount_id, discount_price = seed_cart_item
+    return get_order_item_input(
+        book_id=book_id,
+        discount_id=discount_id,
+        cart_price=discount_price,
         quantity=2
     )
-    yield cart_item
+
+
+@pytest.fixture(scope="session")
+def seed_user(test_client: TestClient, db_session: Session):
+    response = test_client.post("/users/signup", data={
+        "first_name": "def",
+        "last_name": "abc",
+        "email": "test@gmail.com",
+        "password": "123",
+        "is_admin": True
+    })
+    assert response.status_code == status.HTTP_201_CREATED
+    user = db_session.exec(select(User)).first()
+    yield user

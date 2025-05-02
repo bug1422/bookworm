@@ -1,4 +1,4 @@
-from app.models import Book, Category, Author, Discount, Review
+from app.models import Book, Category, Author, Discount, Review, User
 from app.models.order import OrderItemInput, OrderInput
 from datetime import datetime, timezone, timedelta
 now = datetime.now(timezone.utc)

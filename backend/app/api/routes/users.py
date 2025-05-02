@@ -5,7 +5,7 @@ from app.models.user import UserLogin, UserSignup, UserInfo
 from app.models.token import TokenData
 from app.services.user import UserService
 from app.api.deps import get_user_service, get_access_token_data, get_refresh_token_data
-from app.core.config import settings
+from app.core.config import settings, ENVIRONMENT
 from datetime import timedelta
 from app.core.security import create_token
 
@@ -24,7 +24,7 @@ def create_access_token(user, response: Response):
         value=access_token,
         expires=access_token_expires,
         httponly=True,
-        secure=True,
+        secure=ENVIRONMENT != "testing",
         samesite="none",
     )
 
@@ -43,7 +43,7 @@ def create_refresh_token(user, response: Response):
         value=refresh_token,
         expires=refresh_token_expires,
         httponly=True,
-        secure=True,
+        secure=ENVIRONMENT != "testing",
         samesite="none",
         path=f"{settings.API_V1_STR}/users/refresh-token"
     )
@@ -58,7 +58,7 @@ async def signup(
     form_data: UserSignup = Form(),
     service: UserService = Depends(get_user_service),
 ):
-    user_res = await service.create_account(
+    user_res = service.create_account(
         form_data.first_name,
         form_data.last_name,
         form_data.is_admin,
@@ -83,7 +83,7 @@ async def login(
     form_data: UserLogin = Form(),
     service: UserService = Depends(get_user_service),
 ):
-    user_res = await service.get_by_email_and_password(
+    user_res = service.get_by_email_and_password(
         form_data.email, form_data.password
     )
     if not user_res.is_success:
@@ -104,7 +104,7 @@ async def refresh_token(
         refresh_token_data: TokenData = Depends(get_refresh_token_data),
         service: UserService = Depends(get_user_service)
 ):
-    user_res = await service.get_user_info(refresh_token_data.id)
+    user_res = service.get_user_info(refresh_token_data.id)
     if not user_res.is_success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="No user found"
@@ -129,7 +129,7 @@ async def get_user_info(
     access_token_data: TokenData = Depends(get_access_token_data),
     service: UserService = Depends(get_user_service),
 ):
-    user_res = await service.get_user_info(access_token_data.id)
+    user_res = service.get_user_info(access_token_data.id)
     if not user_res.is_success:
         if isinstance(user_res.exception, NotFoundException):
             raise HTTPException(

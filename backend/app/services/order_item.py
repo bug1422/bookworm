@@ -1,4 +1,4 @@
-from app.services.wrapper import async_res_wrapper
+from app.services.wrapper import res_wrapper
 from app.services.book import BookService
 from app.services.discount import DiscountService
 from app.repository.order_item import OrderItemRepository
@@ -22,8 +22,8 @@ class OrderItemService:
         self.book_service = book_service
         self.discount_service = discount_service
 
-    @async_res_wrapper
-    async def add_items(
+    @res_wrapper
+    def add_items(
         self, order_id: int, items: list[OrderItemValidateOutput]
     ):
         mapped_items = [
@@ -35,23 +35,23 @@ class OrderItemService:
             )
             for item in items
         ]
-        await self.repository.add_range(mapped_items)
+        self.repository.add_range(mapped_items)
 
-    async def validate_item(
+    def validate_item(
         self, item_input: OrderItemInput
     ) -> OrderItemValidateOutput:
         validated_item = OrderItemValidateOutput(**item_input.model_dump())
-        quantity_flag = await self.__validate_quantity(item_input, validated_item)
-        book_flag = await self.__validate_book(item_input, validated_item)
+        quantity_flag = self.__validate_quantity(item_input, validated_item)
+        book_flag = self.__validate_book(item_input, validated_item)
         if book_flag:
-            await self.__validate_discount(item_input, validated_item)
+            self.__validate_discount(item_input, validated_item)
         if validated_item.cart_price != validated_item.final_price:
             validated_item.exception_details.append(
                 "Price applied to cart doesn't match the final price"
             )
         return validated_item
 
-    async def __validate_quantity(
+    def __validate_quantity(
         self,
         item_input: OrderItemInput,
         validated_item: OrderItemValidateOutput = OrderItemValidateOutput(),
@@ -67,13 +67,13 @@ class OrderItemService:
         else:
             return True
 
-    async def __validate_book(
+    def __validate_book(
         self,
         item_input: OrderItemInput,
         validated_item: OrderItemValidateOutput = OrderItemValidateOutput(),
     ) -> bool:
         book_res = (
-            await self.book_service.get_by_id(item_input.book_id)
+            self.book_service.get_by_id(item_input.book_id)
             if item_input.book_id != None
             else None
         )
@@ -85,12 +85,12 @@ class OrderItemService:
             validated_item.final_price = validated_item.book_price
             return True
 
-    async def __validate_discount(
+    def __validate_discount(
         self,
         item_input: OrderItemInput,
         validated_item: OrderItemValidateOutput = OrderItemValidateOutput(),
     ) -> bool:
-        discount_res = await self.discount_service.get_by_id(
+        discount_res = self.discount_service.get_by_id(
             item_input.discount_id
         )
         if not discount_res.is_success:

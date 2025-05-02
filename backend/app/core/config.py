@@ -9,7 +9,8 @@ from pydantic_core import Url
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Any, Literal, Annotated, Tuple
 import os
-ENVIRONMENT: Literal["local", "staging", "testing"] = os.getenv("ENVIRONMENT", "local")
+
+ENVIRONMENT: Literal["local", "staging", "testing"] = os.getenv("ENVIRONMENT")
 
 def parse_cors(v: Any) -> list[str] | str:
     if isinstance(v, str) and not v.startswith("["):
@@ -77,6 +78,7 @@ class Settings(BaseSettings):
 
 
 class StagingSettings(Settings):
+    TESTING: bool = False
     POSTGRES_STAGING_SERVER: str
     POSTGRES_STAGING_DB: str
     POSTGRES_STAGING_PORT: int
@@ -95,6 +97,7 @@ class StagingSettings(Settings):
 
 
 class DevSettings(Settings):
+    TESTING: bool = False
     POSTGRES_DEV_SERVER: str
     POSTGRES_DEV_DB: str
     POSTGRES_DEV_PORT: int
@@ -113,6 +116,7 @@ class DevSettings(Settings):
 
 
 class TestSettings(Settings):
+    TESTING: bool = True
     POSTGRES_TEST_SERVER: str
     POSTGRES_TEST_DB: str
     POSTGRES_TEST_PORT: int

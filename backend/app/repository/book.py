@@ -13,7 +13,7 @@ class BookRepository(BaseRepository[Book]):
     def __init__(self, session):
         super().__init__(Book, session)
 
-    async def get_books(
+    def get_books(
         self,
         sort_option: BookSortOption = None,
         category_name: str = None,
@@ -82,7 +82,7 @@ class BookRepository(BaseRepository[Book]):
         books = self.session.exec(query).all()
         return books, max_entries
 
-    async def get_book_detail(
+    def get_book_detail(
         self, book_id: int
     ) -> Tuple[Book, Decimal, Decimal, int, float] | None:
         on_sale_sub = self.__get_on_sale_subquery(book_id)

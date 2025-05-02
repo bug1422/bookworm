@@ -16,7 +16,7 @@ async def get_books(
     query: BookQuery = Query(...),
     service: BookService = Depends(get_book_service),
 ):
-    book_res = await service.get_books(query)
+    book_res = service.get_books(query)
     if not book_res.is_success:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -28,7 +28,7 @@ async def get_books(
 async def get_on_sale_books(
     take: int = 10, service: BookService = Depends(get_book_service)
 ):
-    book_res = await service.get_top_on_sale(take)
+    book_res = service.get_top_on_sale(take)
     if not book_res.is_success:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -41,7 +41,7 @@ async def get_on_sale_books(
 async def get_recommended_books(
     take: int = 8, service: BookService = Depends(get_book_service)
 ):
-    book_res = await service.get_recommended_books(take)
+    book_res = service.get_recommended_books(take)
     if not book_res.is_success:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -54,7 +54,7 @@ async def get_recommended_books(
 async def get_popular_books(
     take: int = 8, service: BookService = Depends(get_book_service)
 ):
-    book_res = await service.get_popular_books(take)
+    book_res = service.get_popular_books(take)
     if not book_res.is_success:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -69,7 +69,7 @@ async def get_book_detail(
     book_service: BookService = Depends(get_book_service),
     review_service: ReviewService = Depends(get_review_service),
 ):
-    book_res = await book_service.get_book_detail(book_id, review_service)
+    book_res = book_service.get_book_detail(book_id, review_service)
     if not book_res.is_success:
         if isinstance(book_res.exception,NotFoundException):
             raise HTTPException(
@@ -90,7 +90,7 @@ async def get_book_review(
     query: ReviewQuery = Query(...),
     service: ReviewService = Depends(get_review_service),
 ):
-    reviews_res = await service.get_book_reviews(book_id, query)
+    reviews_res = service.get_book_reviews(book_id, query)
     if not reviews_res.is_success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -107,7 +107,7 @@ async def add_review(
     review_service: ReviewService = Depends(get_review_service),
     book_service: BookService = Depends(get_book_service),
 ):
-    add_res = await review_service.add_review(book_id,body,book_service)
+    add_res = review_service.add_review(book_id,body,book_service)
     if not add_res.is_success:
         raise HTTPException(status_code=status, detail=add_res.exception)
     return AppResponse(

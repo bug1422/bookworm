@@ -11,7 +11,7 @@ router = APIRouter(prefix="/search-option", tags=["options"])
 async def get_book_search_options(
     service: SearchOptionSerivce = Depends(get_search_option_service),
 ):
-    option_res = await service.get_search_options()
+    option_res = service.get_search_options()
     if not option_res.is_success:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

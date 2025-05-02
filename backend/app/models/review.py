@@ -49,6 +49,7 @@ class ReviewInput(SQLModel):
             raise ValueError(
                 f"rating must be from {settings.MIN_REVIEW_RATING} to {settings.MAX_REVIEW_RATING}"
             )
+        return value
 
 
 class Review(ReviewBase, table=True):
