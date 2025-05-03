@@ -3,7 +3,8 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Optional, Annotated, List
 from pydantic import conlist, field_validator
-from app.models.order_item import OrderItemInput, OrderItemValidateOutput
+from app.models.order_item import OrderItemValidateInput, OrderItemValidateOutput
+from app.models.money import get_currency
 
 
 class OrderBase(SQLModel):
@@ -16,15 +17,17 @@ class OrderBase(SQLModel):
 
     class Config:
         json_encoders = {
-            Decimal: lambda v: float(v)
+            Decimal: lambda v: get_currency(v)
         }
 
+
 class OrderInput(SQLModel, config=dict(from_attributes=False)):
-    items: Annotated[List[OrderItemInput], conlist(OrderItemInput, min_length=1)] = Field(nullable=False)
+    items: Annotated[List[OrderItemValidateInput], conlist(
+        OrderItemValidateInput, min_length=1)] = Field(nullable=False)
 
     @field_validator("items")
     @classmethod
-    def validate_unique_item(cls, items: list[OrderItemInput]):
+    def validate_unique_item(cls, items: list[OrderItemValidateInput]):
         if len(items) != len(set([item.book_id for item in items])):
             raise ValueError("List can't contain duplicate id")
 

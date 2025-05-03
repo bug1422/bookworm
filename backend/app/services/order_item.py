@@ -5,7 +5,8 @@ from app.services.discount import DiscountService
 from app.repository.order_item import OrderItemRepository
 from app.models.order_item import (
     OrderItem,
-    OrderItemInput,
+    OrderItemValidateInput,
+    OrderItemCheckoutInput,
     OrderItemValidateOutput,
 )
 from app.core.config import settings
@@ -39,19 +40,23 @@ class OrderItemService:
         self.repository.add_range(mapped_items)
 
     def validate_item(
-        self, item_input: OrderItemInput
+        self, item_input: OrderItemValidateInput | OrderItemCheckoutInput
     ) -> OrderItemValidateOutput:
         validated_item = OrderItemValidateOutput(**item_input.model_dump())
         quantity_flag = self.__validate_quantity(item_input, validated_item)
         book_flag = self.__validate_book(item_input, validated_item)
-        if book_flag:
-            self.__validate_discount(item_input, validated_item)
-            validated_item.total_price = validated_item.final_price * validated_item.quantity
+        if not book_flag:
+            return validated_item
+        self.__validate_discount(item_input, validated_item)
+        validated_item.total_price = validated_item.final_price * validated_item.quantity
+        if isinstance(item_input, OrderItemCheckoutInput) and validated_item.final_price != item_input.cart_price:
+            validated_item.exception_details.append(
+                "Book price doesn't match final price")
         return validated_item
 
     def __validate_quantity(
         self,
-        item_input: OrderItemInput,
+        item_input: OrderItemValidateInput,
         validated_item: OrderItemValidateOutput = OrderItemValidateOutput(),
     ) -> bool:
         if item_input.quantity <= 0:
@@ -69,7 +74,7 @@ class OrderItemService:
 
     def __validate_book(
         self,
-        item_input: OrderItemInput,
+        item_input: OrderItemValidateInput,
         validated_item: OrderItemValidateOutput = OrderItemValidateOutput(),
     ) -> bool:
         book_res = (
@@ -83,15 +88,17 @@ class OrderItemService:
             return False
         else:
             validated_item.book_title = book_res.result.book_title
-            validated_item.book_cover_photo = get_image_url("books", book_res.result.book_cover_photo)
-            validated_item.book_summary = book_res.result.book_summary
+            validated_item.book_id = book_res.result.id
+            validated_item.book_cover_photo = get_image_url(
+                "books", book_res.result.book_cover_photo)
+            validated_item.author_name = book_res.result.author.author_name
             validated_item.book_price = book_res.result.book_price
             validated_item.final_price = validated_item.book_price
             return True
 
     def __validate_discount(
         self,
-        item_input: OrderItemInput,
+        item_input: OrderItemValidateInput,
         validated_item: OrderItemValidateOutput = OrderItemValidateOutput(),
     ) -> bool:
         response = self.book_service.get_book_max_discount(item_input.book_id)
@@ -99,6 +106,7 @@ class OrderItemService:
             validated_item.exception_details.append(str(response.exception))
             validated_item.available = False
             return False
+
         final_price, start_date, end_date = response.result
         validated_item.final_price = final_price
         validated_item.discount_start_date = start_date
