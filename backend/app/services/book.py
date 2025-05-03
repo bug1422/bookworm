@@ -146,6 +146,7 @@ class BookService:
             category_name=book.category.category_name,
             author_name=book.author.author_name,
             final_price=final_price,
+            is_on_sale=final_price < book.book_price, 
             rating_star=round(avg_rating, 1) if avg_rating else None,
             total_review=total_review if total_review else 0,
         )

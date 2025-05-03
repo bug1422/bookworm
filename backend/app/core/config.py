@@ -41,6 +41,8 @@ class Settings(BaseSettings):
     BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     IMAGES_DIR: str = os.path.join(BASE_DIR, "images")
 
+    EXCHANGE_RATE_USD_VND: float
+
     @computed_field
     @property
     def all_cors_origins(self) -> list[str]:

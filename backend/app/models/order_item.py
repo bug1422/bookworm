@@ -40,6 +40,7 @@ class OrderItemCheckoutInput(OrderItemValidateInput):
 
 class OrderItemValidateOutput(OrderItemValidateInput):
     available: bool = Field(default=True)
+    is_on_sale: bool = Field(default=False)
     author_name: Optional[str] = Field(default=None)
     book_id: Optional[int] = Field(default=None)
     book_title: Optional[str] = Field(default=None)

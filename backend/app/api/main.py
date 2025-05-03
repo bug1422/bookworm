@@ -7,7 +7,7 @@ from app.api.routes import (
     categories,
     orders,
     users,
-    search_options,
+    options
 )
 
 api_router = APIRouter()
@@ -18,4 +18,4 @@ api_router.include_router(categories.router)
 api_router.include_router(discounts.router)
 api_router.include_router(orders.router)
 api_router.include_router(users.router)
-api_router.include_router(search_options.router)
+api_router.include_router(options.router)

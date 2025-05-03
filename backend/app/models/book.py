@@ -40,6 +40,7 @@ class BookOutput(SQLModel):
     author_name: str
     category_name: str
     book_cover_photo: Optional[str]
+    is_on_sale: bool
     final_price: Optional[Decimal] = Field(default=None)
     total_review: Optional[int] = Field(default=0)
     rating_star: Optional[float] = Field(default=None)

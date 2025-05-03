@@ -1,17 +1,22 @@
+from sqlmodel import SQLModel
 from enum import Enum
 from decimal import Decimal
+from app.core.config import settings
+
 
 class Currency(Enum):
-    UNITED_STATES_DOLLAR = "USD"
+    UNITED_STATES_DOLLAR = ("USD", 1, "$_")
+    VIETNAM_DONG = ("VND", settings.EXCHANGE_RATE_USD_VND, "_vnd")
+
+    def __init__(self, value, exchange_rate, symbol):
+        self._value_ = value
+        self.exchange_rate = exchange_rate
+        self.symbol = symbol
 
 
-def get_currency(value: Decimal, currency: Currency = Currency.UNITED_STATES_DOLLAR):
-    if currency == Currency.UNITED_STATES_DOLLAR:
-        formatted_string = f"${value:.2f}"  # Formats as "$12.00"
-    else:
-        formatted_string = str(value)
+def get_currency(value: Decimal):
+    return float(value)
 
-    return {
-        "value": float(value),
-        "formatted_string": formatted_string
-    }
+
+class MoneyOptions(SQLModel):
+    currencies: dict[str, dict] = []

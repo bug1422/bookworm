@@ -16,12 +16,12 @@ from app.services.book import BookService
 from app.services.review import ReviewService
 from app.services.author import AuthorService
 from app.services.category import CategoryService
-from app.services.search_option import SearchOptionSerivce
 from app.services.discount import DiscountService
 from app.services.order import OrderService
 from app.services.order_item import OrderItemService
+from app.services.search_option import SearchOptionSerivce
+from app.services.money_option import MoneyOptionSerivce
 from datetime import datetime, timezone
-
 
 def credentials_exception(detail=""):
     return HTTPException(
@@ -176,5 +176,7 @@ def get_search_option_service(
         book_service, author_service, category_service, review_service
     )
 
+def get_money_option_service():
+    return MoneyOptionSerivce()
 
 # endregion

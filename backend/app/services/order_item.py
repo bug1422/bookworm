@@ -52,6 +52,7 @@ class OrderItemService:
         if isinstance(item_input, OrderItemCheckoutInput) and validated_item.final_price != item_input.cart_price:
             validated_item.exception_details.append(
                 "Book price doesn't match final price")
+        validated_item.is_on_sale=validated_item.final_price < validated_item.book_price
         return validated_item
 
     def __validate_quantity(
