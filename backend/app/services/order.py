@@ -25,7 +25,7 @@ class OrderService:
         validated_items: list[OrderItemValidateOutput] = []
         is_valid: bool = True
         for item in order_items:
-            validated_item = self.item_service.validate_item(item,check_cart_price=True)
+            validated_item = self.item_service.validate_item(item)
             if len(validated_item.exception_details) != 0:
                 is_valid = False
             validated_items.append(validated_item)
