@@ -6,10 +6,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useEffect, useState } from "react";
-import {
-  fetchOnSaleBook,
-  fetchOnSaleBook as getOnSaleBooks,
-} from "@/api/book";
+import { fetchOnSaleBook, fetchOnSaleBook as getOnSaleBooks } from "@/api/book";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -28,6 +25,7 @@ const ItemContainer = ({ books }) => {
               bookPrice={v.book_price}
               finalPrice={v.final_price}
               img_path={v.book_cover_photo}
+              isOnSale={v.is_on_sale}
             />
           ))}
       </div>
@@ -77,8 +75,8 @@ const OnSaleSection = () => {
         bookContainers.push(result.data.slice(i, i + itemPerContainer));
       }
       return bookContainers;
-    } 
-    throw result.error
+    }
+    throw result.error;
   };
 
   return (

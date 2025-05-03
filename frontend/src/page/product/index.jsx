@@ -3,7 +3,6 @@ import BookDetailSection from "./bookDetailSection";
 import ReviewSection from "./reviewSection";
 import { useQuery } from "@tanstack/react-query";
 import SkeletonLoader from "@/components/fallback/skeletonLoader";
-import { SearchProvider } from "@/components/context/useSearch";
 import { fetchBookDetail } from "@/api/book";
 import { ReviewQueryProvider } from "@/components/context/useReviewQueryContext";
 import SpinningCircle from "@/components/icons/loading";
@@ -22,7 +21,7 @@ const ProductError = ({ text }) => {
   );
 };
 
-const ProductLoading = ({ text }) => {
+const ProductLoading = () => {
   return (
     <div className="top-1/2 left-1/2 fixed -translate-x-1/2 text-5xl font-bold flex flex-col items-center gap-4">
       <SpinningCircle />
@@ -55,7 +54,7 @@ const ProductPage = () => {
     throw response.error;
   };
   return (
-    <SearchProvider>
+    <>
       {isLoading ? (
         <ProductLoading />
       ) : status == "error" ? (
@@ -75,7 +74,7 @@ const ProductPage = () => {
           </ReviewQueryProvider>
         </div>
       )}
-    </SearchProvider>
+    </>
   );
 };
 

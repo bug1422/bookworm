@@ -1,4 +1,4 @@
-import { useSearch } from "@/components/context/useSearch";
+import { useOptions } from "@/components/context/useOptionsContext";
 import { Button } from "@/components/ui/button";
 import {
   FormControl,
@@ -46,7 +46,7 @@ const addReviewSchema = Yup.object({
     .max(5, "Maximum rating is 5 stars"),
 });
 const AddReviewForm = () => {
-  const { ratingList, isOptionLoading } = useSearch();
+  const { ratingList, isOptionLoading } = useOptions();
   const { bookId, refetchReviews } = useReviewQuery();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);

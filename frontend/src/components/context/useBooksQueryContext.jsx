@@ -1,11 +1,11 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import { useSearch } from "./useSearch";
+import { useOptions } from "./useOptionsContext";
 import { fetchBooksByQuery } from "@/api/book";
 import { useQuery } from "@tanstack/react-query";
 const BookQueryContext = createContext();
 
 export const BookQueryProvider = ({ children }) => {
-  const { pagingOptions, bookSortOptions, optionsStatus } = useSearch();
+  const { pagingOptions, bookSortOptions, optionsStatus } = useOptions();
   const [queryState, setQueryState] = useState({
     selectedAuthor: null,
     selectedCategory: null,

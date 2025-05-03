@@ -1,4 +1,5 @@
 import { useAuth } from "@/components/context/useAuthContext";
+import { useOptions } from "@/components/context/useOptionsContext";
 import SkeletonLoader from "@/components/fallback/skeletonLoader";
 import QuantityButton from "@/components/quantityButton";
 import { toastError, toastSuccess } from "@/components/toast";
@@ -48,6 +49,7 @@ const BookDetail = ({ book = undefined, bookIsLoading = true }) => {
   );
 };
 const AddToCart = ({ book = undefined, bookIsLoading = true }) => {
+  const { getCurrency } = useOptions()
   const { user } = useAuth();
   const [quantity, setQuantity] = useState(1);
   const addBookToCart = () => {
@@ -72,16 +74,14 @@ const AddToCart = ({ book = undefined, bookIsLoading = true }) => {
           <SkeletonLoader width="1/3" />
         ) : (
           <div className="">
-            {book.final_price == null ? (
-              <span className="text-xl font-bold">{book.book_price}</span>
-            ) : (
-              <>
-                <span className="text-gray-400 line-through me-3">
-                  {book.book_price}
-                </span>
-                <span className="text-xl font-bold">{book.final_price}</span>
-              </>
+            {book.is_on_sale && (
+              <span className="text-gray-400 line-through me-3">
+                {getCurrency(book.book_price)}
+              </span>
             )}
+            <span className="text-xl font-bold">
+              {getCurrency(book.final_price)}
+            </span>
           </div>
         )}
       </div>

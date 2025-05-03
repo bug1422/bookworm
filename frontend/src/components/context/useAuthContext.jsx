@@ -37,7 +37,6 @@ export const AuthContextProvider = ({ children }) => {
       throw Error(response.errorMessage);
     }
     queryClient.invalidateQueries(queryKey)
-    mergeCart(user)
   };
 
   const signout = async () => {
@@ -46,6 +45,8 @@ export const AuthContextProvider = ({ children }) => {
       throw Error(response.errorMessage);
     }
   };
+
+  
   return (
     <AuthContext.Provider
       value={{

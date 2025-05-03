@@ -6,9 +6,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import SkeletonLoader from "../fallback/skeletonLoader";
+import { useOptions } from "../context/useOptionsContext";
 
 const BookCard = ({
   bookId = undefined,
@@ -17,9 +17,11 @@ const BookCard = ({
   img_path = undefined,
   bookPrice = undefined,
   finalPrice = undefined,
+  isOnSale = false,
 }) => {
   const isUndefined = bookId === undefined;
   const navigate = useNavigate();
+  const { getCurrency } = useOptions()
   return (
     <Card
       className="select-none cursor-pointer w-64 h-fit gap-0 p-0"
@@ -57,10 +59,10 @@ const BookCard = ({
           <SkeletonLoader width={"1/4"} height={"2"} />
         ) : (
           <>
-            {bookPrice != finalPrice && (
-              <p className="text-gray-400 line-through">{bookPrice}</p>
+            {isOnSale && (
+              <p className="text-gray-400 line-through">{getCurrency(bookPrice)}</p>
             )}
-            <p className="ms-2 font-bold">{finalPrice}</p>
+            <p className="ms-2 font-bold">{getCurrency(finalPrice)}</p>
           </>
         )}
       </CardFooter>

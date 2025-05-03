@@ -25,6 +25,7 @@ import { useAuth } from "@/components/context/useAuthContext";
 import { useNavigate } from "react-router-dom";
 import { toastSuccess } from "@/components/toast";
 import eventBus from "@/lib/eventBus";
+import SpinningCircle from "@/components/icons/loading";
 const signInSchema = Yup.object({
   email: Yup.string().email("Must be email").required("Can't be empty"),
   password: Yup.string()
@@ -34,6 +35,7 @@ const signInSchema = Yup.object({
 const SignInForm = ({ handleSignInSuccess }) => {
   const navigate = useNavigate();
   const { signin } = useAuth();
+  const [loading,setLoading] = useState()
   const [signinError, setSigninError] = useState(null);
   const form = useForm({
     resolver: yupResolver(signInSchema),
@@ -44,6 +46,7 @@ const SignInForm = ({ handleSignInSuccess }) => {
   });
 
   const onSubmit = async (data) => {
+    setLoading(true)
     try {
       await signin(data.email, data.password);
       toastSuccess("Signin success");
@@ -52,6 +55,7 @@ const SignInForm = ({ handleSignInSuccess }) => {
       console.log(e)
       setSigninError(e.message);
     }
+    setLoading(false)
     //Close popup
   };
   return (
@@ -109,7 +113,7 @@ const SignInForm = ({ handleSignInSuccess }) => {
               </div>
             )}
             <Button type="submit" className="hover:cursor-pointer">
-              Submit
+              {loading ? <SpinningCircle /> : <>Submit</>}
             </Button>
           </DialogFooter>
         </form>

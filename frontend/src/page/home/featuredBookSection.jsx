@@ -36,6 +36,7 @@ const FeaturedGrid = ({ bookList }) => {
           bookPrice={v.book_price}
           finalPrice={v.final_price}
           img_path={v.book_cover_photo}
+          isOnSale={v.is_on_sale}
         />
       ))}
     </>

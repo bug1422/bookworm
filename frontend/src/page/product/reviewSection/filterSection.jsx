@@ -1,10 +1,10 @@
 import { useReviewQuery } from "@/components/context/useReviewQueryContext";
-import { useSearch } from "@/components/context/useSearch";
+import { useOptions } from "@/components/context/useOptionsContext";
 import OptionDropdown from "@/components/dropdown/option";
 import SkeletonLoader from "@/components/fallback/skeletonLoader";
 
 const SortDropdown = () => {
-  const { reviewSortOptions } = useSearch();
+  const { reviewSortOptions } = useOptions();
   const { sortOption, setQueryState } = useReviewQuery();
   var sortIsUnavail =
     reviewSortOptions === undefined || reviewSortOptions.length == 0;
@@ -26,7 +26,7 @@ const SortDropdown = () => {
 };
 
 const ShowDropdown = () => {
-  const { pagingOptions } = useSearch();
+  const { pagingOptions } = useOptions();
   const { pagingOption, setQueryState } = useReviewQuery();
   var pagingIsUnavail =
     pagingOptions === undefined || pagingOptions.length == 0;

@@ -5,7 +5,6 @@ import {
   BookQueryProvider,
   useBookQuery,
 } from "@/components/context/useBooksQueryContext";
-import { SearchProvider } from "@/components/context/useSearch";
 
 const ShopTitle = () => {
   const { selectedAuthor, selectedCategory, selectedRating } = useBookQuery();
@@ -31,7 +30,6 @@ const ShopTitle = () => {
 };
 const ShopPage = () => {
   return (
-    <SearchProvider>
       <BookQueryProvider>
         <ShopTitle />
         <div className="mb-16 grid grid-cols-[14%_auto] gap-4">
@@ -39,7 +37,6 @@ const ShopPage = () => {
           <ListSection />
         </div>
       </BookQueryProvider>
-    </SearchProvider>
   );
 };
 

@@ -1,12 +1,12 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState } from "react";
-import { useSearch } from "./useSearch";
+import { useOptions } from "./useOptionsContext";
 import { fetchBookReviewsByQuery } from "@/api/book";
 const ReviewQueryContext = createContext();
 
 export const ReviewQueryProvider = ({ children }) => {
   const queryClient = useQueryClient()
-  const { pagingOptions, reviewSortOptions, optionsStatus } = useSearch();
+  const { pagingOptions, reviewSortOptions, optionsStatus } = useOptions();
   const [queryState, setQueryState] = useState({
     bookId: null,
     selectedRating: null,

@@ -9,20 +9,20 @@ import {
 import { useBookQuery } from "@/components/context/useBooksQueryContext";
 import { useEffect } from "react";
 import BookCard from "@/components/card/book";
-import { useSearch } from "@/components/context/useSearch";
+import { useOptions } from "@/components/context/useOptionsContext";
 import { cn } from "@/lib/utils";
 import OptionDropdown from "@/components/dropdown/option";
 
 //mock api option
 const SortDropdown = () => {
-  const { bookSortOptions } = useSearch();
+  const { bookSortOptions } = useOptions();
   const { sortOption, setQueryState } = useBookQuery();
   var sortIsUnavail =
     bookSortOptions === undefined || bookSortOptions.length == 0;
   return (
     <OptionDropdown
       onSelect={(opt) => {
-        console.log(opt)
+        console.log(opt);
         if (opt[0] !== sortOption[0]) {
           setQueryState((prev) => ({
             ...prev,
@@ -38,7 +38,7 @@ const SortDropdown = () => {
 };
 
 const ShowDropdown = () => {
-  const { pagingOptions } = useSearch();
+  const { pagingOptions } = useOptions();
   const { pagingOption, setQueryState } = useBookQuery();
   var pagingIsUnavail =
     pagingOptions === undefined || pagingOptions.length == 0;
@@ -183,6 +183,7 @@ const ListSection = () => {
                   bookPrice={v.book_price}
                   finalPrice={v.final_price}
                   img_path={v.book_cover_photo}
+                  isOnSale={v.is_on_sale}
                 />
               ))}
             </div>

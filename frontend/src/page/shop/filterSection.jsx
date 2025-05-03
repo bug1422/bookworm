@@ -1,5 +1,5 @@
 import { useBookQuery } from "@/components/context/useBooksQueryContext";
-import { useSearch } from "@/components/context/useSearch";
+import { useOptions } from "@/components/context/useOptionsContext";
 import { cn } from "@/lib/utils";
 import {
   Accordion,
@@ -9,7 +9,7 @@ import {
 } from "@radix-ui/react-accordion";
 
 const FilterSection = () => {
-  const { authorNames, categoryNames, ratingList } = useSearch();
+  const { authorNames, categoryNames, ratingList } = useOptions();
   const { selectedAuthor, selectedCategory, selectedRating, setQueryState } =
     useBookQuery();
   const selectAuthor = (value) => {

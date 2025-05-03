@@ -21,8 +21,7 @@ export const createOrder = async (items) => {
     const body = items.map((v) => {
       return {
         book_id: v.bookId,
-        discount_id: v.discountId,
-        cart_price: v.cartPrice,
+        cart_price: v.quantity * v.finalPrice,
         quantity: v.quantity,
       };
     });
