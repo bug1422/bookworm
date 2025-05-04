@@ -119,8 +119,16 @@ async def refresh_token(
 async def logout(
     response: Response,
 ):
-    response.delete_cookie("access_token")
-    response.delete_cookie("refresh_token")
+    response.delete_cookie(
+        "access_token",
+        samesite="none",
+        secure=True,
+    )
+    response.delete_cookie(
+        "refresh_token",
+        samesite="none",
+        secure=True,
+    )
     return AppResponse(message="User logout")
 
 
