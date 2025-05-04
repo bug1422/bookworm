@@ -21,7 +21,10 @@ export const loginUser = async (email, password) => {
 
 export const logoutUser = async () => {
   try {
-    const response = await api.get(routePath+"/logout");
+    const response = await api.get(routePath+"/logout", {
+      skipRefresh: true,
+      withCredentials: true
+    });
     return getDataResponse(response);
   } catch (error) {
     return getErrorReponse(error);

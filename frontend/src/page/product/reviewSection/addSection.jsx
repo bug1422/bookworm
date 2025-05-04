@@ -53,7 +53,7 @@ const AddReviewForm = () => {
   const form = useForm({
     resolver: yupResolver(addReviewSchema),
     defaultValues: {
-      title: null,
+      title: "",
       details: "",
       ratingStar: null,
     },
@@ -177,8 +177,7 @@ const AddReviewForm = () => {
         </div>
         <Button
           type="submit"
-          className="m-4 text-2xl font-bold cursor-pointer"
-          variant="secondary"
+          className="bg-indigo-300 py-2 m-4 text-2xl font-bold cursor-pointer"
         >
           {loading ? <SpinningCircle /> : <>Submit Review</>}
         </Button>

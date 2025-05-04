@@ -16,6 +16,7 @@ class CartItem {
     this.bookId = item.book_id;
     this.bookTitle = item.book_title;
     this.bookSummary = item.book_summary;
+    this.authorName = item.author_name;
     this.bookCoverPhoto = item.book_cover_photo;
     this.quantity = item.quantity;
     this.available = item.available;
@@ -49,7 +50,11 @@ export const getKey = (user) => {
 
 export const getValidatedCart = async (user) => {
   const items = getCartFromStorage(getKey(user));
-  console.log(items);
+  if (items.length == 0) {
+    return {
+      data: new Cart()
+    };
+  }
   const response = await validateCart(items);
   if (response.error) {
     const cart = new Cart();
@@ -98,11 +103,22 @@ export const addToCart = (user, bookId, quantity) => {
   return item;
 };
 
+export const removeFromCart = (user, bookId) => {
+  const userKey = getKey(user);
+  let cart = getCartFromStorage(userKey);
+  if (cart == null) cart = [];
+  const existingItem = cart.find((v) => v.bookId == bookId);
+  if (existingItem != undefined) {
+    cart = cart.filter((item) => item != existingItem);
+  }
+  setCartFromStorage(userKey, cart);
+};
+
 export const checkConflictingCart = (user) => {
   if (user != undefined) {
     const guestCart = getCartFromStorage(guestKey);
-    if(guestCart != null && guestCart.length > 0){
-      mergeCart(user)
+    if (guestCart != null && guestCart.length > 0) {
+      mergeCart(user);
     }
   }
 };
@@ -111,7 +127,7 @@ const mergeCart = (user) => {
   const userKey = getKey(user);
   const guestCart = getCartFromStorage(guestKey);
   let userCart = getCartFromStorage(userKey);
-  if (userCart == null) userCart = []
+  if (userCart == null) userCart = [];
   userCart = removeDuplicates([...guestCart, ...userCart]);
   setCartFromStorage(userKey, userCart);
   removeCartFromStorage(guestKey);

@@ -21,8 +21,7 @@ const OptionDropdown = ({ options, selectedOption, onSelect, disabled }) => {
         <Button
           role="combobox"
           aria-expanded={open}
-          variant="secondary"
-          className="min-w-36 justify-between"
+          className="bg-indigo-400 min-w-36 justify-between"
         >
           {selectedOption ? selectedOption[1] : ""}
           <ChevronDown className="opacity-50" />

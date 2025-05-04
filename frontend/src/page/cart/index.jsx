@@ -10,26 +10,25 @@ import eventBus from "@/lib/eventBus";
 import { RecalculatePriceEvent } from "./event";
 
 const CartPage = () => {
-  const { user, userIsLoading} = useAuth();
-  const { data: cart, isLoading }  = useQuery({
+  const { user, userIsLoading } = useAuth();
+  const { data: cart, isLoading } = useQuery({
     queryKey: ["cart"],
     queryFn: () => FetchCart(),
-    enabled: !userIsLoading
-  })
-  const [items, setItems] = useState(cart?.items)
+    enabled: !userIsLoading,
+    staleTime: 0
+  });
+  const [items, setItems] = useState();
 
   const FetchCart = async () => {
-    const validationResponse = await getValidatedCart(user)
-    console.log()
-    if(validationResponse.data === undefined)
-    {
-      toastError("validate cart failed",validationResponse.erroMessage)
-      return null
+    const validationResponse = await getValidatedCart(user);
+    console.log();
+    if (validationResponse.data === undefined) {
+      toastError("validate cart failed", validationResponse.erroMessage);
+      return null;
+    } else {
+      return validationResponse.data;
     }
-    else{
-      return validationResponse.data
-    }
-  }
+  };
 
   const [totalPrice, setTotalPrice] = useState(0);
   useEffect(() => {
@@ -48,6 +47,9 @@ const CartPage = () => {
       eventBus.removeEventListener(RecalculatePriceEvent, handleRefreshItems);
     };
   }, []);
+  useEffect(() => {
+    setItems(cart?.items ?? [])
+  }, [cart])
 
   useEffect(() => {
     if (items !== undefined) {
@@ -59,31 +61,32 @@ const CartPage = () => {
   }, [items]);
 
   return (
-    <div className="">
+    <>
       <div className="py-8 mb-12 border-b-2 border-gray-200 xl:text-2xl font-bold">
         Your cart
       </div>
-      <div className="grid grid-cols-3 gap-16">
-        <div className="col-span-2 py-6 grid grid-cols-[40%_20%_20%_auto] divide-y-2 border-2 border-gray-200 rounded-md overflow-hidden">
-          <div className="col-span-4 grid grid-cols-subgrid border-b-2 border-gray-300 px-6 pb-4">
-            <div className="font-bold">Product</div>
-            <div className="font-bold">Price</div>
-            <div className="font-bold">Quantity</div>
-            <div className="font-bold">Total</div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-5">
+        <div className="col-span-1 lg:col-span-2 py-6 grid grid-cols-1 divide-y-2 border-2 border-gray-200 rounded-md overflow-hidden">
+          <div className="grid grid-cols-[30%_20%_30%_auto] sm:grid-cols-[40%_20%_20%_auto] border-b-2 border-gray-300 px-6 pb-4 justify-items-left">
+            <div className="font-bold text-sm sm:text-base">Product</div>
+            <div className="font-bold text-sm sm:text-base">Price</div>
+            <div className="font-bold text-sm sm:text-base">Quantity</div>
+            <div className="font-bold text-sm sm:text-base">Total</div>
           </div>
-          {isLoading || userIsLoading ? (
+
+          {isLoading || userIsLoading || items === undefined ? (
             <>
               <CartRow />
               <CartRow />
             </>
-          ) : items?.length == 0 ? (
+          ) : items?.length === 0 ? (
             <div className="col-span-full flex flex-col justify-center text-center h-64">
               <div>
                 <div className="font-bold text-4xl mb-6">
                   Your Cart Is Empty!
                 </div>
                 <Link
-                  className="font-light text-base text-white bg-black p-3 rounded-md hover:text-black hover:bg-gray-200 trasition duration-100"
+                  className="font-light text-base text-white bg-black p-3 rounded-md hover:text-black hover:bg-gray-200 transition duration-100"
                   to="/shop"
                 >
                   Find your book here
@@ -98,9 +101,12 @@ const CartPage = () => {
             </>
           )}
         </div>
-        <CartCheckout items={items} totalPrice={totalPrice} />
+
+        <div className="col-span-1">
+          <CartCheckout items={items} totalPrice={totalPrice} />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

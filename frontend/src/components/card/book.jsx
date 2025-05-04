@@ -9,6 +9,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import SkeletonLoader from "../fallback/skeletonLoader";
 import { useOptions } from "../context/useOptionsContext";
+import { useEffect } from "react";
 
 const BookCard = ({
   bookId = undefined,
@@ -21,12 +22,13 @@ const BookCard = ({
 }) => {
   const isUndefined = bookId === undefined;
   const navigate = useNavigate();
-  const { getCurrency } = useOptions()
+  const { getCurrency } = useOptions();
+  const navigating = () => navigate("/product/" + bookId);
   return (
     <Card
-      className="select-none cursor-pointer w-64 h-fit gap-0 p-0"
+      className="select-none cursor-pointer w-full max-w-xs h-fit gap-0 p-0"
       onClick={() => {
-        navigate("/product/" + bookId);
+        navigating();
       }}
     >
       <CardHeader className="w-full h-fit border-b-2 px-0 rounded-sm border-gray-100 ">
@@ -60,7 +62,9 @@ const BookCard = ({
         ) : (
           <>
             {isOnSale && (
-              <p className="text-gray-400 line-through">{getCurrency(bookPrice)}</p>
+              <p className="text-gray-400 line-through">
+                {getCurrency(bookPrice)}
+              </p>
             )}
             <p className="ms-2 font-bold">{getCurrency(finalPrice)}</p>
           </>

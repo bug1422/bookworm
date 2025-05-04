@@ -68,7 +68,7 @@ const FilterSection = () => {
           <AccordionTrigger
             disabled={categoriesIsUnavail}
             className={cn(
-              "w-full select-none text-left pb-1 ps-2 font-bold xl:text-xl",
+              "w-full select-none text-left pb-1 ps-2 font-bold xl:text-xl hover:bg-indigo-100",
               categoriesIsUnavail ? " text-gray-300" : "cursor-pointer"
             )}
           >
@@ -79,8 +79,8 @@ const FilterSection = () => {
               categoryNames.map((v, k) => (
                 <div
                   className={cn(
-                    "select-none cursor-pointer w-full ps-3 py-1 hover:bg-gray-500 transition",
-                    selectedAuthor == v && "bg-gray-500"
+                    "select-none cursor-pointer w-full ps-3 py-1 hover:bg-indigo-400 transition",
+                    selectedAuthor == v && "bg-indigo-500"
                   )}
                   key={k}
                   onClick={() => {
@@ -102,7 +102,7 @@ const FilterSection = () => {
           <AccordionTrigger
             disabled={authorsIsUnavail}
             className={cn(
-              "w-full select-none text-left pb-1 ps-2 font-bold xl:text-xl",
+              "w-full select-none text-left pb-1 ps-2 font-bold xl:text-xl hover:bg-indigo-100",
               categoriesIsUnavail ? " text-gray-300" : "cursor-pointer"
             )}
           >
@@ -113,8 +113,8 @@ const FilterSection = () => {
               authorNames.map((v, k) => (
                 <div
                   className={cn(
-                    "select-none cursor-pointer w-full ps-3 py-1 hover:bg-gray-500 transition",
-                    selectedCategory == v && "bg-gray-500"
+                    "select-none cursor-pointer w-full ps-3 py-1 hover:bg-indigo-400 transition",
+                    selectedCategory == v && "bg-indigo-500"
                   )}
                   key={k}
                   onClick={() => {
@@ -136,7 +136,7 @@ const FilterSection = () => {
           <AccordionTrigger
             disabled={ratingIsUnavail}
             className={cn(
-              "w-full select-none text-left pb-1 ps-2 font-bold xl:text-xl",
+              "w-full select-none text-left pb-1 ps-2 font-bold xl:text-xl hover:bg-indigo-100",
               categoriesIsUnavail ? " text-gray-300" : "cursor-pointer"
             )}
           >
@@ -147,12 +147,12 @@ const FilterSection = () => {
               ratingList.map((v, k) => (
                 <div
                   className={cn(
-                    "select-none cursor-pointer w-full ps-3 py-1 hover:bg-gray-500 transition",
-                    selectedRating == `${v} Star` && "bg-gray-500"
+                    "select-none cursor-pointer w-full ps-3 py-1 hover:bg-indigo-400 transition",
+                    selectedRating == `${v} Star` && "bg-indigo-500"
                   )}
                   key={k}
                   onClick={() => {
-                    selectRating(`${v} Star`);
+                    selectRating(v);
                   }}
                 >
                   {v} Star
