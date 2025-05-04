@@ -10,8 +10,7 @@ from app.models.order_item import (
     OrderItemValidateOutput,
 )
 from app.core.config import settings
-from datetime import datetime, timezone
-
+from decimal import Decimal, ROUND_HALF_UP
 
 class OrderItemService:
     def __init__(
@@ -48,7 +47,7 @@ class OrderItemService:
         if not book_flag:
             return validated_item
         self.__validate_discount(item_input, validated_item)
-        validated_item.total_price = validated_item.final_price * validated_item.quantity
+        validated_item.total_price = (Decimal(item_input.quantity) * Decimal(validated_item.final_price)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
         if isinstance(item_input, OrderItemCheckoutInput) and validated_item.total_price != item_input.cart_price:
             validated_item.exception_details.append(
                 "Book price doesn't match final price")
