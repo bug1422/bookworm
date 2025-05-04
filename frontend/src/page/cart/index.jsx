@@ -12,7 +12,7 @@ import { RecalculatePriceEvent } from "./event";
 const CartPage = () => {
   const { user, cart, userIsLoading, cartIsLoading } = useAuth();
 
-  const [items, setItems] = useState();
+  const [items, setItems] = useState([]);
 
 
   const [totalPrice, setTotalPrice] = useState(0);

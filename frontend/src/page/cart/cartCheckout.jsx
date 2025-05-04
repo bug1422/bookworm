@@ -38,7 +38,7 @@ export const CartCheckout = ({ items, totalPrice }) => {
     );
 
   const queryClient = useQueryClient();
-  const { isAuthenticated, user,refetchCart } = useAuth();
+  const { isAuthenticated, user, refetchCart } = useAuth();
   const [loading, setLoading] = useState();
   const navigate = useNavigate();
   const checkout = async () => {
@@ -48,9 +48,13 @@ export const CartCheckout = ({ items, totalPrice }) => {
     } else {
       try {
         const response = await checkoutCart(user, items);
-        await refetchCart()
-        if (response.erroMessage != undefined) {
-          toastError("Cart checkout failed", "We have removed invalid items from your cart\n"+response.erroMessage);
+        await refetchCart();
+        if (response.errorMessage !== undefined) {
+          toastError(
+            "Cart checkout failed",
+            "We have removed invalid items from your cart\n" +
+              response.erroMessage
+          );
         } else {
           toastSuccess("Cart checkout success");
           setTimeout(() => {

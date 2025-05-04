@@ -44,7 +44,6 @@ const Header = () => {
   const [openSignin, setOpenSignin] = useState(false);
 
   const { user, cart, userIsLoading, isAuthenticated, signout } = useAuth();
-  console.log(cart)
   const itemCount = cart?.items?.length ?? 0;
   const headerSignout = async () => {
     try {
