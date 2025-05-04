@@ -45,7 +45,6 @@ def create_refresh_token(user, response: Response):
         httponly=True,
         secure=ENVIRONMENT != "testing",
         samesite="none",
-        path=f"{settings.API_V1_STR}/users/refresh-token"
     )
 
 
