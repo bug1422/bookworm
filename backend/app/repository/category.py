@@ -7,8 +7,8 @@ class CategoryRepository(BaseRepository[Category]):
     def __init__(self, session):
         super().__init__(Category, session)
 
-    async def get_list_of_name(self) -> list[str]:
+    def get_list_of_name(self) -> list[str]:
         categories_name = self.session.exec(
-            select(Category.category_name).distinct()
+            select(Category.category_name).distinct().order_by(Category.category_name)
         ).all()
         return categories_name

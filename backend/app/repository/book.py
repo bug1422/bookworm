@@ -3,7 +3,9 @@ from typing import Tuple
 from sqlmodel import select, func, case as query_case, and_, desc, nulls_last
 from sqlmodel.sql.expression import Select
 from decimal import Decimal
+from datetime import datetime, timezone
 from app.models.book import Book, BookSortOption
+from app.models.discount import Discount
 from app.models.author import Author
 from app.models.category import Category
 from app.models.review import Review
@@ -13,7 +15,7 @@ class BookRepository(BaseRepository[Book]):
     def __init__(self, session):
         super().__init__(Book, session)
 
-    async def get_books(
+    def get_books(
         self,
         sort_option: BookSortOption = None,
         category_name: str = None,
@@ -27,8 +29,8 @@ class BookRepository(BaseRepository[Book]):
         discount_offset = (
             Book.book_price - on_sale_sub.c.max_discount_price
         ).label("discount_offset")
-        final_price = query_case((on_sale_sub.c.max_discount_price > Book.book_price,
-                            on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
+        final_price = query_case((on_sale_sub.c.max_discount_price != None,
+                                  on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
         query: Select = select(
             Book,
             discount_offset,
@@ -62,7 +64,7 @@ class BookRepository(BaseRepository[Book]):
                 query = query.order_by(desc(final_price))
             case BookSortOption.AVG_RATING:
                 query = query.order_by(
-                    desc(rating_sub.c.average_rating), final_price
+                    nulls_last(desc(rating_sub.c.average_rating)), final_price
                 )
         if category_name:
             query = query.where(Category.category_name == category_name)
@@ -82,38 +84,59 @@ class BookRepository(BaseRepository[Book]):
         books = self.session.exec(query).all()
         return books, max_entries
 
-    async def get_book_detail(
+    def get_book_detail(
         self, book_id: int
-    ) -> Tuple[Book, Decimal, int, float]:
+    ) -> Tuple[Book, Decimal, Decimal, int, float] | None:
         on_sale_sub = self.__get_on_sale_subquery(book_id)
         rating_sub = self.__get_review_subquery(book_id)
-        final_price = query_case(
-            (
-                on_sale_sub.c.max_discount_price > Book.book_price,
-                on_sale_sub.c.max_discount_price,
-            ),
-            else_=Book.book_price,
-        ).label("final_price")
-        query: Select = (
-            select(
-                Book,
-                final_price,
-                rating_sub.c.total_review,
-                rating_sub.c.average_rating,
-            )
-            .join(Author)
-            .join(Category)
-            .join(rating_sub, Book.id == rating_sub.c.book_id)
-            .where(Book.id == book_id)
+        discount_offset = (
+            Book.book_price - on_sale_sub.c.max_discount_price
+        ).label("discount_offset")
+        final_price = query_case((on_sale_sub.c.max_discount_price.isnot(None),
+            on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
+        query: Select = select(
+            Book,
+            discount_offset,
+            final_price,
+            rating_sub.c.total_review,
+            rating_sub.c.average_rating,
         )
+        query = query.join(Author)
+        query = query.join(Category)
+        query = query.join(
+            on_sale_sub,
+            onclause=on_sale_sub.c.book_id == Book.id,
+            isouter=True,
+        )
+        query = query.join(
+            rating_sub, onclause=rating_sub.c.book_id == Book.id, isouter=True
+        )
+        query = query.where(
+            Book.id == book_id)
         book = self.session.exec(query).first()
         return book
 
+    def get_book_max_discount(self,book_id:int) -> Tuple[Decimal,datetime,datetime]:
+        on_sale_sub = self.__get_on_sale_subquery(book_id)
+        final_price = query_case((on_sale_sub.c.max_discount_price.isnot(None),
+            on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
+        query: Select = select(
+            final_price,
+            Book.id,
+            Discount.discount_start_date,
+            Discount.discount_end_date
+        )
+        query = query.join(
+            on_sale_sub,
+            onclause=on_sale_sub.c.book_id == Book.id,
+            isouter=True,
+        )
+        query = query.where(Book.id == book_id)
+        final_price,_,start_date,end_date = self.session.exec(query).first()
+        return final_price,start_date,end_date
+    
     # region Subquery
     def __get_on_sale_subquery(self, book_id: int = None):
-        from datetime import datetime, timezone
-        from app.models.discount import Discount
-
         today = datetime.now(timezone.utc)
         available_discount_subquery = (
             select(

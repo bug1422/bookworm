@@ -5,13 +5,14 @@ from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 from app.core.config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(
+    schemes=["bcrypt"], bcrypt__rounds=12, deprecated="auto")
 
 
 ALGORITHM = "HS256"
 
 
-def create_access_token(
+def create_token(
     subject: str | Any, data: dict = {}, expires_delta: timedelta = timedelta()
 ) -> str:
     to_encode = data.copy()
@@ -23,7 +24,7 @@ def create_access_token(
     return encoded_jwt
 
 
-def decode_access_token(token: str):
+def decode_token(token: str):
     return jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
 
 

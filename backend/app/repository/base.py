@@ -10,28 +10,31 @@ class BaseRepository(Generic[T]):
         self.model = model
         self.session = session
 
-    async def get_by_id(self, id: int) -> T | None:
+    def get_by_id(self, id: int) -> T | None:
         return self.session.exec(
             select(self.model).where(self.model.id == id)
         ).first()
 
-    async def add(self, entity: T) -> T:
+    def add(self, entity: T):
         self.session.add(entity)
 
-    async def add_range(self, items: list[T]):
+    def add_range(self, items: list[T]):
         self.session.add_all(items)
 
-    async def update(self, entity: T) -> T:
+    def update(self, entity: T):
         self.session.add(entity)
 
-    async def delete(self, entity: T) -> None:
+    def delete(self, entity: T):
         self.session.delete(entity)
 
     def rollback(self):
         self.session.rollback()
 
-    def commit(self) -> None:
+    def commit(self):
         self.session.commit()
 
-    def refresh(self, entity: T) -> None:
+    def flush(self):
+        self.session.flush()
+        
+    def refresh(self, entity: T):
         self.session.refresh(entity)

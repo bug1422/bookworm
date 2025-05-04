@@ -3,6 +3,7 @@ from typing import Optional
 from decimal import Decimal
 from enum import Enum
 from app.models.paging import QueryPaging
+from app.models.money import get_currency
 
 
 class BookSortOption(Enum):
@@ -39,16 +40,22 @@ class BookOutput(SQLModel):
     author_name: str
     category_name: str
     book_cover_photo: Optional[str]
+    is_on_sale: bool
     final_price: Optional[Decimal] = Field(default=None)
     total_review: Optional[int] = Field(default=0)
     rating_star: Optional[float] = Field(default=None)
+
+    class Config:
+        json_encoders = {
+            Decimal: lambda v: get_currency(v)
+        }
 
 
 class BookSearchOutput(BookOutput):
     discount_offset: Optional[Decimal] = Field(default=None)
 
 
-class BookDetailOutput(BookOutput):
+class BookDetailOutput(BookSearchOutput):
     book_summary: str
     review_count_by_rating: dict[int, int]
 

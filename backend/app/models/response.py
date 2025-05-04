@@ -1,8 +1,10 @@
-from typing import Any, Optional
+from typing import Any, Optional, TypeVar, Generic
 from sqlmodel import SQLModel
+from pydantic import BaseModel
+
+T = TypeVar("T")
 
 
-class AppResponse(SQLModel):
-    status_code: int
+class AppResponse(BaseModel, Generic[T]):
     message: str = ""
-    detail: Optional[Any] = None
+    detail: Optional[T] = None

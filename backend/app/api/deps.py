@@ -1,6 +1,6 @@
 from fastapi import Depends, Request, HTTPException, status
 from app.core.db import Session, get_session
-from app.core.security import decode_access_token, InvalidTokenError
+from app.core.security import decode_token, InvalidTokenError
 from app.models.token import TokenData
 from app.repository.user import UserRepository
 from app.repository.book import BookRepository
@@ -16,28 +16,55 @@ from app.services.book import BookService
 from app.services.review import ReviewService
 from app.services.author import AuthorService
 from app.services.category import CategoryService
-from app.services.search_option import SearchOptionSerivce
 from app.services.discount import DiscountService
 from app.services.order import OrderService
 from app.services.order_item import OrderItemService
+from app.services.search_option import SearchOptionSerivce
+from app.services.money_option import MoneyOptionSerivce
+from datetime import datetime, timezone
 
-
-def get_token_data(request: Request) -> TokenData:
-    credentials_exception = HTTPException(
+def credentials_exception(detail=""):
+    return HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Invalid credential",
+        detail=detail,
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+
+def get_refresh_token_data(request: Request):
     try:
-        token = request.cookies.get("access_token")
-        payload = decode_access_token(token)
+        refresh_token = request.cookies.get("refresh_token")
+        payload = decode_token(refresh_token)
         sub = payload.get("sub")
         if sub is None:
-            raise credentials_exception
+            raise credentials_exception("Invalid credential")
+        exp_timestamp = payload.get("exp")
+        expiration_time = datetime.fromtimestamp(
+            timestamp=exp_timestamp, tz=timezone.utc)
+        if expiration_time < datetime.now(timezone.utc):
+            raise credentials_exception("Expired credential")
         token_data = TokenData(**payload)
         return token_data
     except InvalidTokenError:
-        raise credentials_exception
+        raise credentials_exception("Invalid credential")
+
+
+def get_access_token_data(request: Request) -> TokenData:
+    try:
+        token = request.cookies.get("access_token")
+        payload = decode_token(token)
+        sub = payload.get("sub")
+        if sub is None:
+            raise credentials_exception("Invalid credential")
+        exp_timestamp = payload.get("exp")
+        expiration_time = datetime.fromtimestamp(
+            timestamp=exp_timestamp, tz=timezone.utc)
+        if expiration_time < datetime.now(timezone.utc):
+            raise credentials_exception("Expired credential")
+        token_data = TokenData(**payload)
+        return token_data
+    except InvalidTokenError:
+        raise credentials_exception("Invalid credential")
 
 
 # region Repository
@@ -129,11 +156,13 @@ def get_order_item_service(
 
 def get_order_service(
     order_repository: OrderRepository = Depends(__get_order_repo),
+    user_service: UserService = Depends(get_user_service),
     item_service: OrderItemService = Depends(get_order_item_service),
 ):
     return OrderService(
         order_repository=order_repository,
         item_service=item_service,
+        user_service=user_service
     )
 
 
@@ -147,5 +176,7 @@ def get_search_option_service(
         book_service, author_service, category_service, review_service
     )
 
+def get_money_option_service():
+    return MoneyOptionSerivce()
 
 # endregion
