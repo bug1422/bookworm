@@ -20,8 +20,9 @@ import { useNavigate } from "react-router-dom";
 
 const CartProduct = ({ item = undefined }) => {
   const isUndefined = item === undefined;
+  const navigate = useNavigate()
   return (
-    <div className="flex py-4 col-span-1 flex-col md:flex-row">
+    <div className="flex py-4 col-span-1 flex-col md:flex-row select-none cursor-pointer" onClick={() => {navigate("/product/"+item.bookId)}}>
       <img
         src={`${import.meta.env.VITE_BACKEND_URL}${item?.bookCoverPhoto}`}
         onError={(e) => {
