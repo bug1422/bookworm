@@ -6,7 +6,9 @@ import SpinningCircle from "@/components/icons/loading";
 import { toastError, toastSuccess } from "@/components/toast";
 import { checkoutCart } from "@/lib/cart";
 import eventBus from "@/lib/eventBus";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const CartTotal = ({ totalPrice }) => {
   const { getCurrency } = useOptions();
@@ -35,8 +37,10 @@ export const CartCheckout = ({ items, totalPrice }) => {
       </div>
     );
 
-  const { isAuthenticated, user } = useAuth();
+  const queryClient = useQueryClient();
+  const { isAuthenticated, user,refetchCart } = useAuth();
   const [loading, setLoading] = useState();
+  const navigate = useNavigate();
   const checkout = async () => {
     setLoading(true);
     if (!isAuthenticated) {
@@ -44,10 +48,14 @@ export const CartCheckout = ({ items, totalPrice }) => {
     } else {
       try {
         const response = await checkoutCart(user, items);
+        await refetchCart()
         if (response.erroMessage != undefined) {
-          toastError("Cart checkout failed", response.erroMessage);
+          toastError("Cart checkout failed", "We have removed invalid items from your cart\n"+response.erroMessage);
         } else {
           toastSuccess("Cart checkout success");
+          setTimeout(() => {
+            navigate("/");
+          }, 10000);
         }
       } catch (e) {
         console.log(e);

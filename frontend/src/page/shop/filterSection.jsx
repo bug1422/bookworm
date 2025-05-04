@@ -148,7 +148,7 @@ const FilterSection = () => {
                 <div
                   className={cn(
                     "select-none cursor-pointer w-full ps-3 py-1 hover:bg-indigo-400 transition",
-                    selectedRating == `${v} Star` && "bg-indigo-500"
+                    selectedRating == `${v}` && "bg-indigo-500"
                   )}
                   key={k}
                   onClick={() => {

@@ -1,10 +1,19 @@
 import { useReviewQuery } from "@/components/context/useReviewQueryContext";
 import SkeletonLoader from "@/components/fallback/skeletonLoader";
-import { formatDateString } from "@/lib/utils";
+import { cn, formatDateString } from "@/lib/utils";
+import { useEffect } from "react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const ReviewItem = ({ review = undefined }) => {
   return (
-    <div>
+    <div className="mt-4 pb-4">
       {review === undefined ? (
         <div className="flex flex-col gap-4">
           <SkeletonLoader width="36" />
@@ -36,10 +45,70 @@ const MessageBox = ({ children }) => {
   );
 };
 
+const ListPagination = ({ className }) => {
+  const { currentPage, maxPage, setQueryState } = useReviewQuery();
+  useEffect(() => {
+    setCurrentPage(1);
+  }, []);
+  const setCurrentPage = (page) => {
+    setQueryState((prev) => ({
+      ...prev,
+      currentPage: page,
+    }));
+  };
+  return (
+    <Pagination className={cn("h-16", className)}>
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious
+            className="select-none cursor-pointer"
+            onClick={() => {
+              if (currentPage > 1) setCurrentPage(currentPage - 1);
+            }}
+          />
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink
+            className="select-none cursor-pointer"
+            onClick={() => {
+              if (currentPage > 1) setCurrentPage(currentPage - 1);
+            }}
+          >
+            {currentPage > 1 && currentPage - 1}
+          </PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink className="select-none cursor-pointer" isActive>
+            {currentPage}
+          </PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink
+            className="select-none cursor-pointer"
+            onClick={() => {
+              if (currentPage < maxPage) setCurrentPage(currentPage + 1);
+            }}
+          >
+            {currentPage < maxPage && currentPage + 1}
+          </PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationNext
+            className="select-none cursor-pointer"
+            onClick={() => {
+              if (currentPage < maxPage) setCurrentPage(currentPage + 1);
+            }}
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  );
+};
+
 const ReviewList = () => {
   const { reviews, reviewsIsLoading, reviewsStatus } = useReviewQuery();
   return (
-    <div className="relative w-full mt-6 mb-4 flex flex-col divide-y-2 gap-8 min-h-80">
+    <div className="relative w-full mt-6 mb-4 flex flex-col divide-y-2 divide-white min-h-80">
       {reviewsIsLoading ? (
         <>
           {Array(3)
@@ -62,6 +131,7 @@ const ReviewList = () => {
           {reviews.map((v, k) => (
             <ReviewItem key={k} review={v} />
           ))}
+          <ListPagination className="" />
         </>
       )}
     </div>

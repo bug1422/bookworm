@@ -11,18 +11,20 @@ const QuantityButton = ({
   return (
     <div
       className={cn(
-        "select-none flex items-center justify-between bg-indigo-100 px-2 py-1 rounded w-full",
+        "select-none flex items-center justify-between bg-indigo-100 rounded w-fit gap-3",
         className
       )}
     >
       <MinusIcon
         onClick={onDecrease}
-        className="cursor-pointer hover:bg-indigo-800 w-8 h-8 sm:w-6 sm:h-6 rounded"
+        size={35}
+        className="cursor-pointer hover:bg-indigo-800 rounded"
       />
       <div className="mx-2 text-lg sm:text-base">{quantity}</div>
       <PlusIcon
         onClick={onIncrease}
-        className="cursor-pointer hover:bg-indigo-800 w-8 h-8 sm:w-6 sm:h-6 rounded"
+        size={35}
+        className="cursor-pointer hover:bg-indigo-800 rounded"
       />
     </div>
   );

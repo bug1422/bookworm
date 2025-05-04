@@ -4,6 +4,7 @@ import SkeletonLoader from "@/components/fallback/skeletonLoader";
 import QuantityButton from "@/components/quantityButton";
 import { toastError, toastSuccess } from "@/components/toast";
 import { addToCart, MaxQuantity, MinQuantity } from "@/lib/cart";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 const BookDetail = ({ book = undefined, bookIsLoading = true }) => {
@@ -52,12 +53,14 @@ const BookDetail = ({ book = undefined, bookIsLoading = true }) => {
   );
 };
 const AddToCart = ({ book = undefined, bookIsLoading = true }) => {
+  const queryClient = useQueryClient();
   const { getCurrency } = useOptions();
   const { user } = useAuth();
   const [quantity, setQuantity] = useState(1);
   const addBookToCart = () => {
     if (book != undefined) {
       const item = addToCart(user, book.id, quantity);
+      queryClient.invalidateQueries("cart");
       toastSuccess(
         "Added to cart",
         `Book ${
@@ -79,11 +82,11 @@ const AddToCart = ({ book = undefined, bookIsLoading = true }) => {
           <div className="">
             {book.is_on_sale && (
               <span className="text-gray-400 line-through me-3">
-                {getCurrency(book.book_price)}
+                {getCurrency(quantity*book.book_price)}
               </span>
             )}
             <span className="text-xl font-bold">
-              {getCurrency(book.final_price)}
+              {getCurrency(quantity*book.final_price)}
             </span>
           </div>
         )}

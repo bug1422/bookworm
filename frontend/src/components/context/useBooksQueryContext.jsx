@@ -67,7 +67,8 @@ export const BookQueryProvider = ({ children }) => {
     retry: 3,
     retryDelay: 2000,
     refetchOnMount: "always",
-    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+    staleTime: 0,
   });
   const booksStatus = optionsStatus == "error" ? "error" : status;
   const booksIsLoading = optionsStatus == "pending" || booksStatus == "pending";

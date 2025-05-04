@@ -1,6 +1,7 @@
 import { fetchPopularBook, fetchRecommendedBook } from "@/api/book";
 import BookCard from "@/components/card/book";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
@@ -68,24 +69,26 @@ const FeaturedBookSection = () => {
   const fetchRecommendedList = async () => {
     const result = await fetchRecommendedBook();
     if (result.data) {
-      return result.data
+      return result.data;
     }
     throw result.error;
   };
   const fetchPopularList = async () => {
     const result = await fetchPopularBook();
     if (result.data) {
-      return result.data
+      return result.data;
     }
     throw result.error;
   };
   return (
     <div className="flex flex-col gap-4 items-center w-full my-4 xl:my-16">
       <div className="xl:text-3xl">Featured Books</div>
-      <div className="grid grid-cols-2">
+      <div className="grid grid-cols-2 gap-2">
         <Button
-          className="cursor-pointer"
-          variant={mode == 0 ? "secondary" : "primary"}
+          className={cn(
+            "cursor-pointer hover:bg-indigo-500",
+            mode == 0 ? "bg-indigo-400" : "bg-indigo-50 text-black"
+          )}
           onClick={() => {
             setMode(0);
           }}
@@ -93,8 +96,10 @@ const FeaturedBookSection = () => {
           Recommended
         </Button>
         <Button
-          className="cursor-pointer"
-          variant={mode == 1 ? "secondary" : "primary"}
+          className={cn(
+            "cursor-pointer hover:bg-indigo-500",
+            mode == 1 ? "bg-indigo-400" : "bg-indigo-50 text-black"
+          )}
           onClick={() => {
             setMode(1);
           }}

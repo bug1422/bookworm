@@ -31,7 +31,7 @@ const BookCard = ({
         navigating();
       }}
     >
-      <CardHeader className="w-full h-fit border-b-2 px-0 rounded-sm border-gray-100 ">
+      <CardHeader className="w-full h-fit lg:py-8 border-b-2 px-0 rounded-sm border-gray-100 ">
         <img
           src={`${import.meta.env.VITE_BACKEND_URL}${img_path}`}
           onError={(e) => {
@@ -47,7 +47,9 @@ const BookCard = ({
           {isUndefined ? (
             <SkeletonLoader height={"6"} width={"32"} />
           ) : (
-            <p className="text-xl font-bold line-clamp-2">{bookTitle}</p>
+            <p className="text-xl font-bold line-clamp-2" title={bookTitle}>{bookTitle.length <= 20
+              ? bookTitle
+              : bookTitle.substring(0, 20) + "..."}</p>
           )}
           {isUndefined ? (
             <SkeletonLoader width={"20"} />

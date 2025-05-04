@@ -75,7 +75,7 @@ const ListPagination = ({ className }) => {
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            className="select-none cursor-pointer"
+            className={cn("select-none cursor-pointer")}
             onClick={() => {
               if (currentPage > 1) setCurrentPage(currentPage - 1);
             }}
@@ -85,7 +85,7 @@ const ListPagination = ({ className }) => {
           <PaginationLink
             className="select-none cursor-pointer"
             onClick={() => {
-              setCurrentPage(currentPage - 1);
+              if (currentPage > 1) setCurrentPage(currentPage - 1);
             }}
           >
             {currentPage > 1 && currentPage - 1}

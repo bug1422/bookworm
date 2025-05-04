@@ -43,7 +43,9 @@ const Header = () => {
   const [openMenu, setOpenMenu] = useState(false);
   const [openSignin, setOpenSignin] = useState(false);
 
-  const { user, userIsLoading, isAuthenticated, signout } = useAuth();
+  const { user, cart, userIsLoading, isAuthenticated, signout } = useAuth();
+  console.log(cart)
+  const itemCount = cart?.items?.length ?? 0;
   const headerSignout = async () => {
     try {
       await signout();
@@ -66,7 +68,9 @@ const Header = () => {
         <HeaderNav link="/home">Home</HeaderNav>
         <HeaderNav link="/shop">Shop</HeaderNav>
         <HeaderNav link="/about">About</HeaderNav>
-        <HeaderNav link="/cart">Cart</HeaderNav>
+        <HeaderNav link="/cart">
+          Cart {itemCount != 0 && `(${itemCount})`}
+        </HeaderNav>
         {userIsLoading ? (
           <SpinningCircle size={10} />
         ) : isAuthenticated ? (
@@ -101,7 +105,11 @@ const Header = () => {
             <AlignJustifyIcon />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent side="bottom" align="start" className="w-[100vw] p-0 flex flex-col bg-indigo-500 text-white shadow-md rounded-md">
+        <DropdownMenuContent
+          side="bottom"
+          align="start"
+          className="w-[100vw] p-0 flex flex-col bg-indigo-500 text-white shadow-md rounded-md"
+        >
           {user != undefined && (
             <div className="text-center py-2">{`${user.last_name} ${user.first_name}`}</div>
           )}
@@ -131,7 +139,7 @@ const Header = () => {
             onLink="bg-indigo-800"
             link="/cart"
           >
-            Cart
+            Cart {itemCount != 0 && `(${itemCount})`}
           </HeaderNav>
           {userIsLoading ? (
             <span className="py-2">Loading...</span>

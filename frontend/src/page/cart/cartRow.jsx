@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { toastError, toastSuccess } from "@/components/toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 const CartProduct = ({ item = undefined }) => {
   const isUndefined = item === undefined;
@@ -34,7 +35,11 @@ const CartProduct = ({ item = undefined }) => {
         {isUndefined ? (
           <SkeletonLoader width={"16"} height={"6"} />
         ) : (
-          <div className="text-sm sm:text-lg font-bold">{item.bookTitle}</div>
+          <div className="text-sm sm:text-lg font-bold " title={item.bookTitle}>
+            {item.bookTitle.length <= 30
+              ? item.bookTitle
+              : item.bookTitle.substring(0, 30) + "..."}
+          </div>
         )}
         {isUndefined ? (
           <SkeletonLoader width={"32"} height={"4"} />
@@ -47,8 +52,7 @@ const CartProduct = ({ item = undefined }) => {
 };
 
 const CartRow = ({ item = undefined }) => {
-  const queryClient = useQueryClient()
-  
+  const queryClient = useQueryClient();
   const { getCurrency } = useOptions();
   const { user } = useAuth();
   const isUndefined = item === undefined;
@@ -72,10 +76,8 @@ const CartRow = ({ item = undefined }) => {
   const removeItem = () => {
     if (item === undefined) return;
     try {
-      const bookTitle = item.bookTitle;
       removeFromCart(user, item?.bookId);
-      queryClient.invalidateQueries("cart")
-      toastSuccess("Success", "Remove " + bookTitle + " from cart");
+      queryClient.invalidateQueries("cart");
     } catch (e) {
       toastError("Can't update quantity", e.message);
     }
@@ -109,8 +111,12 @@ const CartRow = ({ item = undefined }) => {
       <div className="flex flex-col gap-3 flex-shrink-0 justify-center">
         <QuantityButton
           onDecrease={() => {
-            if (item && quantity !== MinQuantity) {
-              updateQuantity(-1);
+            if (item) {
+              if (quantity == MinQuantity) {
+                removeItem();
+              } else {
+                updateQuantity(-1);
+              }
             }
           }}
           onIncrease={() => {
@@ -120,15 +126,6 @@ const CartRow = ({ item = undefined }) => {
           }}
           quantity={quantity}
         />
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={() => removeItem()}
-          className="mt-2 w-full hover:bg-red-800 cursor-pointer"
-        >
-          <Trash2 className="" />
-          Remove
-        </Button>
       </div>
       <div className="flex flex-col justify-center items-center">
         {isUndefined ? (

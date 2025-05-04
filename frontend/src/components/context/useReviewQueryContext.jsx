@@ -25,11 +25,12 @@ export const ReviewQueryProvider = ({ children }) => {
       currentPage,
       bookId,
     } = queryState;
+    console.log(sortOption,pagingOption)
     const reviewList = await fetchBookReviewsByQuery(
       bookId,
       selectedRating,
-      sortOption,
-      pagingOption,
+      sortOption[0],
+      pagingOption[0],
       currentPage
     );
     if (reviewList.data) {

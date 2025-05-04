@@ -33,6 +33,7 @@ import { useReviewQuery } from "@/components/context/useReviewQueryContext";
 import SpinningCircle from "@/components/icons/loading";
 import { toast } from "sonner";
 import { toastError, toastSuccess } from "@/components/toast";
+import { Textarea } from "@/components/ui/textarea";
 
 const addReviewSchema = Yup.object({
   title: Yup.string()
@@ -75,8 +76,11 @@ const AddReviewForm = () => {
           "Review submitted",
           "Thank you for giving out your opinion."
         );
-        refetchReviews()
-        form.reset({}, { keepErrors: false, keepDirty: false, keepValues: false });
+        refetchReviews();
+        form.reset(
+          {},
+          { keepErrors: false, keepDirty: false, keepValues: false }
+        );
       }
     }
     setLoading(false);
@@ -111,7 +115,11 @@ const AddReviewForm = () => {
                   Details please! Your review helps other shoppers.
                 </FormLabel>
                 <FormControl>
-                  <Input type="details" id="details" {...field} />
+                  <Textarea
+                    id="details"
+                    rows={2} // Ensures the textarea has enough space for 2 lines
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -10,25 +10,10 @@ import eventBus from "@/lib/eventBus";
 import { RecalculatePriceEvent } from "./event";
 
 const CartPage = () => {
-  const { user, userIsLoading } = useAuth();
-  const { data: cart, isLoading } = useQuery({
-    queryKey: ["cart"],
-    queryFn: () => FetchCart(),
-    enabled: !userIsLoading,
-    staleTime: 0
-  });
+  const { user, cart, userIsLoading, cartIsLoading } = useAuth();
+
   const [items, setItems] = useState();
 
-  const FetchCart = async () => {
-    const validationResponse = await getValidatedCart(user);
-    console.log();
-    if (validationResponse.data === undefined) {
-      toastError("validate cart failed", validationResponse.erroMessage);
-      return null;
-    } else {
-      return validationResponse.data;
-    }
-  };
 
   const [totalPrice, setTotalPrice] = useState(0);
   useEffect(() => {
@@ -74,7 +59,7 @@ const CartPage = () => {
             <div className="font-bold text-sm sm:text-base">Total</div>
           </div>
 
-          {isLoading || userIsLoading || items === undefined ? (
+          {cartIsLoading || userIsLoading || items === undefined ? (
             <>
               <CartRow />
               <CartRow />

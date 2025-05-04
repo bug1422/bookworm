@@ -50,9 +50,10 @@ export const getKey = (user) => {
 
 export const getValidatedCart = async (user) => {
   const items = getCartFromStorage(getKey(user));
-  if (items.length == 0) {
+  console.log(items);
+  if (items == null || items.length == 0) {
     return {
-      data: new Cart()
+      data: new Cart(),
     };
   }
   const response = await validateCart(items);
@@ -73,8 +74,21 @@ export const getValidatedCart = async (user) => {
 export const checkoutCart = async (user, items) => {
   const response = await createOrder(items);
   if (response.error) {
+    //Remove bad items
+    const errors = response.errorMessage.split("|");
+    const bookIds = [];
+    for (const error of errors) {
+      const [bookId] = error.split(":");
+      const parsedId = parseInt(bookId);
+      if (Number.isInteger(parsedId) && !bookIds.includes(parsedId)) {
+        bookIds.push(parsedId);
+      }
+    }
+    for (const id of bookIds) {
+      removeFromCart(user, id);
+    }
     return {
-      erroMessage: response.errorMessage,
+      erroMessage: `Removed invalid items: Books[${bookIds.join(",")}]`,
     };
   } else {
     removeCartFromStorage(getKey(user));

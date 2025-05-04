@@ -1,5 +1,5 @@
 import { fetchUserInfo, loginUser, logoutUser } from "@/api/user";
-import { checkConflictingCart } from "@/lib/cart";
+import { checkConflictingCart, getValidatedCart } from "@/lib/cart";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext, createContext, useEffect } from "react";
 
@@ -16,18 +16,39 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
   const queryKey = "user-info";
-  const { data: user, isLoading: userIsLoading } = useQuery({
+  const { data: user, isLoading: userIsLoading, 
+    refetch: refetchUser,
+  } = useQuery({
     queryKey: [queryKey],
     queryFn: () => FetchCurrentUser(),
     enabled: true,
+    staleTime: 0,
+  });
+  const FetchCart = async () => {
+    const validationResponse = await getValidatedCart(user);
+    if (validationResponse.data === undefined) {
+      toastError("validate cart failed", validationResponse.erroMessage);
+      return null;
+    } else {
+      return validationResponse.data;
+    }
+  };
+
+  const {
+    data: cart,
+    isLoading: cartIsLoading,
+    refetch: refetchCart,
+  } = useQuery({
+    queryKey: ["cart"],
+    queryFn: () => FetchCart(),
     staleTime: 0,
   });
   const isAuthenticated = user !== undefined && user !== null;
   useEffect(() => {
     if (user !== null && user !== undefined) {
       checkConflictingCart(user);
-      queryClient.invalidateQueries("cart");
     }
+    refetchCart()
   }, [user]);
 
   const signin = async (email, password) => {
@@ -43,8 +64,8 @@ export const AuthContextProvider = ({ children }) => {
     if (response.error) {
       throw Error(response.errorMessage);
     }
-    await queryClient.invalidateQueries({ queryKey: [queryKey] });
-    queryClient.removeQueries({ queryKey: ['cart'] });
+    refetchUser()
+    queryClient.removeQueries({ queryKey: ["cart"] });
   };
 
   return (
@@ -52,7 +73,10 @@ export const AuthContextProvider = ({ children }) => {
       value={{
         isAuthenticated,
         user,
+        cart,
         userIsLoading,
+        cartIsLoading,
+        refetchCart,
         signin,
         signout,
       }}
