@@ -63,13 +63,13 @@ const ReviewFilter = ({ book = undefined, bookIsLoading = true }) => {
       selectedRating: value,
     }));
   };
-  const reviewCountDict = book.review_count_by_rating
+  const reviewCountDict = book.review_count_by_rating;
   return (
     <>
-      <div className="my-3">
+      <div className="my-3 flex flex-col sm:flex-row sm:items-center sm:gap-4">
         <span className="font-bold text-xl">Customer Reviews</span>
         {selectedRating !== undefined && (
-          <span className="text-gray-200 text-sm">
+          <span className="text-gray-500 text-sm">
             (Filtered by {selectedRating} star)
           </span>
         )}
@@ -78,48 +78,84 @@ const ReviewFilter = ({ book = undefined, bookIsLoading = true }) => {
         <SkeletonLoader height="6" width="28" />
       ) : (
         <div className="text-2xl mb-1">
-          {book.rating_star ? `${book.rating_star} Star` : "No Rating"}{" "}
+          {book.rating_star ? (
+            <>
+              <span className="font-bold">{book.rating_star}</span> Star
+            </>
+          ) : (
+            "No Rating"
+          )}
         </div>
       )}
       {bookIsLoading ? (
         <SkeletonLoader width="80" className="my-3" />
       ) : (
-        <div className="flex select-none mb-1">
+        <div className="flex flex-wrap gap-2 select-none mb-1">
           <div
             className="px-2 underline underline-offset-2 font-bold cursor-pointer"
-            onClick={() => {if(book.total_review != 0) setSelectedRating(undefined)}}
+            onClick={() => {
+              if (book.total_review !== 0) setSelectedRating(undefined);
+            }}
           >
-            ({book.total_review})
+            Total: ( {book.total_review})
           </div>
-          <div className="flex divide-x-2 divide-gray-800">
-            <div className="px-2 underline underline-offset-2 cursor-pointer hover:text-gray-500" onClick={() => {if(reviewCountDict[5] != 0) setSelectedRating(5)}}>
+          <div className="text-center flex gap-2 divide-x-2 divide-gray-800">
+            <div
+              className="px-2 underline underline-offset-2 cursor-pointer hover:text-gray-500"
+              onClick={() => {
+                setSelectedRating(5);
+              }}
+            >
               5 star ({reviewCountDict[5]})
             </div>
-            <div className="px-2 underline underline-offset-2 cursor-pointer hover:text-gray-500" onClick={() => {if(reviewCountDict[4] != 0) setSelectedRating(4)}}>
+            <div
+              className="px-2 underline underline-offset-2 cursor-pointer hover:text-gray-500"
+              onClick={() => {
+                setSelectedRating(4);
+              }}
+            >
               4 star ({reviewCountDict[4]})
             </div>
-            <div className="px-2 underline underline-offset-2 cursor-pointer hover:text-gray-500" onClick={() => {if(reviewCountDict[3] != 0) setSelectedRating(3)}}>
+            <div
+              className="px-2 underline underline-offset-2 cursor-pointer hover:text-gray-500"
+              onClick={() => {
+                setSelectedRating(3);
+              }}
+            >
               3 star ({reviewCountDict[3]})
             </div>
-            <div className="px-2 underline underline-offset-2 cursor-pointer hover:text-gray-500" onClick={() => {if(reviewCountDict[2] != 0) setSelectedRating(2)}}>
+            <div
+              className="px-2 underline underline-offset-2 cursor-pointer hover:text-gray-500"
+              onClick={() => {
+                setSelectedRating(2);
+              }}
+            >
               2 star ({reviewCountDict[2]})
             </div>
-            <div className="px-2 underline underline-offset-2 cursor-pointer hover:text-gray-500" onClick={() => {if(reviewCountDict[1] != 0) setSelectedRating(1)}}>
+            <div
+              className="px-2 underline underline-offset-2 cursor-pointer hover:text-gray-500"
+              onClick={() => {
+                setSelectedRating(1);
+              }}
+            >
               1 star ({reviewCountDict[1]})
             </div>
           </div>
         </div>
       )}
-      <div className="flex justify-between">
+      <div className="mb-4 flex flex-wrap justify-center md:justify-between gap-y-2text-center md:text-left">
         {reviewsIsLoading ? (
           <SkeletonLoader width="36" />
         ) : (
-          reviewsStatus == "success" &&
-          maxPage !== 0 && (
-            <div>{`Showing ${currentPage}-${maxPage} of ${maxItems} reviews`}</div>
+          reviewsStatus == "success" && (
+            <div className="w-full sm:w-auto">
+              {maxPage == 0
+                ? "Showing no review"
+                : `Showing ${currentPage}-${maxPage} of ${maxItems} reviews`}
+            </div>
           )
         )}
-        <div className="ms-auto flex gap-5">
+        <div className="flex flex-col sm:flex-row justify-around w-full md:w-auto gap-4 ml-auto">
           <SortDropdown />
           <ShowDropdown />
         </div>

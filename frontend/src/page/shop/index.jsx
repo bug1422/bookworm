@@ -32,7 +32,7 @@ const ShopPage = () => {
   return (
       <BookQueryProvider>
         <ShopTitle />
-        <div className="mb-16 grid grid-cols-[14%_auto] gap-4">
+        <div className="mb-16 grid grid-cols-1 sm:grid-cols-[14%_auto] lg:grid-cols-[14%_auto] gap-4">
           <FilterSection />
           <ListSection />
         </div>

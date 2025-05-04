@@ -6,7 +6,7 @@ import { useContext, createContext, useEffect } from "react";
 const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const FetchCurrentUser = async () => {
     const response = await fetchUserInfo();
     if (response.error) {
@@ -15,28 +15,27 @@ export const AuthContextProvider = ({ children }) => {
       return response.data;
     }
   };
-  const queryKey = "user-info"
+  const queryKey = "user-info";
   const { data: user, isLoading: userIsLoading } = useQuery({
     queryKey: [queryKey],
     queryFn: () => FetchCurrentUser(),
     enabled: true,
+    staleTime: 0,
   });
   const isAuthenticated = user !== undefined && user !== null;
-
-  useEffect(()=>{
-    if(user != undefined){
-      checkConflictingCart(user)
+  useEffect(() => {
+    if (user !== null && user !== undefined) {
+      checkConflictingCart(user);
+      queryClient.invalidateQueries("cart");
     }
-  },[user])
-
+  }, [user]);
 
   const signin = async (email, password) => {
     const response = await loginUser(email, password);
-    console.log(response)
     if (response.error) {
       throw Error(response.errorMessage);
     }
-    queryClient.invalidateQueries(queryKey)
+    await queryClient.invalidateQueries({ queryKey: [queryKey] });
   };
 
   const signout = async () => {
@@ -44,9 +43,10 @@ export const AuthContextProvider = ({ children }) => {
     if (response.error) {
       throw Error(response.errorMessage);
     }
+    await queryClient.invalidateQueries({ queryKey: [queryKey] });
+    queryClient.removeQueries({ queryKey: ['cart'] });
   };
 
-  
   return (
     <AuthContext.Provider
       value={{

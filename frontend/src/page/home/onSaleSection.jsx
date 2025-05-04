@@ -14,7 +14,7 @@ import BookCard from "@/components/card/book";
 const ItemContainer = ({ books }) => {
   return (
     <CarouselItem className="">
-      <div className="px-44 grid grid-cols-4 xl:gap-8">
+      <div className="px-4 sm:px-8 md:px-16 lg:px-24 xl:px-44 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 justify-items-center">
         {books &&
           books.map((v, k) => (
             <BookCard
@@ -35,7 +35,7 @@ const ItemContainer = ({ books }) => {
 const FallbackContainer = ({ itemCount }) => {
   return (
     <CarouselItem>
-      <div className="px-44 grid grid-cols-4 xl:gap-8">
+      <div className="px-4 sm:px-8 md:px-16 lg:px-24 xl:px-44 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 justify-items-center">
         {Array(itemCount)
           .fill(1)
           .map((v, k) => (
@@ -58,26 +58,45 @@ const NoBookContainer = () => {
 
 const OnSaleSection = () => {
   const navigate = useNavigate();
-  const itemPerContainer = 4;
-  const { data: onSaleBookContainers, isLoading } = useQuery({
+  const [itemPerContainer, setItemPerContainer] = useState(getCount());
+  function getCount() {
+    const width = window.innerWidth;
+    if (width <= 640) return 1;
+    if (width <= 1279) return 2;
+    return 4;
+  }
+
+  const { data: saleBooks, isLoading } = useQuery({
     queryKey: ["on-sale"],
     queryFn: () => fetchOnSaleContainer(),
     retryOnMount: true,
     retry: 3,
     retryDelay: 2000,
   });
-
+  const [onSaleBookContainers, setOnSaleBookContainers] = useState([]);
   const fetchOnSaleContainer = async () => {
     const result = await fetchOnSaleBook();
     if (result.data) {
-      let bookContainers = [];
-      for (let i = 0; i < result.data.length; i += itemPerContainer) {
-        bookContainers.push(result.data.slice(i, i + itemPerContainer));
-      }
-      return bookContainers;
+      return result.data;
     }
     throw result.error;
   };
+
+  useEffect(() => {
+    const update = () => setItemPerContainer(getCount());
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
+  useEffect(() => {
+    let bookContainers = [];
+    if (saleBooks != undefined) {
+      for (let i = 0; i < saleBooks.length; i += itemPerContainer) {
+        bookContainers.push(saleBooks.slice(i, i + itemPerContainer));
+      }
+    }
+    setOnSaleBookContainers(bookContainers);
+  }, [saleBooks, itemPerContainer]);
 
   return (
     <div className="w-full xl:my-8">

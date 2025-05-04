@@ -78,6 +78,7 @@ const SignInForm = ({ handleSignInSuccess }) => {
                     type="email"
                     id="email"
                     className="col-span-3"
+                    autoComplete="email"
                     {...field}
                   />
                 </FormControl>
@@ -98,6 +99,7 @@ const SignInForm = ({ handleSignInSuccess }) => {
                     type="password"
                     id="password"
                     className="col-span-3"
+                    autoComplete="current-password"
                     {...field}
                   />
                 </FormControl>
@@ -124,8 +126,7 @@ const SignInForm = ({ handleSignInSuccess }) => {
 
 export const DialogOpenEvent = "dialogOpen";
 
-export const SignInDialog = () => {
-  const [isOpen, setIsOpen] = useState(false);
+export const SignInDialog = ({isOpen, setIsOpen}) => {
   useEffect(() => {
     const handleDialogOpen = () => {
       setIsOpen(true);
@@ -140,9 +141,6 @@ export const SignInDialog = () => {
   };
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <div className="select-none cursor-pointer">Sign In</div>
-      </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <SignInForm handleSignInSuccess={handleSignInSuccess} />
       </DialogContent>

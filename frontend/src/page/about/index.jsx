@@ -54,18 +54,19 @@ const VisionSection = () => {
 
 const AboutPage = () => {
   return (
-    <div className="">
-      <div className="py-8 mb-12 border-b-2 border-gray-200 xl:text-2xl font-bold">
+    <>
+      <div className="py-8 mb-12 border-b-2 border-gray-200 xl:text-2xl font-bold text-center">
         About Us
       </div>
-      <div className="mx-[25%] text-2xl">
+      <div className="px-4 sm:px-8 md:px-16 lg:px-24 max-w-screen-lg mx-auto text-2xl">
         <WelcomeSection />
-        <div className="grid grid-cols-2 mt-8">
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-12">
           <StorySection />
           <VisionSection />
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

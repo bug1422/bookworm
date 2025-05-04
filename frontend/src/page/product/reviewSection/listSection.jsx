@@ -5,8 +5,8 @@ import { formatDateString } from "@/lib/utils";
 const ReviewItem = ({ review = undefined }) => {
   return (
     <div>
-      {review == undefined ? (
-        <div className="flex flex-col gap-2">
+      {review === undefined ? (
+        <div className="flex flex-col gap-4">
           <SkeletonLoader width="36" />
           <SkeletonLoader width="100%" />
           <SkeletonLoader width="100%" />
@@ -14,12 +14,14 @@ const ReviewItem = ({ review = undefined }) => {
         </div>
       ) : (
         <>
-          <div className="flex gap-2 divide-x-1 divide-gray-800 items-center">
+          <div className="flex gap-2 divide-x-2 divide-gray-800 items-center mb-2">
             <div className="font-bold text-xl pe-2">{review.review_title}</div>
             <div>{review.rating_star} stars</div>
           </div>
-          <p>{review.review_details}</p>
-          <div>{formatDateString(review.review_date)}</div>
+          <p className="text-base mb-2">{review.review_details}</p>
+          <div className="text-sm text-gray-500">
+            {formatDateString(review.review_date)}
+          </div>
         </>
       )}
     </div>
@@ -37,7 +39,7 @@ const MessageBox = ({ children }) => {
 const ReviewList = () => {
   const { reviews, reviewsIsLoading, reviewsStatus } = useReviewQuery();
   return (
-    <div className="relative w-full my-4 flex flex-col divide-y-2 gap-8 min-h-80">
+    <div className="relative w-full mt-6 mb-4 flex flex-col divide-y-2 gap-8 min-h-80">
       {reviewsIsLoading ? (
         <>
           {Array(3)
@@ -51,7 +53,9 @@ const ReviewList = () => {
       ) : reviews.length == 0 ? (
         <MessageBox>
           <div>This book hasn't been reviewed yet</div>
-          <div className="text-base italic">If you've read it, we'd love to hear your thoughts!</div>
+          <div className="text-base italic">
+            If you've read it, we'd love to hear your thoughts!
+          </div>
         </MessageBox>
       ) : (
         <>

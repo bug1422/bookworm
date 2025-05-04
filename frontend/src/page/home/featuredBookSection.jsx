@@ -80,7 +80,7 @@ const FeaturedBookSection = () => {
     throw result.error;
   };
   return (
-    <div className="flex flex-col gap-4 items-center w-full xl:my-16">
+    <div className="flex flex-col gap-4 items-center w-full my-4 xl:my-16">
       <div className="xl:text-3xl">Featured Books</div>
       <div className="grid grid-cols-2">
         <Button
@@ -102,7 +102,7 @@ const FeaturedBookSection = () => {
           Popular
         </Button>
       </div>
-      <div className="border-1 border-gray-200 p-6 px-50 w-full min-h-[52rem] xl:gap-8 grid grid-cols-4">
+      <div className="border border-gray-200 w-full px-4 py-3 sm:px-8 md:px-16 lg:px-24 xl:px-44 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 justify-items-center">
         {mode == 0 && (
           <>
             {recommendedIsLoading ? (

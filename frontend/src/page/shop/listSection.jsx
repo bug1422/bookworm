@@ -119,9 +119,9 @@ const ListPagination = ({ className }) => {
   );
 };
 
-const LoadingGrid = ({ itemCount = 4 }) => {
+const LoadingGrid = ({ itemCount = 5 }) => {
   return (
-    <div className="grid grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 justify-items-center">
       {Array(itemCount)
         .fill(1)
         .map((v, k) => (
@@ -155,11 +155,15 @@ const ListSection = () => {
     useBookQuery();
   return (
     <div>
-      <div className="mb-4 flex justify-between">
-        {!booksIsLoading && booksStatus == "success" && (
-          <div>{`Showing ${currentPage}-${maxPage} of ${maxItems} books`}</div>
+      <div className="mb-4 flex flex-wrap justify-center md:justify-between px-4 sm:px-8 md:px-16 gap-y-2 text-center md:text-left">
+        {!booksIsLoading && booksStatus === "success" && (
+          <div className="w-full sm:w-auto">
+            {books.length == 0
+              ? "Showing no book"
+              : `Showing ${currentPage}-${maxPage} of ${maxItems} books`}
+          </div>
         )}
-        <div className="flex gap-4 ml-auto">
+        <div className="flex flex-col sm:flex-row justify-around w-full md:w-auto gap-4 ml-auto">
           <SortDropdown />
           <ShowDropdown />
         </div>
@@ -173,7 +177,7 @@ const ListSection = () => {
           <NoBookGrid />
         ) : (
           <>
-            <div className="grid grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 justify-items-center">
               {books.map((v, k) => (
                 <BookCard
                   bookId={v.id}
