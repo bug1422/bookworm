@@ -48,7 +48,7 @@ export const AuthContextProvider = ({ children }) => {
     if (user !== null && user !== undefined) {
       checkConflictingCart(user);
     }
-    refetchCart()
+    refetchCart().then((v)=>{return v})
   }, [user]);
 
   const signin = async (email, password) => {
@@ -56,7 +56,7 @@ export const AuthContextProvider = ({ children }) => {
     if (response.error) {
       throw Error(response.errorMessage);
     }
-    await queryClient.invalidateQueries({ queryKey: [queryKey] });
+    await refetchUser()
   };
 
   const signout = async () => {
@@ -64,7 +64,7 @@ export const AuthContextProvider = ({ children }) => {
     if (response.error) {
       throw Error(response.errorMessage);
     }
-    refetchUser()
+    await refetchUser()
     queryClient.removeQueries({ queryKey: ["cart"] });
   };
 

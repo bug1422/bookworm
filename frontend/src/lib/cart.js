@@ -50,7 +50,6 @@ export const getKey = (user) => {
 
 export const getValidatedCart = async (user) => {
   const items = getCartFromStorage(getKey(user));
-  console.log(items);
   if (items == null || items.length == 0) {
     return {
       data: new Cart(),
