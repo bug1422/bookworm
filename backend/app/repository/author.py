@@ -9,6 +9,6 @@ class AuthorRepository(BaseRepository[Author]):
 
     def get_list_of_name(self) -> list[str]:
         author_names = self.session.exec(
-            select(Author.author_name).distinct()
+            select(Author.author_name).distinct().order_by(Author.author_name)
         ).all()
         return author_names
