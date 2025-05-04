@@ -64,7 +64,7 @@ class BookRepository(BaseRepository[Book]):
                 query = query.order_by(desc(final_price))
             case BookSortOption.AVG_RATING:
                 query = query.order_by(
-                    desc(rating_sub.c.average_rating), final_price
+                    nulls_last(desc(rating_sub.c.average_rating)), final_price
                 )
         if category_name:
             query = query.where(Category.category_name == category_name)
