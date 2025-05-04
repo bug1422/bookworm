@@ -144,7 +144,7 @@ async def get_user_info(
             )
         else:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="internal error"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="internal error"
             )
     return AppResponse(
         message="User Info",

@@ -49,7 +49,7 @@ class OrderItemService:
             return validated_item
         self.__validate_discount(item_input, validated_item)
         validated_item.total_price = validated_item.final_price * validated_item.quantity
-        if isinstance(item_input, OrderItemCheckoutInput) and validated_item.final_price != item_input.cart_price:
+        if isinstance(item_input, OrderItemCheckoutInput) and validated_item.total_price != item_input.cart_price:
             validated_item.exception_details.append(
                 "Book price doesn't match final price")
         validated_item.is_on_sale=validated_item.final_price < validated_item.book_price

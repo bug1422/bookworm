@@ -24,7 +24,7 @@ async def create_order(
         if isinstance(validate_res.exception, OrderValidationException):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=validate_res.exception.get_detail_string())
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=str(validate_res.exception))
     return AppResponse(
         message="order created",
@@ -37,7 +37,7 @@ async def validate_order(
 ):
     validate_res = service.validate_order(order_items)
     if not validate_res.is_success:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=str(validate_res.exception))
     return AppResponse(
         message="validation complete",

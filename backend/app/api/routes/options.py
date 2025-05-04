@@ -14,7 +14,7 @@ async def get_money_options(
     option_res = service.get_money_options()
     if not option_res.is_success:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(option_res.exception),
         )
     return AppResponse(
@@ -29,7 +29,7 @@ async def get_search_options(
     option_res = service.get_search_options()
     if not option_res.is_success:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(option_res.exception),
         )
     return AppResponse(

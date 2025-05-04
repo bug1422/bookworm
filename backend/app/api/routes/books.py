@@ -19,7 +19,7 @@ async def get_books(
     book_res = service.get_books(query)
     if not book_res.is_success:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(book_res.exception),
         )
     return AppResponse(detail=book_res.result)
@@ -31,7 +31,7 @@ async def get_on_sale_books(
     book_res = service.get_top_on_sale(take)
     if not book_res.is_success:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(book_res.exception),
         )
     return AppResponse(detail=book_res.result)
@@ -44,7 +44,7 @@ async def get_recommended_books(
     book_res = service.get_recommended_books(take)
     if not book_res.is_success:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(book_res.exception),
         )
     return AppResponse(detail=book_res.result)
@@ -57,7 +57,7 @@ async def get_popular_books(
     book_res = service.get_popular_books(take)
     if not book_res.is_success:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(book_res.exception),
         )
     return AppResponse(detail=book_res.result)
@@ -78,7 +78,7 @@ async def get_book_detail(
             )
         else:
              raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=status.HTTP_400_BAD_REQUEST,
                 detail=str(book_res.exception),
             )
     return AppResponse(detail=book_res.result)
