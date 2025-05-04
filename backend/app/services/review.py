@@ -27,7 +27,12 @@ class ReviewService:
         self, book_id: int, query_option: ReviewQuery
     ) -> PagingResponse[ReviewDetail]:
         reviews, max_items = self.repository.get_by_book_id(
-            book_id, query_option)
+            book_id=book_id,
+            rating_star=query_option.rating_star,
+            sort_option=query_option.sort_option,
+            offset=(query_option.page - 1) * query_option.take,
+            limit=query_option.take,
+        )
         return PagingResponse[ReviewDetail](
             current_page=query_option.page,
             max_page=ceil(max_items / query_option.take),

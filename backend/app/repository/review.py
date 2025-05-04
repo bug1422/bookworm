@@ -3,6 +3,7 @@ from sqlmodel import select, func, desc, Integer
 from app.models.review import Review, ReviewQuery, ReviewSortOption
 from typing import Tuple
 
+
 class ReviewRepository(BaseRepository[Review]):
     def __init__(self, session):
         super().__init__(Review, session)
@@ -25,15 +26,17 @@ class ReviewRepository(BaseRepository[Review]):
         return result
 
     def get_by_book_id(
-        self, book_id: int, query_option: ReviewQuery
+        self, book_id: int, rating_star: int = None, sort_option: ReviewSortOption = None,
+        offset: int = 0,
+        limit: int = 0,
     ) -> Tuple[list[Review], int]:
         query = select(Review).where(Review.book_id == book_id)
-        if query_option.rating_star:
+        if rating_star:
             query = query.where(
                 Review.rating_star
-                == query_option.rating_star
+                == rating_star
             )
-        match query_option.sort_option:
+        match sort_option:
             case ReviewSortOption.NEWEST_DATE:
                 query = query.order_by(desc(Review.review_date))
             case ReviewSortOption.OLDEST_DATE:
@@ -41,5 +44,6 @@ class ReviewRepository(BaseRepository[Review]):
         max_entries = self.session.scalar(
             select(func.count()).select_from(query.subquery())
         )
+        query = query.offset(offset).limit(limit)
         result = self.session.exec(query).all()
         return result, max_entries
