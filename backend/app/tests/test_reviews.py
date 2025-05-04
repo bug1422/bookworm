@@ -18,15 +18,15 @@ def get_query_params(query: ReviewQuery):
         "take": query.take,
         "sort_option": query.sort_option.value,
     }
-    if query.star_rating:
-        params.update({"star_rating": query.star_rating, })
+    if query.rating_star:
+        params.update({"star_rating": query.rating_star, })
     return params
 
 
 @pytest.mark.reviews
 def test_query_book_reviews_with_rating_should_return_greater_rating(test_client: TestClient, db_session, seed_reviews):
     test_rating = 2
-    query = ReviewQuery(star_rating=test_rating,
+    query = ReviewQuery(rating_star=test_rating,
                         sort_option=ReviewSortOption.NEWEST_DATE)
     book = db_session.exec(select(Book)).first()
     book_reviews = book.reviews

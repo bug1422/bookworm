@@ -28,10 +28,10 @@ class ReviewRepository(BaseRepository[Review]):
         self, book_id: int, query_option: ReviewQuery
     ) -> Tuple[list[Review], int]:
         query = select(Review).where(Review.book_id == book_id)
-        if query_option.star_rating:
+        if query_option.rating_star:
             query = query.where(
-                func.cast(Review.rating_star, Integer)
-                >= query_option.star_rating
+                Review.rating_star
+                == query_option.rating_star
             )
         match query_option.sort_option:
             case ReviewSortOption.NEWEST_DATE:
