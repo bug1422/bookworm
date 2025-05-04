@@ -26,7 +26,11 @@ export const SiteRoutes = [
     element: <AboutPage />,
   },
   {
-    path: "/product:productId",
+    path: "/product",
+    element: <Navigate to={"/shop"} replace />
+  },
+  {
+    path: "/product/:productId",
     element: <ProductPage />,
   },
 ];

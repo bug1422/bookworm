@@ -1,34 +1,166 @@
+import { useBookQuery } from "@/components/context/useBooksQueryContext";
+import { useOptions } from "@/components/context/useOptionsContext";
+import { cn } from "@/lib/utils";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@radix-ui/react-accordion";
+
 const FilterSection = () => {
-  
+  const { authorNames, categoryNames, ratingList } = useOptions();
+  const { selectedAuthor, selectedCategory, selectedRating, setQueryState } =
+    useBookQuery();
+  const selectAuthor = (value) => {
+    if (selectedAuthor != value)
+      setQueryState((prev) => ({
+        ...prev,
+        selectedAuthor: value,
+      }));
+    else {
+      setQueryState((prev) => ({
+        ...prev,
+        selectedAuthor: null,
+      }));
+    }
+  };
+  const selectCategory = (value) => {
+    if (selectedCategory != value)
+      setQueryState((prev) => ({
+        ...prev,
+        selectedCategory: value,
+      }));
+    else {
+      setQueryState((prev) => ({
+        ...prev,
+        selectedCategory: null,
+      }));
+    }
+  };
+  const selectRating = (value) => {
+    if (selectedRating != value)
+      setQueryState((prev) => ({
+        ...prev,
+        selectedRating: value,
+      }));
+    else {
+      setQueryState((prev) => ({
+        ...prev,
+        selectedRating: null,
+      }));
+    }
+  };
+  var authorsIsUnavail =
+    categoryNames === undefined || categoryNames.length == 0;
+  var categoriesIsUnavail =
+    authorNames === undefined || authorNames.length == 0;
+  var ratingIsUnavail = ratingList === undefined || ratingList.length == 0;
   return (
     <div className="flex flex-col gap-4">
-      <div className="font-bold">Filter By</div>
-      <div className="xl:rounded-sm p-2 pb-4 border-2 border-gray-200">
-        <div className="font-bold xl:text-xl">Category</div>
-        <div className="ms-3 flex flex-col gap-2 mt-2">
-          <div>category_name</div>
-          <div>category 1</div>
-          <div>category 2</div>
-        </div>
-      </div>
-      <div className="xl:rounded-sm p-2 pb-4 border-2 border-gray-200">
-        <div className="font-bold xl:text-xl">Author</div>
-        <div className="ms-3 flex flex-col gap-2 mt-2">
-          <div>author_name</div>
-          <div>author 1</div>
-          <div>author 2</div>
-        </div>
-      </div>
-      <div className="xl:rounded-sm p-2 pb-4 border-2 border-gray-200">
-        <div className="font-bold xl:text-xl">Rating Review</div>
-        <div className="ms-3 flex flex-col gap-2 mt-2">
-          <div>1 Star</div>
-          <div>2 Star</div>
-          <div>3 Star</div>
-          <div>4 Star</div>
-          <div>5 Star</div>
-        </div>
-      </div>
+      <div className="font-bold text-2xl">Filter By</div>
+      <Accordion
+        className="xl:rounded-sm h-fit border-2 border-gray-200"
+        type="single"
+        collapsible
+      >
+        <AccordionItem value="item-1">
+          <AccordionTrigger
+            disabled={categoriesIsUnavail}
+            className={cn(
+              "w-full select-none text-left pb-1 ps-2 font-bold xl:text-xl hover:bg-indigo-100",
+              categoriesIsUnavail ? " text-gray-300" : "cursor-pointer"
+            )}
+          >
+            Category
+          </AccordionTrigger>
+          <AccordionContent className="h-56 border-t-1 border-gray-200 overflow-y-scroll flex flex-col mt-2">
+            {categoryNames &&
+              categoryNames.map((v, k) => (
+                <div
+                  className={cn(
+                    "select-none cursor-pointer w-full ps-3 py-1 hover:bg-indigo-400 transition",
+                    selectedAuthor == v && "bg-indigo-500"
+                  )}
+                  key={k}
+                  onClick={() => {
+                    selectAuthor(v);
+                  }}
+                >
+                  {v}
+                </div>
+              ))}
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+      <Accordion
+        className="xl:rounded-sm h-fit border-2 border-gray-200"
+        type="single"
+        collapsible
+      >
+        <AccordionItem value="item-2">
+          <AccordionTrigger
+            disabled={authorsIsUnavail}
+            className={cn(
+              "w-full select-none text-left pb-1 ps-2 font-bold xl:text-xl hover:bg-indigo-100",
+              categoriesIsUnavail ? " text-gray-300" : "cursor-pointer"
+            )}
+          >
+            Author
+          </AccordionTrigger>
+          <AccordionContent className="h-56 border-t-1 border-gray-200 overflow-y-scroll flex flex-col mt-2">
+            {authorNames &&
+              authorNames.map((v, k) => (
+                <div
+                  className={cn(
+                    "select-none cursor-pointer w-full ps-3 py-1 hover:bg-indigo-400 transition",
+                    selectedCategory == v && "bg-indigo-500"
+                  )}
+                  key={k}
+                  onClick={() => {
+                    selectCategory(v);
+                  }}
+                >
+                  {v}
+                </div>
+              ))}
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+      <Accordion
+        className="xl:rounded-sm h-fit border-2 border-gray-200"
+        type="single"
+        collapsible
+      >
+        <AccordionItem value="item-3">
+          <AccordionTrigger
+            disabled={ratingIsUnavail}
+            className={cn(
+              "w-full select-none text-left pb-1 ps-2 font-bold xl:text-xl hover:bg-indigo-100",
+              categoriesIsUnavail ? " text-gray-300" : "cursor-pointer"
+            )}
+          >
+            Rating List
+          </AccordionTrigger>
+          <AccordionContent className="h-fit border-t-1 border-gray-200 flex flex-col mt-2">
+            {ratingList &&
+              ratingList.map((v, k) => (
+                <div
+                  className={cn(
+                    "select-none cursor-pointer w-full ps-3 py-1 hover:bg-indigo-400 transition",
+                    selectedRating == `${v}` && "bg-indigo-500"
+                  )}
+                  key={k}
+                  onClick={() => {
+                    selectRating(v);
+                  }}
+                >
+                  {v} Star
+                </div>
+              ))}
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   );
 };
