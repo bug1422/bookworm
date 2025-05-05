@@ -45,7 +45,9 @@ const BookDetail = ({ book = undefined, bookIsLoading = true }) => {
                 ))}
             </>
           ) : (
-            <div className="text-xl max-h-[25rem] overflow-y-auto md:overflow-y-scroll">{book.book_summary}</div>
+            <div className="text-xl max-h-[25rem] overflow-y-auto md:overflow-y-scroll">
+              {book.book_summary}
+            </div>
           )}
         </div>
       </div>

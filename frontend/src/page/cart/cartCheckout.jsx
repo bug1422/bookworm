@@ -13,7 +13,7 @@ import { checkoutCart } from '@/lib/cart';
 import eventBus from '@/lib/eventBus';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-const CartCheckoutToastId = "redirecting_id"
+const CartCheckoutToastId = 'redirecting_id';
 
 const CartTotal = ({ totalPrice }) => {
   const { getCurrency } = useOptions();
@@ -98,7 +98,10 @@ export const CartCheckout = ({ items, totalPrice }) => {
           } else {
             toastSuccess(
               'Cart checkout success',
-              <NavigatingBackBtn navigate={navigate} toastId={CartCheckoutToastId} />,
+              <NavigatingBackBtn
+                navigate={navigate}
+                toastId={CartCheckoutToastId}
+              />,
               CartCheckoutToastId,
               11000,
             );

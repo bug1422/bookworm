@@ -15,6 +15,9 @@ export const OptionsProvider = ({ children }) => {
       bookSortOptions: [],
       reviewSortOptions: [],
     };
+    if (result.error) {
+      throw Error(result.errorMessage);
+    }
     if (result.data) {
       const data = result.data;
       if (data.author_names) options.authorNames = data.author_names;
@@ -35,6 +38,9 @@ export const OptionsProvider = ({ children }) => {
     let options = {
       currencies: {},
     };
+    if (result.error) {
+      throw Error(result.errorMessage);
+    }
     if (result.data) {
       if (result.data.currencies) options.currencies = result.data.currencies;
     }
@@ -47,10 +53,11 @@ export const OptionsProvider = ({ children }) => {
     status: optionsStatus,
   } = useQuery({
     queryKey: ['search-option'],
-    retry: 3,
-    retryDelay: 2000,
+    retry: () => true,
+    retryDelay: 5000,
     queryFn: () => FetchSearchOptions(),
     refetchOnReconnect: 'always',
+    refetchOnWindowFocus: true,
     staleTime: 30 * 60 * 1000,
   });
 
@@ -60,10 +67,11 @@ export const OptionsProvider = ({ children }) => {
     status: moneyOptionsStatus,
   } = useQuery({
     queryKey: ['money-option'],
-    retry: 3,
-    retryDelay: 2000,
+    retry: () => true,
+    retryDelay: 5000,
     queryFn: () => FetchMoneyOptions(),
     refetchOnReconnect: 'always',
+    refetchOnWindowFocus: true,
     staleTime: 30 * 60 * 1000,
   });
   const selectedCurrencyMode = import.meta.env.VITE_CURRENCY_MODE;
@@ -73,7 +81,9 @@ export const OptionsProvider = ({ children }) => {
   };
 
   const getCurrency = (value) => {
-    if (moneyOptions?.currencies === undefined) return 'loading...';
+    console.log(moneyOptions?.currencies);
+    if (Object.keys(moneyOptions?.currencies || {}).length === 0)
+      return 'loading...';
     const currentCurrency = moneyOptions?.currencies[selectedCurrencyMode];
     if (currentCurrency === undefined) return 'error...';
     return (value * currentCurrency.exchange_rate).toLocaleString(
@@ -84,6 +94,8 @@ export const OptionsProvider = ({ children }) => {
       },
     );
   };
+
+  useEffect(() => {});
   return (
     <OptionsContext.Provider
       value={{

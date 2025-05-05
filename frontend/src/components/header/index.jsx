@@ -59,11 +59,12 @@ const Header = () => {
   };
 
   useEffect(() => {
-    const update = () => setOpenMenu((prev) => {
-      const width = window.innerWidth;
-      if (width > 768) return false;
-      return prev
-    });
+    const update = () =>
+      setOpenMenu((prev) => {
+        const width = window.innerWidth;
+        if (width > 768) return false;
+        return prev;
+      });
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
   }, []);
