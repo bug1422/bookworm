@@ -1,11 +1,15 @@
-from sqlmodel import SQLModel, Relationship, Field
-from pydantic import field_validator
-from typing import Optional
 from datetime import datetime, timezone
 from enum import Enum
+from typing import TYPE_CHECKING, Optional
+
+from pydantic import field_validator
+from sqlmodel import Field, Relationship, SQLModel
+
 from app.core.config import settings
 from app.models.paging import QueryPaging
 
+if TYPE_CHECKING:
+    from app.models import Book
 
 class ReviewSortOption(Enum):
     OLDEST_DATE = ("oldest-date", "Sort by date: oldest to newest")

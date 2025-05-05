@@ -1,9 +1,14 @@
-from sqlmodel import SQLModel, Numeric, Relationship, Field
-from typing import Optional
 from decimal import Decimal
 from enum import Enum
-from app.models.paging import QueryPaging
+from typing import TYPE_CHECKING, Optional
+
+from sqlmodel import Field, Numeric, Relationship, SQLModel
+
 from app.models.money import get_currency
+from app.models.paging import QueryPaging
+
+if TYPE_CHECKING:
+    from app.models import Author, Category, Discount, Review
 
 
 class BookSortOption(Enum):

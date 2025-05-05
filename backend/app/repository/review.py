@@ -1,7 +1,9 @@
-from app.repository.base import BaseRepository
-from sqlmodel import select, func, desc, Integer
-from app.models.review import Review, ReviewQuery, ReviewSortOption
 from typing import Tuple
+
+from sqlmodel import Integer, desc, func, select
+
+from app.models.review import Review, ReviewQuery, ReviewSortOption
+from app.repository.base import BaseRepository
 
 
 class ReviewRepository(BaseRepository[Review]):

@@ -1,19 +1,20 @@
-from app.core.image import get_image_url
-from app.repository.book import BookRepository
-from app.models.paging import PagingResponse
-from app.models.exception import NotFoundException
-from app.models.book import (
-    BookQuery,
-    Book,
-    BookOutput,
-    BookSearchOutput,
-    BookDetailOutput,
-    BookSortOption,
-)
-from app.services.review import ReviewService
-from app.services.wrapper import res_wrapper
 from decimal import Decimal
 from math import ceil
+
+from app.core.image import get_image_url
+from app.models.book import (
+    Book,
+    BookDetailOutput,
+    BookOutput,
+    BookQuery,
+    BookSearchOutput,
+    BookSortOption,
+)
+from app.models.exception import NotFoundException
+from app.models.paging import PagingResponse
+from app.repository.book import BookRepository
+from app.services.review import ReviewService
+from app.services.wrapper import res_wrapper
 
 
 class BookService:
@@ -123,7 +124,7 @@ class BookService:
             avg_rating,
             review_count_result.result,
         )
-        
+
     @res_wrapper
     def get_book_max_discount(self,book_id:int):
         return self.repository.get_book_max_discount(book_id)
@@ -150,7 +151,7 @@ class BookService:
             category_name=book.category.category_name,
             author_name=book.author.author_name,
             final_price=final_price,
-            is_on_sale=final_price < book.book_price, 
+            is_on_sale=final_price < book.book_price,
             rating_star=round(avg_rating, 1) if avg_rating else None,
             total_review=total_review if total_review else 0,
         )

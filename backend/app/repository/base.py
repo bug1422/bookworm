@@ -1,6 +1,6 @@
-from typing import Generic, TypeVar, Type
-from sqlmodel import SQLModel, Session, select
-from typing import Any
+from typing import Any, Generic, Type, TypeVar
+
+from sqlmodel import Session, SQLModel, select
 
 T = TypeVar("T", bound=SQLModel)
 
@@ -35,6 +35,6 @@ class BaseRepository(Generic[T]):
 
     def flush(self):
         self.session.flush()
-        
+
     def refresh(self, entity: T):
         self.session.refresh(entity)

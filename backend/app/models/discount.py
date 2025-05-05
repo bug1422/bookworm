@@ -1,9 +1,13 @@
-from sqlmodel import SQLModel, Numeric, Relationship, Field
-from typing import Optional
 from datetime import datetime, timezone
 from decimal import Decimal
+from typing import TYPE_CHECKING, Optional
+
+from sqlmodel import Field, Numeric, Relationship, SQLModel
+
 from app.models.money import get_currency
 
+if TYPE_CHECKING:
+    from app.models import Book
 
 class DiscountBase(SQLModel):
     discount_start_date: datetime = Field(

@@ -1,4 +1,4 @@
-from app.models.order import OrderValidateOutput, OrderItemValidateOutput
+from app.models.order import OrderItemValidateOutput, OrderValidateOutput
 
 
 class NotFoundException(Exception):

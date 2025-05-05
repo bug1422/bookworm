@@ -1,17 +1,22 @@
-from sqlmodel import SQLModel, Relationship, Field
+from typing import TYPE_CHECKING, Optional
+
 from pydantic import EmailStr
-from typing import Optional
+from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from app.models import Order
 
 
-    
 class UserLogin(SQLModel):
     email: str
     password: str
+
 
 class UserSignup(UserLogin):
     first_name: str
     last_name: str
     is_admin: bool
+
 
 class UserInfo(SQLModel):
     id: Optional[int] = Field(default=None)
@@ -19,6 +24,7 @@ class UserInfo(SQLModel):
     first_name: str = Field(max_length=50, nullable=False)
     last_name: str = Field(max_length=50, nullable=True)
     admin: bool
+
 
 class UserBase(SQLModel):
     first_name: str = Field(max_length=50, nullable=False)

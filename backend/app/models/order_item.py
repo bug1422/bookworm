@@ -1,9 +1,14 @@
-from sqlmodel import SQLModel, Numeric, Relationship, Field
 from datetime import datetime, timezone
-from typing import Optional
 from decimal import Decimal
+from typing import TYPE_CHECKING, Optional
+
+from sqlmodel import Field, Numeric, Relationship, SQLModel
+
 from app.core.config import settings
 from app.models.money import get_currency
+
+if TYPE_CHECKING:
+    from app.models import Book
 
 
 class OrderItemBase(SQLModel):
@@ -11,7 +16,7 @@ class OrderItemBase(SQLModel):
     price: Decimal = Field(
         default=0, max_digits=5, decimal_places=2, nullable=False
     )
-    
+
     class Config:
         json_encoders = {
             Decimal: lambda v: get_currency(v)
@@ -25,7 +30,7 @@ class OrderItemValidateInput(SQLModel):
     quantity: int = Field(
         default=0, nullable=False
     )
-    
+
     class Config:
         json_encoders = {
             Decimal: lambda v: get_currency(v)
