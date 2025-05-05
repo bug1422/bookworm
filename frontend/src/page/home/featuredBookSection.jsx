@@ -81,7 +81,7 @@ const FeaturedBookSection = () => {
     throw result.error;
   };
   return (
-    <div className="flex flex-col gap-4 items-center w-full my-4 xl:my-16">
+    <div className="flex flex-col gap-4 items-center w-full min-h-[30rem] my-4 xl:my-16">
       <div className="xl:text-3xl">Featured Books</div>
       <div className="grid grid-cols-2 gap-2">
         <Button

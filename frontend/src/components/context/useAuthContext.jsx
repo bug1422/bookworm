@@ -72,7 +72,7 @@ export const AuthContextProvider = ({ children }) => {
     if (response.error) {
       throw Error(response.errorMessage);
     }
-    toastDismiss()
+    toastDismiss();
     await refetchUser();
     queryClient.removeQueries({ queryKey: ['cart'] });
   };
