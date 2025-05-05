@@ -1,6 +1,9 @@
-from sqlmodel import SQLModel, Relationship, Field
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
+from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from app.models import Book
 
 class AuthorBase(SQLModel):
     author_name: str = Field(nullable=False, max_length=255)

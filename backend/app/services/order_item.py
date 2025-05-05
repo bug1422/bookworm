@@ -1,16 +1,18 @@
+from decimal import ROUND_HALF_UP, Decimal
+
+from app.core.config import settings
 from app.core.image import get_image_url
-from app.services.wrapper import res_wrapper
-from app.services.book import BookService
-from app.services.discount import DiscountService
-from app.repository.order_item import OrderItemRepository
 from app.models.order_item import (
     OrderItem,
-    OrderItemValidateInput,
     OrderItemCheckoutInput,
+    OrderItemValidateInput,
     OrderItemValidateOutput,
 )
-from app.core.config import settings
-from decimal import Decimal, ROUND_HALF_UP
+from app.repository.order_item import OrderItemRepository
+from app.services.book import BookService
+from app.services.discount import DiscountService
+from app.services.wrapper import res_wrapper
+
 
 class OrderItemService:
     def __init__(
@@ -42,7 +44,7 @@ class OrderItemService:
         self, item_input: OrderItemValidateInput | OrderItemCheckoutInput
     ) -> OrderItemValidateOutput:
         validated_item = OrderItemValidateOutput(**item_input.model_dump())
-        quantity_flag = self.__validate_quantity(item_input, validated_item)
+        _ = self.__validate_quantity(item_input, validated_item)
         book_flag = self.__validate_book(item_input, validated_item)
         if not book_flag:
             return validated_item
@@ -79,7 +81,7 @@ class OrderItemService:
     ) -> bool:
         book_res = (
             self.book_service.get_by_id(item_input.book_id)
-            if item_input.book_id != None
+            if item_input.book_id is not None
             else None
         )
         if not book_res.is_success:

@@ -1,6 +1,6 @@
-from functools import wraps
 from dataclasses import dataclass
-from typing import Optional, Any, TypeVar, Callable, Awaitable, Generic
+from functools import wraps
+from typing import Any, Awaitable, Callable, Generic, Optional, TypeVar
 
 P = TypeVar("P")
 

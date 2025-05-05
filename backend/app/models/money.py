@@ -1,6 +1,8 @@
-from sqlmodel import SQLModel
-from enum import Enum
 from decimal import Decimal
+from enum import Enum
+
+from sqlmodel import SQLModel
+
 from app.core.config import settings
 
 

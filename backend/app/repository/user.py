@@ -1,6 +1,7 @@
-from app.repository.base import BaseRepository
 from sqlmodel import select
+
 from app.models.user import User
+from app.repository.base import BaseRepository
 
 
 class UserRepository(BaseRepository[User]):

@@ -1,6 +1,7 @@
-from app.repository.base import BaseRepository
-from sqlmodel import select, func, and_
+from sqlmodel import and_, func, select
+
 from app.models.category import Category
+from app.repository.base import BaseRepository
 
 
 class CategoryRepository(BaseRepository[Category]):

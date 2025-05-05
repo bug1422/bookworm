@@ -1,14 +1,17 @@
-from app.repository.base import BaseRepository
-from typing import Tuple
-from sqlmodel import select, func, case as query_case, and_, desc, nulls_last
-from sqlmodel.sql.expression import Select
-from decimal import Decimal
 from datetime import datetime, timezone
-from app.models.book import Book, BookSortOption
-from app.models.discount import Discount
+from decimal import Decimal
+from typing import Tuple
+
+from sqlmodel import and_, desc, func, nulls_last, select
+from sqlmodel import case as query_case
+from sqlmodel.sql.expression import Select
+
 from app.models.author import Author
+from app.models.book import Book, BookSortOption
 from app.models.category import Category
+from app.models.discount import Discount
 from app.models.review import Review
+from app.repository.base import BaseRepository
 
 
 class BookRepository(BaseRepository[Book]):
@@ -29,7 +32,7 @@ class BookRepository(BaseRepository[Book]):
         discount_offset = (
             Book.book_price - on_sale_sub.c.max_discount_price
         ).label("discount_offset")
-        final_price = query_case((on_sale_sub.c.max_discount_price != None,
+        final_price = query_case((on_sale_sub.c.max_discount_price.is_not(None),
                                   on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
         query: Select = select(
             Book,
@@ -51,7 +54,7 @@ class BookRepository(BaseRepository[Book]):
 
         match sort_option:
             case BookSortOption.ON_SALE:
-                query = query.where(discount_offset != None).order_by(
+                query = query.where(discount_offset.is_not(None)).order_by(
                     desc(discount_offset), final_price
                 )
             case BookSortOption.POPULARITY:
@@ -73,7 +76,7 @@ class BookRepository(BaseRepository[Book]):
         if rating_star:
             query = query.where(
                 and_(
-                    rating_sub.c.average_rating != None,
+                    rating_sub.c.average_rating.is_not(None),
                     rating_sub.c.average_rating >= int(rating_star),
                 )
             )
@@ -92,8 +95,8 @@ class BookRepository(BaseRepository[Book]):
         discount_offset = (
             Book.book_price - on_sale_sub.c.max_discount_price
         ).label("discount_offset")
-        final_price = query_case((on_sale_sub.c.max_discount_price.isnot(None),
-            on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
+        final_price = query_case((on_sale_sub.c.max_discount_price.is_not(None),
+                                  on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
         query: Select = select(
             Book,
             discount_offset,
@@ -116,10 +119,10 @@ class BookRepository(BaseRepository[Book]):
         book = self.session.exec(query).first()
         return book
 
-    def get_book_max_discount(self,book_id:int) -> Tuple[Decimal,datetime,datetime]:
+    def get_book_max_discount(self, book_id: int) -> Tuple[Decimal, datetime, datetime]:
         on_sale_sub = self.__get_on_sale_subquery(book_id)
-        final_price = query_case((on_sale_sub.c.max_discount_price.isnot(None),
-            on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
+        final_price = query_case((on_sale_sub.c.max_discount_price.is_not(None),
+                                  on_sale_sub.c.max_discount_price), else_=Book.book_price).label("final_price")
         query: Select = select(
             final_price,
             Book.id,
@@ -132,9 +135,9 @@ class BookRepository(BaseRepository[Book]):
             isouter=True,
         )
         query = query.where(Book.id == book_id)
-        final_price,_,start_date,end_date = self.session.exec(query).first()
-        return final_price,start_date,end_date
-    
+        final_price, _, start_date, end_date = self.session.exec(query).first()
+        return final_price, start_date, end_date
+
     # region Subquery
     def __get_on_sale_subquery(self, book_id: int = None):
         today = datetime.now(timezone.utc)
@@ -146,7 +149,7 @@ class BookRepository(BaseRepository[Book]):
             .where(
                 and_(
                     Discount.discount_start_date <= today,
-                    (Discount.discount_end_date == None)
+                    (Discount.discount_end_date.is_(None))
                     | (Discount.discount_end_date >= today),
                 )
             )

@@ -1,6 +1,7 @@
-from app.services.wrapper import res_wrapper
-from app.repository.discount import DiscountRepository
 from app.models.discount import Discount
+from app.repository.discount import DiscountRepository
+from app.services.wrapper import res_wrapper
+
 
 class DiscountService:
     def __init__(self, repository: DiscountRepository):

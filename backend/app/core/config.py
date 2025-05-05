@@ -1,14 +1,10 @@
+import os
 import secrets
-from pydantic import (
-    AnyUrl,
-    BeforeValidator,
-    PostgresDsn,
-    computed_field
-)
+from typing import Annotated, Any, Literal, Tuple
+
+from pydantic import AnyUrl, BeforeValidator, PostgresDsn, computed_field
 from pydantic_core import Url
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Any, Literal, Annotated, Tuple
-import os
 
 ENVIRONMENT: Literal["local", "staging", "testing"] = os.getenv("ENVIRONMENT")
 

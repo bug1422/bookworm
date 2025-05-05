@@ -1,14 +1,15 @@
 from fastapi import APIRouter
-from app.api.routes import discounts
-from app.core.config import settings
+
 from app.api.routes import (
     authors,
     books,
     categories,
+    discounts,
+    options,
     orders,
     users,
-    options
 )
+from app.core.config import settings
 
 api_router = APIRouter()
 

@@ -1,6 +1,7 @@
-from app.repository.base import BaseRepository
-from sqlmodel import select, func, and_
+from sqlmodel import and_, func, select
+
 from app.models.author import Author
+from app.repository.base import BaseRepository
 
 
 class AuthorRepository(BaseRepository[Author]):

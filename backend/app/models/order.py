@@ -1,10 +1,18 @@
-from sqlmodel import SQLModel, Relationship, Field
 from datetime import datetime, timezone
 from decimal import Decimal
-from typing import Optional, Annotated, List
+from typing import TYPE_CHECKING, Annotated, List, Optional
+
 from pydantic import conlist, field_validator
-from app.models.order_item import OrderItemValidateInput, OrderItemValidateOutput
+from sqlmodel import Field, Relationship, SQLModel
+
 from app.models.money import get_currency
+from app.models.order_item import (
+    OrderItemValidateInput,
+    OrderItemValidateOutput,
+)
+
+if TYPE_CHECKING:
+    from app.models import OrderItem, User
 
 
 class OrderBase(SQLModel):

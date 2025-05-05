@@ -1,7 +1,9 @@
-from sqlmodel import SQLModel, Field
-from pydantic import field_validator, BaseModel
-from app.core.config import settings
 from typing import Generic, TypeVar
+
+from pydantic import BaseModel, field_validator
+from sqlmodel import Field, SQLModel
+
+from app.core.config import settings
 
 T = TypeVar("T")
 

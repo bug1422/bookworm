@@ -1,12 +1,13 @@
-from fastapi import APIRouter, Depends, Query, Body, status, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
+
 from app.api.deps import get_book_service, get_review_service
+from app.models.book import BookDetailOutput, BookQuery, BookSearchOutput
+from app.models.exception import NotFoundException
+from app.models.paging import PagingResponse
+from app.models.response import AppResponse
+from app.models.review import ReviewDetail, ReviewInput, ReviewQuery
 from app.services.book import BookService
 from app.services.review import ReviewService
-from app.models.response import AppResponse
-from app.models.paging import PagingResponse
-from app.models.book import BookQuery, BookSearchOutput, BookDetailOutput
-from app.models.review import ReviewQuery,ReviewInput, ReviewDetail
-from app.models.exception import NotFoundException
 
 router = APIRouter(prefix="/books", tags=["book"])
 

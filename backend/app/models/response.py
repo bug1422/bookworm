@@ -1,6 +1,7 @@
-from typing import Any, Optional, TypeVar, Generic
-from sqlmodel import SQLModel
+from typing import Any, Generic, Optional, TypeVar
+
 from pydantic import BaseModel
+from sqlmodel import SQLModel
 
 T = TypeVar("T")
 

@@ -1,10 +1,14 @@
-from app.services.wrapper import res_wrapper
+from app.models.exception import OrderValidationException
+from app.models.order import Order, OrderValidateOutput
+from app.models.order_item import (
+    OrderItemCheckoutInput,
+    OrderItemValidateInput,
+    OrderItemValidateOutput,
+)
+from app.repository.order import OrderRepository
 from app.services.order_item import OrderItemService
 from app.services.user import UserService
-from app.repository.order import OrderRepository
-from app.models.order import Order, OrderValidateOutput
-from app.models.order_item import OrderItemValidateOutput, OrderItemValidateInput, OrderItemCheckoutInput
-from app.models.exception import OrderValidationException
+from app.services.wrapper import res_wrapper
 
 
 class OrderService:
@@ -36,7 +40,7 @@ class OrderService:
         if not is_valid or exception_details:
             raise OrderValidationException(order_output)
         return order_output
-    
+
     @res_wrapper
     def add_order(self, user_id: int, order_items: list[OrderItemCheckoutInput]) -> Order:
         user_res = self.user_service.get_user_info(user_id)

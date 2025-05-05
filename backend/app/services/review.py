@@ -1,16 +1,20 @@
-from app.repository.review import ReviewRepository
+from math import ceil
+from typing import TYPE_CHECKING
+
+from app.core.config import settings
+from app.models.paging import PagingResponse
 from app.models.review import (
     Review,
     ReviewDetail,
-    ReviewQuery,
     ReviewInput,
+    ReviewQuery,
     ReviewSortOption,
 )
-from app.models.paging import PagingResponse
+from app.repository.review import ReviewRepository
 from app.services.wrapper import res_wrapper
-from app.core.config import settings
-from math import ceil
 
+if TYPE_CHECKING:
+    from app.services.book import BookService
 
 class ReviewService:
     def __init__(self, repository: ReviewRepository):
