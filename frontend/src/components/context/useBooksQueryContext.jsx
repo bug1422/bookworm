@@ -1,7 +1,7 @@
-import { createContext, useState, useEffect, useContext } from "react";
-import { useOptions } from "./useOptionsContext";
-import { fetchBooksByQuery } from "@/api/book";
-import { useQuery } from "@tanstack/react-query";
+import { createContext, useState, useEffect, useContext } from 'react';
+import { useOptions } from './useOptionsContext';
+import { fetchBooksByQuery } from '@/api/book';
+import { useQuery } from '@tanstack/react-query';
 const BookQueryContext = createContext();
 
 export const BookQueryProvider = ({ children }) => {
@@ -32,7 +32,7 @@ export const BookQueryProvider = ({ children }) => {
       selectedRating,
       sortOption[0],
       pagingOption[0],
-      currentPage
+      currentPage,
     );
     if (bookList.data) {
       const data = bookList.data;
@@ -52,7 +52,7 @@ export const BookQueryProvider = ({ children }) => {
     status,
   } = useQuery({
     queryKey: [
-      "book-list",
+      'book-list',
       {
         selectedAuthor: queryState.selectedAuthor,
         selectedCategory: queryState.selectedCategory,
@@ -63,18 +63,18 @@ export const BookQueryProvider = ({ children }) => {
       },
     ],
     queryFn: () => FetchBooks(),
-    enabled: optionsStatus == "success",
+    enabled: optionsStatus == 'success',
     retry: 3,
     retryDelay: 2000,
-    refetchOnMount: "always",
+    refetchOnMount: 'always',
     refetchOnWindowFocus: true,
     staleTime: 0,
   });
-  const booksStatus = optionsStatus == "error" ? "error" : status;
-  const booksIsLoading = optionsStatus == "pending" || booksStatus == "pending";
+  const booksStatus = optionsStatus == 'error' ? 'error' : status;
+  const booksIsLoading = optionsStatus == 'pending' || booksStatus == 'pending';
   useEffect(() => {
     const defaultSortOption = bookSortOptions?.find(
-      (opt) => opt[0] == "on-sale"
+      (opt) => opt[0] == 'on-sale',
     );
     if (queryState.sortOption == null && defaultSortOption != null) {
       setQueryState((prev) => ({
@@ -84,7 +84,7 @@ export const BookQueryProvider = ({ children }) => {
     }
   }, [bookSortOptions]);
   useEffect(() => {
-    const defaultPaging = pagingOptions?.find((opt) => opt[0] == "20");
+    const defaultPaging = pagingOptions?.find((opt) => opt[0] == '20');
     if (queryState.pagingOption == null && defaultPaging != null) {
       setQueryState((prev) => ({
         ...prev,

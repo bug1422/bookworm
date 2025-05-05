@@ -5,13 +5,13 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
-import { useBookQuery } from "@/components/context/useBooksQueryContext";
-import { useEffect } from "react";
-import BookCard from "@/components/card/book";
-import { useOptions } from "@/components/context/useOptionsContext";
-import { cn } from "@/lib/utils";
-import OptionDropdown from "@/components/dropdown/option";
+} from '@/components/ui/pagination';
+import { useBookQuery } from '@/components/context/useBooksQueryContext';
+import { useEffect } from 'react';
+import BookCard from '@/components/card/book';
+import { useOptions } from '@/components/context/useOptionsContext';
+import { cn } from '@/lib/utils';
+import OptionDropdown from '@/components/dropdown/option';
 
 //mock api option
 const SortDropdown = () => {
@@ -70,11 +70,11 @@ const ListPagination = ({ className }) => {
     }));
   };
   return (
-    <Pagination className={cn("h-24", className)}>
+    <Pagination className={cn('h-24', className)}>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            className={cn("select-none cursor-pointer")}
+            className={cn('select-none cursor-pointer')}
             onClick={() => {
               if (currentPage > 1) setCurrentPage(currentPage - 1);
             }}
@@ -155,10 +155,10 @@ const ListSection = () => {
   return (
     <div>
       <div className="mb-4 flex flex-wrap justify-center md:justify-between px-4 sm:px-8 md:px-16 gap-y-2 text-center md:text-left">
-        {!booksIsLoading && booksStatus === "success" && (
+        {!booksIsLoading && booksStatus === 'success' && (
           <div className="w-full sm:w-auto">
             {books.length == 0
-              ? "Showing no book"
+              ? 'Showing no book'
               : `Showing ${currentPage}-${maxPage} of ${maxItems} books`}
           </div>
         )}
@@ -170,7 +170,7 @@ const ListSection = () => {
       <div className=" min-h-[700px] relative flex flex-col pb-24">
         {booksIsLoading ? (
           <LoadingGrid />
-        ) : booksStatus == "error" ? (
+        ) : booksStatus == 'error' ? (
           <ErrorGrid />
         ) : books == undefined || books.length == 0 ? (
           <NoBookGrid />

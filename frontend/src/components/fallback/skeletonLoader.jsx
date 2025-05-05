@@ -1,27 +1,27 @@
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
-const convertToStyle = (value) =>{
-  if (value.includes("/")) {
-    const [num, denom] = value.split("/").map(Number);
+const convertToStyle = (value) => {
+  if (value.includes('/')) {
+    const [num, denom] = value.split('/').map(Number);
     if (!isNaN(num) && !isNaN(denom)) {
-      return `${(num / denom) * 100}%`
+      return `${(num / denom) * 100}%`;
     }
-  } else if (value.includes("%")) {
-    return value
+  } else if (value.includes('%')) {
+    return value;
   } else if (!isNaN(parseInt(value))) {
-    return `${parseInt(value) / 4}rem`
+    return `${parseInt(value) / 4}rem`;
   } else {
-    return value
+    return value;
   }
-}
+};
 
-const SkeletonLoader = ({ width = "12", height = "4", className = "" }) => {
+const SkeletonLoader = ({ width = '12', height = '4', className = '' }) => {
   const getStyle = () => {
     let style = {};
     style = {
-      "width": convertToStyle(width), 
-      "height": convertToStyle(height), 
-    }
+      width: convertToStyle(width),
+      height: convertToStyle(height),
+    };
     return style;
   };
   return (

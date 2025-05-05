@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   FormControl,
   FormDescription,
@@ -15,46 +15,46 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { FormProvider, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
-import { useEffect, useState } from "react";
-import { useAuth } from "@/components/context/useAuthContext";
-import { useNavigate } from "react-router-dom";
-import { toastSuccess } from "@/components/toast";
-import eventBus from "@/lib/eventBus";
-import SpinningCircle from "@/components/icons/loading";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { FormProvider, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
+import { useEffect, useState } from 'react';
+import { useAuth } from '@/components/context/useAuthContext';
+import { useNavigate } from 'react-router-dom';
+import { toastSuccess } from '@/components/toast';
+import eventBus from '@/lib/eventBus';
+import SpinningCircle from '@/components/icons/loading';
 const signInSchema = Yup.object({
-  email: Yup.string().email("Must be email").required("Can't be empty"),
+  email: Yup.string().email('Must be email').required("Can't be empty"),
   password: Yup.string()
-    .min(3, "Must be longer than 3")
+    .min(3, 'Must be longer than 3')
     .required("Can't be empty"),
 });
 const SignInForm = ({ handleSignInSuccess }) => {
   const navigate = useNavigate();
   const { signin } = useAuth();
-  const [loading,setLoading] = useState()
+  const [loading, setLoading] = useState();
   const [signinError, setSigninError] = useState(null);
   const form = useForm({
     resolver: yupResolver(signInSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
   });
 
   const onSubmit = async (data) => {
-    setLoading(true)
+    setLoading(true);
     try {
       await signin(data.email, data.password);
-      toastSuccess("Signin success");
+      toastSuccess('Signin success');
       handleSignInSuccess();
     } catch (e) {
       setSigninError(e.message);
     }
-    setLoading(false)
+    setLoading(false);
     //Close popup
   };
   return (
@@ -123,9 +123,9 @@ const SignInForm = ({ handleSignInSuccess }) => {
   );
 };
 
-export const DialogOpenEvent = "dialogOpen";
+export const DialogOpenEvent = 'dialogOpen';
 
-export const SignInDialog = ({isOpen, setIsOpen}) => {
+export const SignInDialog = ({ isOpen, setIsOpen }) => {
   useEffect(() => {
     const handleDialogOpen = () => {
       setIsOpen(true);

@@ -1,3 +1,3 @@
-const eventBus = new EventTarget()
+const eventBus = new EventTarget();
 
-export default eventBus
+export default eventBus;

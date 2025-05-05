@@ -1,26 +1,26 @@
-import { useAuth } from "@/components/context/useAuthContext";
-import { toastError } from "@/components/toast";
-import { getValidatedCart, getKey as getCartKey } from "@/lib/cart";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { CartCheckout } from "./cartCheckout";
-import CartRow from "./cartRow";
-import eventBus from "@/lib/eventBus";
-import { RecalculatePriceEvent } from "./event";
+import { useAuth } from '@/components/context/useAuthContext';
+import { toastError } from '@/components/toast';
+import { getValidatedCart, getKey as getCartKey } from '@/lib/cart';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { CartCheckout } from './cartCheckout';
+import CartRow from './cartRow';
+import eventBus from '@/lib/eventBus';
+import { RecalculatePriceEvent } from './event';
 
 const CartPage = () => {
   const { user, cart, userIsLoading, cartIsLoading } = useAuth();
 
   const [items, setItems] = useState([]);
-  const isItemsAvail = items !== undefined && items !== null
+  const isItemsAvail = items !== undefined && items !== null;
   const [totalPrice, setTotalPrice] = useState(0);
   useEffect(() => {
     const refreshItems = (bookId, quantity) => {
       setItems((prev) =>
         prev.map((item) =>
-          item.bookId === bookId ? { ...item, quantity } : item
-        )
+          item.bookId === bookId ? { ...item, quantity } : item,
+        ),
       );
     };
     const handleRefreshItems = (event) => {

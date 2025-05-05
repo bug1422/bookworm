@@ -1,5 +1,5 @@
-import { api, getCartErrorResponse, getDataResponse, getErrorReponse } from ".";
-const routePath = "/orders";
+import { api, getCartErrorResponse, getDataResponse, getErrorReponse } from '.';
+const routePath = '/orders';
 
 export const validateCart = async (items) => {
   try {
@@ -9,7 +9,7 @@ export const validateCart = async (items) => {
         quantity: v.quantity,
       };
     });
-    const response = await api.post(routePath + "/validate", body);
+    const response = await api.post(routePath + '/validate', body);
     return getDataResponse(response);
   } catch (error) {
     return getCartErrorResponse(error);

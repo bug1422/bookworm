@@ -1,10 +1,10 @@
-import { api, getErrorReponse, getDataResponse } from ".";
+import { api, getErrorReponse, getDataResponse } from '.';
 
-const routePath = "/options";
+const routePath = '/options';
 
 export const fetchSearchOption = async () => {
   try {
-    const response = await api.options(routePath + "/search");
+    const response = await api.options(routePath + '/search');
     return getDataResponse(response);
   } catch (error) {
     return getErrorReponse(error);
@@ -13,7 +13,7 @@ export const fetchSearchOption = async () => {
 
 export const fetchMoneyOption = async () => {
   try {
-    const response = await api.options(routePath + "/money");
+    const response = await api.options(routePath + '/money');
     return getDataResponse(response);
   } catch (error) {
     return getErrorReponse(error);

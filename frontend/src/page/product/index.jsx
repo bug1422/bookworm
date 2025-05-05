@@ -1,11 +1,11 @@
-import { Link, useParams } from "react-router-dom";
-import BookDetailSection from "./bookDetailSection";
-import ReviewSection from "./reviewSection";
-import { useQuery } from "@tanstack/react-query";
-import SkeletonLoader from "@/components/fallback/skeletonLoader";
-import { fetchBookDetail } from "@/api/book";
-import { ReviewQueryProvider } from "@/components/context/useReviewQueryContext";
-import SpinningCircle from "@/components/icons/loading";
+import { Link, useParams } from 'react-router-dom';
+import BookDetailSection from './bookDetailSection';
+import ReviewSection from './reviewSection';
+import { useQuery } from '@tanstack/react-query';
+import SkeletonLoader from '@/components/fallback/skeletonLoader';
+import { fetchBookDetail } from '@/api/book';
+import { ReviewQueryProvider } from '@/components/context/useReviewQueryContext';
+import SpinningCircle from '@/components/icons/loading';
 
 const ProductError = ({ text }) => {
   return (
@@ -56,13 +56,13 @@ const ProductPage = () => {
     <>
       {isLoading ? (
         <ProductLoading />
-      ) : status == "error" ? (
+      ) : status == 'error' ? (
         <ProductError text="Product is down at the moment" />
       ) : (
         <div className="my-6">
           <div className="py-8 mb-12 border-b-2 border-gray-200  xl:text-2xl font-bold">
             {isLoading ? (
-              <SkeletonLoader width={"25"} />
+              <SkeletonLoader width={'25'} />
             ) : (
               <>{book.category_name}</>
             )}

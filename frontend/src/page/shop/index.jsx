@@ -1,19 +1,19 @@
-import { useLocation } from "react-router-dom";
-import FilterSection from "./filterSection";
-import ListSection from "./listSection";
+import { useLocation } from 'react-router-dom';
+import FilterSection from './filterSection';
+import ListSection from './listSection';
 import {
   BookQueryProvider,
   useBookQuery,
-} from "@/components/context/useBooksQueryContext";
+} from '@/components/context/useBooksQueryContext';
 
 const ShopTitle = () => {
   const { selectedAuthor, selectedCategory, selectedRating } = useBookQuery();
   const getCurrentFilter = () => {
     const current = [selectedAuthor, selectedCategory, selectedRating].filter(
-      (p) => p !== null
+      (p) => p !== null,
     );
     if (current.length > 0) {
-      return `(Filtered by ${current.join(", ")})`;
+      return `(Filtered by ${current.join(', ')})`;
     }
     return ``;
   };
@@ -30,13 +30,13 @@ const ShopTitle = () => {
 };
 const ShopPage = () => {
   return (
-      <BookQueryProvider>
-        <ShopTitle />
-        <div className="mb-16 grid grid-cols-1 sm:grid-cols-[14%_auto] lg:grid-cols-[14%_auto] gap-4">
-          <FilterSection />
-          <ListSection />
-        </div>
-      </BookQueryProvider>
+    <BookQueryProvider>
+      <ShopTitle />
+      <div className="mb-16 grid grid-cols-1 sm:grid-cols-[14%_auto] lg:grid-cols-[14%_auto] gap-4">
+        <FilterSection />
+        <ListSection />
+      </div>
+    </BookQueryProvider>
   );
 };
 

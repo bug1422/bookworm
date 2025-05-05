@@ -4,13 +4,13 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
-import { useEffect, useState } from "react";
-import { fetchOnSaleBook, fetchOnSaleBook as getOnSaleBooks } from "@/api/book";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import BookCard from "@/components/card/book";
+} from '@/components/ui/carousel';
+import { useEffect, useState } from 'react';
+import { fetchOnSaleBook, fetchOnSaleBook as getOnSaleBooks } from '@/api/book';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import BookCard from '@/components/card/book';
 const ItemContainer = ({ books }) => {
   return (
     <CarouselItem className="">
@@ -67,7 +67,7 @@ const OnSaleSection = () => {
   }
 
   const { data: saleBooks, isLoading } = useQuery({
-    queryKey: ["on-sale"],
+    queryKey: ['on-sale'],
     queryFn: () => fetchOnSaleContainer(),
     retryOnMount: true,
     retry: 3,
@@ -105,7 +105,7 @@ const OnSaleSection = () => {
         <Button
           className="p-6 select-none cursor-pointer"
           onClick={() => {
-            navigate("/shop");
+            navigate('/shop');
           }}
         >
           View All
@@ -125,7 +125,7 @@ const OnSaleSection = () => {
           </svg>
         </Button>
       </div>
-      <Carousel className={"min-h-[25rem] border-1 border-gray-200 p-6"}>
+      <Carousel className={'min-h-[25rem] border-1 border-gray-200 p-6'}>
         <CarouselContent className="h-full">
           {isLoading ? (
             <FallbackContainer itemCount={itemPerContainer} />

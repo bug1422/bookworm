@@ -1,5 +1,5 @@
-import { useAuth } from "../context/useAuthContext";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { useAuth } from '../context/useAuthContext';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 
 const ProfileDropdown = ({ title, children }) => {
   return (
@@ -7,9 +7,7 @@ const ProfileDropdown = ({ title, children }) => {
       <PopoverTrigger className="hover:bg-indigo-800 hover:text-white transition p-4 rounded-sm">
         {title}
       </PopoverTrigger>
-      <PopoverContent>
-        {children}
-      </PopoverContent>
+      <PopoverContent>{children}</PopoverContent>
     </Popover>
   );
 };

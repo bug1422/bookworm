@@ -1,11 +1,10 @@
-import { fetchUserInfo, loginUser, logoutUser } from "@/api/user";
-import { checkConflictingCart, getValidatedCart } from "@/lib/cart";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useContext, createContext, useEffect } from "react";
-import { toastError, toastInfo } from "../toast";
+import { fetchUserInfo, loginUser, logoutUser } from '@/api/user';
+import { checkConflictingCart, getValidatedCart } from '@/lib/cart';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useContext, createContext, useEffect } from 'react';
+import { toastDismiss, toastError, toastInfo } from '../toast';
 
 const AuthContext = createContext();
-
 export const AuthContextProvider = ({ children }) => {
   const queryClient = useQueryClient();
   const FetchCurrentUser = async () => {
@@ -16,8 +15,10 @@ export const AuthContextProvider = ({ children }) => {
       return response.data;
     }
   };
-  const queryKey = "user-info";
-  const { data: user, isLoading: userIsLoading, 
+  const queryKey = 'user-info';
+  const {
+    data: user,
+    isLoading: userIsLoading,
     refetch: refetchUser,
   } = useQuery({
     queryKey: [queryKey],
@@ -27,13 +28,12 @@ export const AuthContextProvider = ({ children }) => {
   });
   const FetchCart = async () => {
     const validationResponse = await getValidatedCart(user);
-    if(validationResponse.data === undefined){
-      toastError("Cart is invalid", "Please try again later")
-      return null
-    }
-    else {
+    if (validationResponse.data === undefined) {
+      toastError('Cart is invalid', 'Please try again later');
+      return null;
+    } else {
       if (validationResponse.isRevalidated) {
-        toastInfo("Cart has been revalidated", "Please recheck your cart");
+        toastInfo('Cart has been revalidated', 'Please recheck your cart');
         return validationResponse.data;
       }
       return validationResponse.data;
@@ -45,17 +45,18 @@ export const AuthContextProvider = ({ children }) => {
     isLoading: cartIsLoading,
     refetch: refetchCart,
   } = useQuery({
-    queryKey: ["cart"],
+    queryKey: ['cart'],
     queryFn: () => FetchCart(),
     staleTime: 0,
-
   });
   const isAuthenticated = user !== undefined && user !== null;
   useEffect(() => {
     if (user !== null && user !== undefined) {
       checkConflictingCart(user);
     }
-    refetchCart().then((v)=>{return v})
+    refetchCart().then((v) => {
+      return v;
+    });
   }, [user]);
 
   const signin = async (email, password) => {
@@ -63,7 +64,7 @@ export const AuthContextProvider = ({ children }) => {
     if (response.error) {
       throw Error(response.errorMessage);
     }
-    await refetchUser()
+    await refetchUser();
   };
 
   const signout = async () => {
@@ -71,8 +72,9 @@ export const AuthContextProvider = ({ children }) => {
     if (response.error) {
       throw Error(response.errorMessage);
     }
-    await refetchUser()
-    queryClient.removeQueries({ queryKey: ["cart"] });
+    toastDismiss()
+    await refetchUser();
+    queryClient.removeQueries({ queryKey: ['cart'] });
   };
 
   return (

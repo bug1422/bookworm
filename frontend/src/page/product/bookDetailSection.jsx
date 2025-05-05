@@ -1,11 +1,11 @@
-import { useAuth } from "@/components/context/useAuthContext";
-import { useOptions } from "@/components/context/useOptionsContext";
-import SkeletonLoader from "@/components/fallback/skeletonLoader";
-import QuantityButton from "@/components/quantityButton";
-import { toastError, toastSuccess } from "@/components/toast";
-import { addToCart, MaxQuantity, MinQuantity } from "@/lib/cart";
-import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useAuth } from '@/components/context/useAuthContext';
+import { useOptions } from '@/components/context/useOptionsContext';
+import SkeletonLoader from '@/components/fallback/skeletonLoader';
+import QuantityButton from '@/components/quantityButton';
+import { toastError, toastSuccess } from '@/components/toast';
+import { addToCart, MaxQuantity, MinQuantity } from '@/lib/cart';
+import { useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 const BookDetail = ({ book = undefined, bookIsLoading = true }) => {
   return (
@@ -16,13 +16,13 @@ const BookDetail = ({ book = undefined, bookIsLoading = true }) => {
             src={`${import.meta.env.VITE_BACKEND_URL}${book.book_cover_photo}`}
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = "/assets/book-placeholder.png";
+              e.target.src = '/assets/book-placeholder.png';
             }}
             alt="book-image"
             className="object-center w-1/2 lg:w-full bg-gray-100 rounded-md"
           />
           {bookIsLoading ? (
-            <SkeletonLoader width={"24"} className="mt-4" />
+            <SkeletonLoader width={'24'} className="mt-4" />
           ) : (
             <div className="text-center lg:text-right text-gray-400 w-full mt-2">
               By (author) <span className="font-bold">{book.author_name}</span>
@@ -32,7 +32,7 @@ const BookDetail = ({ book = undefined, bookIsLoading = true }) => {
 
         <div className="flex-1 mt-6 lg:mt-0 flex flex-col gap-6">
           {bookIsLoading ? (
-            <SkeletonLoader height={"6"} width={"25"} />
+            <SkeletonLoader height={'6'} width={'25'} />
           ) : (
             <div className="text-xl font-bold">{book.book_title}</div>
           )}
@@ -41,7 +41,7 @@ const BookDetail = ({ book = undefined, bookIsLoading = true }) => {
               {Array(6)
                 .fill(0)
                 .map((_, i) => (
-                  <SkeletonLoader key={i} width={"full"} />
+                  <SkeletonLoader key={i} width={'full'} />
                 ))}
             </>
           ) : (
@@ -60,17 +60,17 @@ const AddToCart = ({ book = undefined, bookIsLoading = true }) => {
   const addBookToCart = () => {
     if (book != undefined) {
       const item = addToCart(user, book.id, quantity);
-      queryClient.invalidateQueries("cart");
+      queryClient.invalidateQueries('cart');
       toastSuccess(
-        "Added to cart",
+        'Added to cart',
         `Book ${
           book.book_title.length <= 8
             ? book.book_title
-            : book.book_title.substring(0, 8) + "..."
-        } has been added. \nTotal quantity: ${item.quantity}`
+            : book.book_title.substring(0, 8) + '...'
+        } has been added. \nTotal quantity: ${item.quantity}`,
       );
     } else {
-      toastError("Failt to add", "Can't get book");
+      toastError('Failt to add', "Can't get book");
     }
   };
   return (
@@ -82,11 +82,11 @@ const AddToCart = ({ book = undefined, bookIsLoading = true }) => {
           <div className="">
             {book.is_on_sale && (
               <span className="text-gray-400 line-through me-3">
-                {getCurrency(quantity*book.book_price)}
+                {getCurrency(quantity * book.book_price)}
               </span>
             )}
             <span className="text-xl font-bold">
-              {getCurrency(quantity*book.final_price)}
+              {getCurrency(quantity * book.final_price)}
             </span>
           </div>
         )}

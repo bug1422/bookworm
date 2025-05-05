@@ -1,1 +1,1 @@
-export const RecalculatePriceEvent = "recalculateTotal";
+export const RecalculatePriceEvent = 'recalculateTotal';
