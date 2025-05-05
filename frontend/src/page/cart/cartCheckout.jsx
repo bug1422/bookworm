@@ -1,20 +1,19 @@
-import { useAuth } from "@/components/context/useAuthContext";
-import { useOptions } from "@/components/context/useOptionsContext";
-import SkeletonLoader from "@/components/fallback/skeletonLoader";
-import { DialogOpenEvent } from "@/components/header/signin";
-import SpinningCircle from "@/components/icons/loading";
+import { useAuth } from '@/components/context/useAuthContext';
+import { useOptions } from '@/components/context/useOptionsContext';
+import SkeletonLoader from '@/components/fallback/skeletonLoader';
+import { DialogOpenEvent } from '@/components/header/signin';
+import SpinningCircle from '@/components/icons/loading';
 import {
   toastDismiss,
   toastError,
   toastInfo,
   toastSuccess,
-} from "@/components/toast";
-import { Button } from "@/components/ui/button";
-import { checkoutCart } from "@/lib/cart";
-import eventBus from "@/lib/eventBus";
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+} from '@/components/toast';
+import { checkoutCart } from '@/lib/cart';
+import eventBus from '@/lib/eventBus';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+const CartCheckoutToastId = "redirecting_id"
 
 const CartTotal = ({ totalPrice }) => {
   const { getCurrency } = useOptions();
@@ -25,9 +24,9 @@ const CartTotal = ({ totalPrice }) => {
 const NavigatingBackBtn = ({ navigate, toastId = null, second = 10 }) => {
   const [time, setTime] = useState(second);
   const navigating = () => {
-    navigate("/")
-    toastDismiss(toastId)
-  }
+    navigate('/');
+    toastDismiss(toastId);
+  };
   useEffect(() => {
     const interval = setInterval(() => {
       if (time > 0) {
@@ -85,24 +84,23 @@ export const CartCheckout = ({ items, totalPrice }) => {
       eventBus.dispatchEvent(new CustomEvent(DialogOpenEvent));
     } else {
       if (items.length == 0) {
-        toastInfo("Cart is empty", "Go add some book");
+        toastInfo('Cart is empty', 'Go add some book');
       } else {
         try {
           const response = await checkoutCart(user, items);
           await refetchCart();
           if (response.errorMessage !== undefined) {
             toastError(
-              "Cart checkout failed",
-              "We have removed invalid items from your cart\n" +
-                response.erroMessage
+              'Cart checkout failed',
+              'We have removed invalid items from your cart\n' +
+                response.erroMessage,
             );
           } else {
-            const toastId = "redirecting_id"
             toastSuccess(
-              "Cart checkout success",
-              <NavigatingBackBtn navigate={navigate} toastId={toastId}/>,
-              toastId,
-              11000
+              'Cart checkout success',
+              <NavigatingBackBtn navigate={navigate} toastId={CartCheckoutToastId} />,
+              CartCheckoutToastId,
+              11000,
             );
           }
         } catch (e) {

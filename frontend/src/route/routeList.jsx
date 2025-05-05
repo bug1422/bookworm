@@ -1,36 +1,36 @@
-import AboutPage from "../page/about";
-import CartPage from "../page/cart";
-import HomePage from "../page/home";
-import ProductPage from "../page/product";
-import ShopPage from "../page/shop";
-import {Navigate} from "react-router-dom"
+import AboutPage from '../page/about';
+import CartPage from '../page/cart';
+import HomePage from '../page/home';
+import ProductPage from '../page/product';
+import ShopPage from '../page/shop';
+import { Navigate } from 'react-router-dom';
 export const SiteRoutes = [
   {
-    path: "/",
-    element: <Navigate to={"/home"} replace />
+    path: '/',
+    element: <Navigate to={'/home'} replace />,
   },
   {
-    path: "/home",
+    path: '/home',
     element: <HomePage />,
   },
   {
-    path: "/shop",
+    path: '/shop',
     element: <ShopPage />,
   },
   {
-    path: "/cart",
+    path: '/cart',
     element: <CartPage />,
   },
   {
-    path: "/about",
+    path: '/about',
     element: <AboutPage />,
   },
   {
-    path: "/product",
-    element: <Navigate to={"/shop"} replace />
+    path: '/product',
+    element: <Navigate to={'/shop'} replace />,
   },
   {
-    path: "/product/:productId",
+    path: '/product/:productId',
     element: <ProductPage />,
   },
 ];

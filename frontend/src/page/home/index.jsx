@@ -1,5 +1,5 @@
-import FeaturedBookSection from "./featuredBookSection";
-import OnSaleSection from "./onSaleSection";
+import FeaturedBookSection from './featuredBookSection';
+import OnSaleSection from './onSaleSection';
 
 const HomePage = () => {
   return (

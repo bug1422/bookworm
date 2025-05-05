@@ -1,7 +1,7 @@
-import { useReviewQuery } from "@/components/context/useReviewQueryContext";
-import { useOptions } from "@/components/context/useOptionsContext";
-import OptionDropdown from "@/components/dropdown/option";
-import SkeletonLoader from "@/components/fallback/skeletonLoader";
+import { useReviewQuery } from '@/components/context/useReviewQueryContext';
+import { useOptions } from '@/components/context/useOptionsContext';
+import OptionDropdown from '@/components/dropdown/option';
+import SkeletonLoader from '@/components/fallback/skeletonLoader';
 
 const SortDropdown = () => {
   const { reviewSortOptions } = useOptions();
@@ -83,7 +83,7 @@ const ReviewFilter = ({ book = undefined, bookIsLoading = true }) => {
               <span className="font-bold">{book.rating_star}</span> Star
             </>
           ) : (
-            "No Rating"
+            'No Rating'
           )}
         </div>
       )}
@@ -147,10 +147,10 @@ const ReviewFilter = ({ book = undefined, bookIsLoading = true }) => {
         {reviewsIsLoading ? (
           <SkeletonLoader width="36" />
         ) : (
-          reviewsStatus == "success" && (
+          reviewsStatus == 'success' && (
             <div className="w-full sm:w-auto">
               {maxPage == 0
-                ? "Showing no review"
+                ? 'Showing no review'
                 : `Showing ${currentPage}-${maxPage} of ${maxItems} reviews`}
             </div>
           )

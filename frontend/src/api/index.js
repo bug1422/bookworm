@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 export const api = axios.create({
   baseURL: `${import.meta.env.VITE_BACKEND_URL}/${
@@ -26,7 +26,7 @@ export const getCartErrorResponse = (error) => {
   } else {
     return {
       error: error,
-      errorMessage: "UnexpectedError",
+      errorMessage: 'UnexpectedError',
     };
   }
 };
@@ -39,7 +39,7 @@ export const getErrorReponse = (error) => {
   } else {
     return {
       error: error,
-      errorMessage: "UnexpectedError",
+      errorMessage: 'UnexpectedError',
     };
   }
 };
@@ -57,7 +57,7 @@ api.interceptors.response.use(
       originalReq._retry = true;
       isRefreshing = true;
       try {
-        await api.get("/users/refresh-token");
+        await api.get('/users/refresh-token');
         isRefreshing = false;
         return api(originalReq);
       } catch (refreshError) {
@@ -66,5 +66,5 @@ api.interceptors.response.use(
       }
     }
     return Promise.reject(err);
-  }
+  },
 );

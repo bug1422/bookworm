@@ -1,49 +1,54 @@
-import { useAuth } from "@/components/context/useAuthContext";
-import { useOptions } from "@/components/context/useOptionsContext";
-import SkeletonLoader from "@/components/fallback/skeletonLoader";
-import QuantityButton from "@/components/quantityButton";
+import { useAuth } from '@/components/context/useAuthContext';
+import { useOptions } from '@/components/context/useOptionsContext';
+import SkeletonLoader from '@/components/fallback/skeletonLoader';
+import QuantityButton from '@/components/quantityButton';
 import {
   updateQuantityFromCart,
   MaxQuantity,
   MinQuantity,
   removeFromCart,
-} from "@/lib/cart";
-import eventBus from "@/lib/eventBus";
-import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { RecalculatePriceEvent } from "./event";
-import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
-import { toastError, toastSuccess } from "@/components/toast";
-import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+} from '@/lib/cart';
+import eventBus from '@/lib/eventBus';
+import { cn } from '@/lib/utils';
+import { useState } from 'react';
+import { RecalculatePriceEvent } from './event';
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
+import { toastError, toastSuccess } from '@/components/toast';
+import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 
 const CartProduct = ({ item = undefined }) => {
   const isUndefined = item === undefined;
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   return (
-    <div className="flex py-4 col-span-1 flex-col md:flex-row select-none cursor-pointer" onClick={() => {navigate("/product/"+item.bookId)}}>
+    <div
+      className="flex py-4 col-span-1 flex-col md:flex-row select-none cursor-pointer"
+      onClick={() => {
+        navigate('/product/' + item.bookId);
+      }}
+    >
       <img
         src={`${import.meta.env.VITE_BACKEND_URL}${item?.bookCoverPhoto}`}
         onError={(e) => {
           e.target.onerror = null;
-          e.target.src = "/assets/book-placeholder.png";
+          e.target.src = '/assets/book-placeholder.png';
         }}
         alt="cart-img"
         className="w-30 aspect-square rounded-xl mb-4 sm:mb-2 mx-auto md:mx-0"
       />
       <div className="self-center flex flex-col gap-2 text-left">
         {isUndefined ? (
-          <SkeletonLoader width={"16"} height={"6"} />
+          <SkeletonLoader width={'16'} height={'6'} />
         ) : (
           <div className="text-sm sm:text-lg font-bold " title={item.bookTitle}>
             {item.bookTitle.length <= 30
               ? item.bookTitle
-              : item.bookTitle.substring(0, 30) + "..."}
+              : item.bookTitle.substring(0, 30) + '...'}
           </div>
         )}
         {isUndefined ? (
-          <SkeletonLoader width={"32"} height={"4"} />
+          <SkeletonLoader width={'32'} height={'4'} />
         ) : (
           <div className="text-sm sm:text-base">{item.authorName}</div>
         )}
@@ -78,7 +83,7 @@ const CartRow = ({ item = undefined }) => {
     if (item === undefined) return;
     try {
       removeFromCart(user, item?.bookId);
-      queryClient.invalidateQueries("cart");
+      queryClient.invalidateQueries('cart');
     } catch (e) {
       toastError("Can't update quantity", e.message);
     }
@@ -86,7 +91,7 @@ const CartRow = ({ item = undefined }) => {
   return (
     <div
       className={cn(
-        "col-span-4 grid grid-cols-[30%_20%_30%_auto] sm:grid-cols-[40%_20%_20%_auto] px-6 py-4"
+        'col-span-4 grid grid-cols-[30%_20%_30%_auto] sm:grid-cols-[40%_20%_20%_auto] px-6 py-4',
       )}
     >
       <CartProduct item={item} />

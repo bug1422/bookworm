@@ -1,12 +1,12 @@
-import { useBookQuery } from "@/components/context/useBooksQueryContext";
-import { useOptions } from "@/components/context/useOptionsContext";
-import { cn } from "@/lib/utils";
+import { useBookQuery } from '@/components/context/useBooksQueryContext';
+import { useOptions } from '@/components/context/useOptionsContext';
+import { cn } from '@/lib/utils';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@radix-ui/react-accordion";
+} from '@radix-ui/react-accordion';
 
 const FilterSection = () => {
   const { authorNames, categoryNames, ratingList } = useOptions();
@@ -68,8 +68,8 @@ const FilterSection = () => {
           <AccordionTrigger
             disabled={categoriesIsUnavail}
             className={cn(
-              "w-full select-none text-left pb-1 ps-2 font-bold xl:text-xl hover:bg-indigo-100",
-              categoriesIsUnavail ? " text-gray-300" : "cursor-pointer"
+              'w-full select-none text-left pb-1 ps-2 font-bold xl:text-xl hover:bg-indigo-100',
+              categoriesIsUnavail ? ' text-gray-300' : 'cursor-pointer',
             )}
           >
             Category
@@ -79,8 +79,8 @@ const FilterSection = () => {
               categoryNames.map((v, k) => (
                 <div
                   className={cn(
-                    "select-none cursor-pointer w-full ps-3 py-1 hover:bg-indigo-400 transition",
-                    selectedAuthor == v && "bg-indigo-500"
+                    'select-none cursor-pointer w-full ps-3 py-1 hover:bg-indigo-400 transition',
+                    selectedAuthor == v && 'bg-indigo-500',
                   )}
                   key={k}
                   onClick={() => {
@@ -102,8 +102,8 @@ const FilterSection = () => {
           <AccordionTrigger
             disabled={authorsIsUnavail}
             className={cn(
-              "w-full select-none text-left pb-1 ps-2 font-bold xl:text-xl hover:bg-indigo-100",
-              categoriesIsUnavail ? " text-gray-300" : "cursor-pointer"
+              'w-full select-none text-left pb-1 ps-2 font-bold xl:text-xl hover:bg-indigo-100',
+              categoriesIsUnavail ? ' text-gray-300' : 'cursor-pointer',
             )}
           >
             Author
@@ -113,8 +113,8 @@ const FilterSection = () => {
               authorNames.map((v, k) => (
                 <div
                   className={cn(
-                    "select-none cursor-pointer w-full ps-3 py-1 hover:bg-indigo-400 transition",
-                    selectedCategory == v && "bg-indigo-500"
+                    'select-none cursor-pointer w-full ps-3 py-1 hover:bg-indigo-400 transition',
+                    selectedCategory == v && 'bg-indigo-500',
                   )}
                   key={k}
                   onClick={() => {
@@ -136,8 +136,8 @@ const FilterSection = () => {
           <AccordionTrigger
             disabled={ratingIsUnavail}
             className={cn(
-              "w-full select-none text-left pb-1 ps-2 font-bold xl:text-xl hover:bg-indigo-100",
-              categoriesIsUnavail ? " text-gray-300" : "cursor-pointer"
+              'w-full select-none text-left pb-1 ps-2 font-bold xl:text-xl hover:bg-indigo-100',
+              categoriesIsUnavail ? ' text-gray-300' : 'cursor-pointer',
             )}
           >
             Rating List
@@ -147,8 +147,8 @@ const FilterSection = () => {
               ratingList.map((v, k) => (
                 <div
                   className={cn(
-                    "select-none cursor-pointer w-full ps-3 py-1 hover:bg-indigo-400 transition",
-                    selectedRating == `${v}` && "bg-indigo-500"
+                    'select-none cursor-pointer w-full ps-3 py-1 hover:bg-indigo-400 transition',
+                    selectedRating == `${v}` && 'bg-indigo-500',
                   )}
                   key={k}
                   onClick={() => {

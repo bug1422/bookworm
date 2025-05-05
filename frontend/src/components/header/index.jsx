@@ -1,22 +1,22 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { useAuth } from "../context/useAuthContext";
-import SpinningCircle from "../icons/loading";
-import { SignInDialog } from "./signin";
-import { AlignJustifyIcon } from "lucide-react";
-import { useState } from "react";
-import { toastError, toastSuccess } from "../toast";
-import ProfileDropdown from "./ProfileDropdown";
+import { useLocation, useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import { useAuth } from '../context/useAuthContext';
+import SpinningCircle from '../icons/loading';
+import { SignInDialog } from './signin';
+import { AlignJustifyIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { toastError, toastSuccess } from '../toast';
+import ProfileDropdown from './ProfileDropdown';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from '../ui/dropdown-menu';
 
 const HeaderNav = ({
-  className = "",
-  onLink = "underline decoration-2",
-  notOnLink = "",
+  className = '',
+  onLink = 'underline decoration-2',
+  notOnLink = '',
   children,
   link,
 }) => {
@@ -28,7 +28,7 @@ const HeaderNav = ({
       className={cn(
         isLink ? onLink : notOnLink,
         className,
-        "select-none cursor-pointer"
+        'select-none cursor-pointer',
       )}
       onClick={() => {
         navigate(link);
@@ -49,21 +49,31 @@ const Header = () => {
     try {
       await signout();
       document.cookie =
-        "access_token=; Max-Age=0; path=/; Secure; SameSite=None";
+        'access_token=; Max-Age=0; path=/; Secure; SameSite=None';
       document.cookie =
-        "refresh_token=; Max-Age=0; path=/; Secure; SameSite=None";
-      toastSuccess("Signout success");
+        'refresh_token=; Max-Age=0; path=/; Secure; SameSite=None';
+      toastSuccess('Signout success');
     } catch (e) {
-      toastError("Signout failed", e.message);
+      toastError('Signout failed', e.message);
     }
   };
+
+  useEffect(() => {
+    const update = () => setOpenMenu((prev) => {
+      const width = window.innerWidth;
+      if (width > 768) return false;
+      return prev
+    });
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
   return (
     <header className="h-[10vh] py-3 px-4 sm:px-6 flex justify-between w-full bg-indigo-300 relative">
       <div className="sm:ms-6 flex items-center gap-2">
         <img src="/assets/book-placeholder.png" alt="bookworm-header" />
         <div className="font-bold xl:text-3xl">BOOKWORM</div>
       </div>
-      <div className="hidden sm:flex gap-6 md:gap-10 lg:gap-12 items-center">
+      <div className="hidden md:flex gap-6 md:gap-10 lg:gap-12 items-center">
         <HeaderNav link="/home">Home</HeaderNav>
         <HeaderNav link="/shop">Shop</HeaderNav>
         <HeaderNav link="/about">About</HeaderNav>
@@ -93,7 +103,7 @@ const Header = () => {
         )}
       </div>
       <DropdownMenu open={openMenu} onOpenChange={setOpenMenu}>
-        <DropdownMenuTrigger asChild className="sm:hidden flex items-center">
+        <DropdownMenuTrigger asChild className="md:hidden flex items-center">
           <button
             onClick={() =>
               setIsOpen((prev) => {

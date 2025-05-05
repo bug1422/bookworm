@@ -1,7 +1,7 @@
-import { useReviewQuery } from "@/components/context/useReviewQueryContext";
-import SkeletonLoader from "@/components/fallback/skeletonLoader";
-import { cn, formatDateString } from "@/lib/utils";
-import { useEffect } from "react";
+import { useReviewQuery } from '@/components/context/useReviewQueryContext';
+import SkeletonLoader from '@/components/fallback/skeletonLoader';
+import { cn, formatDateString } from '@/lib/utils';
+import { useEffect } from 'react';
 import {
   Pagination,
   PaginationContent,
@@ -9,7 +9,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
+} from '@/components/ui/pagination';
 
 const ReviewItem = ({ review = undefined }) => {
   return (
@@ -57,7 +57,7 @@ const ListPagination = ({ className }) => {
     }));
   };
   return (
-    <Pagination className={cn("h-16", className)}>
+    <Pagination className={cn('h-16', className)}>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
@@ -117,7 +117,7 @@ const ReviewList = () => {
               <ReviewItem key={k} />
             ))}
         </>
-      ) : reviewsStatus == "error" ? (
+      ) : reviewsStatus == 'error' ? (
         <MessageBox>Server is down at the moment</MessageBox>
       ) : reviews.length == 0 ? (
         <MessageBox>

@@ -2,17 +2,17 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { ChevronDown } from "lucide-react";
-import { Button } from "../ui/button";
+} from '@/components/ui/popover';
+import { ChevronDown } from 'lucide-react';
+import { Button } from '../ui/button';
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import { useState } from "react";
+} from '@/components/ui/command';
+import { useState } from 'react';
 const OptionDropdown = ({ options, selectedOption, onSelect, disabled }) => {
   const [open, setOpen] = useState(false);
   return (
@@ -23,7 +23,7 @@ const OptionDropdown = ({ options, selectedOption, onSelect, disabled }) => {
           aria-expanded={open}
           className="bg-indigo-400 min-w-36 justify-between"
         >
-          {selectedOption ? selectedOption[1] : ""}
+          {selectedOption ? selectedOption[1] : ''}
           <ChevronDown className="opacity-50" />
         </Button>
       </PopoverTrigger>

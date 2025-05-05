@@ -1,11 +1,11 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createContext, useContext, useEffect, useState } from "react";
-import { useOptions } from "./useOptionsContext";
-import { fetchBookReviewsByQuery } from "@/api/book";
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { useOptions } from './useOptionsContext';
+import { fetchBookReviewsByQuery } from '@/api/book';
 const ReviewQueryContext = createContext();
 
 export const ReviewQueryProvider = ({ children }) => {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const { pagingOptions, reviewSortOptions, optionsStatus } = useOptions();
   const [queryState, setQueryState] = useState({
     bookId: null,
@@ -18,22 +18,17 @@ export const ReviewQueryProvider = ({ children }) => {
   });
 
   const FetchReviews = async () => {
-    const {
-      sortOption,
-      selectedRating,
-      pagingOption,
-      currentPage,
-      bookId,
-    } = queryState;
+    const { sortOption, selectedRating, pagingOption, currentPage, bookId } =
+      queryState;
     const reviewList = await fetchBookReviewsByQuery(
       bookId,
       selectedRating,
       sortOption[0],
       pagingOption[0],
-      currentPage
+      currentPage,
     );
     if (reviewList.data) {
-      const data = reviewList.data
+      const data = reviewList.data;
       setQueryState((prev) => ({
         ...prev,
         maxPage: data.max_page,
@@ -41,18 +36,18 @@ export const ReviewQueryProvider = ({ children }) => {
       }));
       return data.items;
     }
-    return null
+    return null;
   };
 
   const queryKey = [
-    "review-list-" + queryState.bookId,
+    'review-list-' + queryState.bookId,
     {
       selectedRating: queryState.selectedRating,
       sortOption: queryState.sortOption,
       pagingOption: queryState.pagingOption,
       currentPage: queryState.currentPage,
     },
-  ]
+  ];
   const {
     data: reviews,
     isLoading,
@@ -60,22 +55,22 @@ export const ReviewQueryProvider = ({ children }) => {
   } = useQuery({
     queryKey: queryKey,
     queryFn: () => FetchReviews(),
-    enabled: optionsStatus == "success" && queryState.bookId !== null,
+    enabled: optionsStatus == 'success' && queryState.bookId !== null,
     retryOnMount: true,
     retry: 3,
     retryDelay: 2000,
   });
 
   const refetchReviews = async () => {
-    queryClient.invalidateQueries(queryKey)
-  }
-  const reviewsStatus = optionsStatus == "error" ? "error" : status;
+    queryClient.invalidateQueries(queryKey);
+  };
+  const reviewsStatus = optionsStatus == 'error' ? 'error' : status;
   const reviewsIsLoading =
-    optionsStatus == "pending" || reviewsStatus == "pending";
+    optionsStatus == 'pending' || reviewsStatus == 'pending';
 
   useEffect(() => {
     const defaultSortOption = reviewSortOptions?.find(
-      (opt) => opt[0] == "newest-date"
+      (opt) => opt[0] == 'newest-date',
     );
     if (defaultSortOption != null) {
       setQueryState((prev) => ({
@@ -86,7 +81,7 @@ export const ReviewQueryProvider = ({ children }) => {
   }, [reviewSortOptions]);
 
   useEffect(() => {
-    const defaultPaging = pagingOptions?.find((opt) => opt[0] == "20");
+    const defaultPaging = pagingOptions?.find((opt) => opt[0] == '20');
     if (defaultPaging != null) {
       setQueryState((prev) => ({
         ...prev,
@@ -114,7 +109,7 @@ export const ReviewQueryProvider = ({ children }) => {
         reviewsIsLoading,
         reviewsStatus,
         setQueryState,
-        refetchReviews
+        refetchReviews,
       }}
     >
       {children}

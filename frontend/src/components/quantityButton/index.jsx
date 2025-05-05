@@ -1,9 +1,9 @@
-import { cn } from "@/lib/utils";
-import { MinusIcon, PlusIcon } from "lucide-react";
+import { cn } from '@/lib/utils';
+import { MinusIcon, PlusIcon } from 'lucide-react';
 
 const QuantityButton = ({
   quantity = 0,
-  className = "",
+  className = '',
   onIncrease,
   onDecrease,
   onChange,
@@ -11,8 +11,8 @@ const QuantityButton = ({
   return (
     <div
       className={cn(
-        "select-none flex items-center justify-between bg-indigo-100 rounded w-fit gap-3",
-        className
+        'select-none flex items-center justify-between bg-indigo-100 rounded w-fit gap-3',
+        className,
       )}
     >
       <MinusIcon

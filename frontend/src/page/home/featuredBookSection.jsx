@@ -1,9 +1,9 @@
-import { fetchPopularBook, fetchRecommendedBook } from "@/api/book";
-import BookCard from "@/components/card/book";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { fetchPopularBook, fetchRecommendedBook } from '@/api/book';
+import BookCard from '@/components/card/book';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 
 const FallbackGrid = ({ itemCount }) => {
   return (
@@ -47,7 +47,7 @@ const FeaturedGrid = ({ bookList }) => {
 const FeaturedBookSection = () => {
   const [mode, setMode] = useState(-1);
   const { data: recommendedList, isLoading: recommendedIsLoading } = useQuery({
-    queryKey: ["recommended"],
+    queryKey: ['recommended'],
     queryFn: () => fetchRecommendedList(),
     enabled: mode == 0,
     retryOnMount: true,
@@ -55,7 +55,7 @@ const FeaturedBookSection = () => {
     retryDelay: 2000,
   });
   const { data: popularList, isLoading: popularIsLoading } = useQuery({
-    queryKey: ["popular"],
+    queryKey: ['popular'],
     queryFn: () => fetchPopularList(),
     enabled: mode == 1,
     retryOnMount: true,
@@ -86,8 +86,8 @@ const FeaturedBookSection = () => {
       <div className="grid grid-cols-2 gap-2">
         <Button
           className={cn(
-            "cursor-pointer hover:bg-indigo-500",
-            mode == 0 ? "bg-indigo-400" : "bg-indigo-50 text-black"
+            'cursor-pointer hover:bg-indigo-500',
+            mode == 0 ? 'bg-indigo-400' : 'bg-indigo-50 text-black',
           )}
           onClick={() => {
             setMode(0);
@@ -97,8 +97,8 @@ const FeaturedBookSection = () => {
         </Button>
         <Button
           className={cn(
-            "cursor-pointer hover:bg-indigo-500",
-            mode == 1 ? "bg-indigo-400" : "bg-indigo-50 text-black"
+            'cursor-pointer hover:bg-indigo-500',
+            mode == 1 ? 'bg-indigo-400' : 'bg-indigo-50 text-black',
           )}
           onClick={() => {
             setMode(1);

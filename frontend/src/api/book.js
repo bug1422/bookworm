@@ -1,18 +1,18 @@
-import { api, getDataResponse, getErrorReponse } from ".";
-const routePath = "/books"
+import { api, getDataResponse, getErrorReponse } from '.';
+const routePath = '/books';
 
 export const fetchOnSaleBook = async () => {
   try {
-    const response = await api.get(routePath+"/on-sale");
-    return getDataResponse(response)
+    const response = await api.get(routePath + '/on-sale');
+    return getDataResponse(response);
   } catch (error) {
     return getErrorReponse(error);
   }
 };
 export const fetchRecommendedBook = async () => {
   try {
-    const response = await api.get(routePath+"/featured/recommended");
-    return getDataResponse(response)
+    const response = await api.get(routePath + '/featured/recommended');
+    return getDataResponse(response);
   } catch (error) {
     return getErrorReponse(error);
   }
@@ -20,8 +20,8 @@ export const fetchRecommendedBook = async () => {
 
 export const fetchPopularBook = async () => {
   try {
-    const response = await api.get(routePath+"/featured/popular");
-    return getDataResponse(response)
+    const response = await api.get(routePath + '/featured/popular');
+    return getDataResponse(response);
   } catch (error) {
     return getErrorReponse(error);
   }
@@ -33,7 +33,7 @@ export const fetchBooksByQuery = async (
   ratingStar,
   sortOption,
   pagingOption,
-  currentPage
+  currentPage,
 ) => {
   try {
     const response = await api.get(routePath, {
@@ -46,7 +46,7 @@ export const fetchBooksByQuery = async (
         rating_star: ratingStar,
       },
     });
-    return getDataResponse(response)
+    return getDataResponse(response);
   } catch (error) {
     return getErrorReponse(error);
   }
@@ -56,8 +56,8 @@ export const fetchBookDetail = async (bookId) => {
   try {
     if (bookId === undefined || bookId === null)
       throw Error("book id doesn't exist");
-    const response = await api.get(routePath+`/${bookId}`);
-    return getDataResponse(response)
+    const response = await api.get(routePath + `/${bookId}`);
+    return getDataResponse(response);
   } catch (error) {
     return getErrorReponse(error);
   }
@@ -67,10 +67,10 @@ export const fetchBookReviewsByQuery = async (
   ratingStar,
   sortOption,
   pagingOption,
-  currentPage
+  currentPage,
 ) => {
   try {
-    const response = await api.get(routePath+`/${bookId}/reviews`, {
+    const response = await api.get(routePath + `/${bookId}/reviews`, {
       params: {
         page: currentPage,
         take: pagingOption,
@@ -78,7 +78,7 @@ export const fetchBookReviewsByQuery = async (
         rating_star: ratingStar,
       },
     });
-    return getDataResponse(response)
+    return getDataResponse(response);
   } catch (error) {
     return getErrorReponse(error);
   }
@@ -86,12 +86,12 @@ export const fetchBookReviewsByQuery = async (
 
 export const addBookReview = async (bookId, title, details, ratingStar) => {
   try {
-    const response = await api.post(routePath+`/${bookId}/reviews`, {
+    const response = await api.post(routePath + `/${bookId}/reviews`, {
       review_title: title,
-      review_details: details ?? "",
+      review_details: details ?? '',
       rating_star: ratingStar,
     });
-    return getDataResponse(response)
+    return getDataResponse(response);
   } catch (error) {
     return getErrorReponse(error);
   }

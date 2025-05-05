@@ -1,6 +1,6 @@
-import { fetchMoneyOption, fetchSearchOption } from "@/api/option";
-import { useQuery } from "@tanstack/react-query";
-import { createContext, useContext, useEffect, useState } from "react";
+import { fetchMoneyOption, fetchSearchOption } from '@/api/option';
+import { useQuery } from '@tanstack/react-query';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const OptionsContext = createContext();
 
@@ -46,11 +46,11 @@ export const OptionsProvider = ({ children }) => {
     isLoading: isOptionLoading,
     status: optionsStatus,
   } = useQuery({
-    queryKey: ["search-option"],
+    queryKey: ['search-option'],
     retry: 3,
     retryDelay: 2000,
     queryFn: () => FetchSearchOptions(),
-    refetchOnReconnect: "always",
+    refetchOnReconnect: 'always',
     staleTime: 30 * 60 * 1000,
   });
 
@@ -59,27 +59,30 @@ export const OptionsProvider = ({ children }) => {
     isLoading,
     status: moneyOptionsStatus,
   } = useQuery({
-    queryKey: ["money-option"],
+    queryKey: ['money-option'],
     retry: 3,
     retryDelay: 2000,
     queryFn: () => FetchMoneyOptions(),
-    refetchOnReconnect: "always",
+    refetchOnReconnect: 'always',
     staleTime: 30 * 60 * 1000,
   });
   const selectedCurrencyMode = import.meta.env.VITE_CURRENCY_MODE;
   const currencyMode = {
-    "USD": "en-US",
-    "VND": "vi-VN",
+    USD: 'en-US',
+    VND: 'vi-VN',
   };
 
   const getCurrency = (value) => {
-    if (moneyOptions?.currencies === undefined) return "loading...";
+    if (moneyOptions?.currencies === undefined) return 'loading...';
     const currentCurrency = moneyOptions?.currencies[selectedCurrencyMode];
-    if (currentCurrency === undefined) return "error...";
-    return (value * currentCurrency.exchange_rate).toLocaleString(currencyMode[selectedCurrencyMode] ?? "en-US", {
-      style: "currency",
-      currency: selectedCurrencyMode,
-    });
+    if (currentCurrency === undefined) return 'error...';
+    return (value * currentCurrency.exchange_rate).toLocaleString(
+      currencyMode[selectedCurrencyMode] ?? 'en-US',
+      {
+        style: 'currency',
+        currency: selectedCurrencyMode,
+      },
+    );
   };
   return (
     <OptionsContext.Provider

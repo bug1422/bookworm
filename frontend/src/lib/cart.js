@@ -1,5 +1,5 @@
-import { createOrder, validateCart } from "@/api/order";
-import { toastError } from "@/components/toast";
+import { createOrder, validateCart } from '@/api/order';
+import { toastError } from '@/components/toast';
 
 export const MinQuantity = import.meta.env.VITE_MIN_ITEM_QUANTITY;
 export const MaxQuantity = import.meta.env.VITE_MAX_ITEM_QUANTITY;
@@ -41,8 +41,8 @@ class Cart {
   }
 }
 
-const cartPrefix = "cart";
-const guestKey = "guest";
+const cartPrefix = 'cart';
+const guestKey = 'guest';
 
 export const getKey = (user) => {
   return user != undefined ? user.email : guestKey;
@@ -73,20 +73,20 @@ export const getValidatedCart = async (user) => {
       return {
         erroMessage: response.message,
         data: cart,
-        isRevalidated: true
+        isRevalidated: true,
       };
     } else {
       return {
         erroMessage: response.message,
         data: null,
-        isRevalidated: false
+        isRevalidated: false,
       };
     }
   } else {
     const cart = new Cart(response.data);
     return {
       data: cart,
-      isRevalidated: false
+      isRevalidated: false,
     };
   }
 };
@@ -95,10 +95,10 @@ export const checkoutCart = async (user, items) => {
   const response = await createOrder(items);
   if (response.error) {
     //Remove bad items
-    const errors = response.errorMessage.split("|");
+    const errors = response.errorMessage.split('|');
     const bookIds = [];
     for (const error of errors) {
-      const [bookId] = error.split(":");
+      const [bookId] = error.split(':');
       const parsedId = parseInt(bookId);
       if (Number.isInteger(parsedId) && !bookIds.includes(parsedId)) {
         bookIds.push(parsedId);
@@ -108,7 +108,7 @@ export const checkoutCart = async (user, items) => {
       removeFromCart(user, id);
     }
     return {
-      erroMessage: `Removed invalid items: Books[${bookIds.join(",")}]`,
+      erroMessage: `Removed invalid items: Books[${bookIds.join(',')}]`,
     };
   } else {
     removeCartFromStorage(getKey(user));
@@ -127,7 +127,7 @@ export const addToCart = (user, bookId, quantity) => {
   if (existingItem != undefined) {
     item.quantity = Math.min(
       item.quantity + existingItem.quantity,
-      MaxQuantity
+      MaxQuantity,
     );
     item.quantity = Math.max(item.quantity, MinQuantity);
     cart = cart.filter((item) => item != existingItem);
@@ -203,7 +203,7 @@ const getCartFromStorage = (key) => {
 const setCartFromStorage = (key, value) => {
   localStorage.setItem(
     `${cartPrefix}-${key}`,
-    JSON.stringify(removeDuplicates(value))
+    JSON.stringify(removeDuplicates(value)),
   );
 };
 
