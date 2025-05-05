@@ -15,6 +15,21 @@ export const getDataResponse = (response) => {
   };
 };
 
+export const getCartErrorResponse = (error) => {
+  if (axios.isAxiosError(error)) {
+    return {
+      status: error.response.status,
+      error: error,
+      errorMessage: error.response?.data?.detail || error.message,
+      data: error.response.data?.detail,
+    };
+  } else {
+    return {
+      error: error,
+      errorMessage: "UnexpectedError",
+    };
+  }
+};
 export const getErrorReponse = (error) => {
   if (axios.isAxiosError(error)) {
     return {

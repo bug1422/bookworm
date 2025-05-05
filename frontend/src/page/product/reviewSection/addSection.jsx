@@ -68,7 +68,6 @@ const AddReviewForm = () => {
         data.details,
         data.ratingStar
       );
-      console.log(response);
       if (response.error) {
         toastError("Review failed", response.errorMessage);
       } else {

@@ -1,4 +1,4 @@
-import { api, getDataResponse, getErrorReponse } from ".";
+import { api, getCartErrorResponse, getDataResponse, getErrorReponse } from ".";
 const routePath = "/orders";
 
 export const validateCart = async (items) => {
@@ -12,7 +12,7 @@ export const validateCart = async (items) => {
     const response = await api.post(routePath + "/validate", body);
     return getDataResponse(response);
   } catch (error) {
-    return getErrorReponse(error);
+    return getCartErrorResponse(error);
   }
 };
 

@@ -3,17 +3,57 @@ import { useOptions } from "@/components/context/useOptionsContext";
 import SkeletonLoader from "@/components/fallback/skeletonLoader";
 import { DialogOpenEvent } from "@/components/header/signin";
 import SpinningCircle from "@/components/icons/loading";
-import { toastError, toastSuccess } from "@/components/toast";
+import {
+  toastDismiss,
+  toastError,
+  toastInfo,
+  toastSuccess,
+} from "@/components/toast";
+import { Button } from "@/components/ui/button";
 import { checkoutCart } from "@/lib/cart";
 import eventBus from "@/lib/eventBus";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const CartTotal = ({ totalPrice }) => {
   const { getCurrency } = useOptions();
   return (
     <div className="my-10 text-3xl font-bold">{getCurrency(totalPrice)}</div>
+  );
+};
+const NavigatingBackBtn = ({ navigate, toastId = null, second = 10 }) => {
+  const [time, setTime] = useState(second);
+  const navigating = () => {
+    navigate("/")
+    toastDismiss(toastId)
+  }
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (time > 0) {
+        setTime((prev) => {
+          return prev - 1;
+        });
+      } else {
+        navigating();
+      }
+    }, 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+  return (
+    <>
+      Navigating back to home in {time}s
+      <div
+        onClick={() => {
+          navigating();
+        }}
+        className="underline font-bold select-none cursor-pointer"
+      >
+        Go back now
+      </div>
+    </>
   );
 };
 
@@ -36,33 +76,38 @@ export const CartCheckout = ({ items, totalPrice }) => {
         </div>
       </div>
     );
-
-  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const { isAuthenticated, user, refetchCart } = useAuth();
   const [loading, setLoading] = useState();
-  const navigate = useNavigate();
   const checkout = async () => {
     setLoading(true);
     if (!isAuthenticated) {
       eventBus.dispatchEvent(new CustomEvent(DialogOpenEvent));
     } else {
-      try {
-        const response = await checkoutCart(user, items);
-        await refetchCart();
-        if (response.errorMessage !== undefined) {
-          toastError(
-            "Cart checkout failed",
-            "We have removed invalid items from your cart\n" +
-              response.erroMessage
-          );
-        } else {
-          toastSuccess("Cart checkout success");
-          setTimeout(() => {
-            navigate("/");
-          }, 10000);
+      if (items.length == 0) {
+        toastInfo("Cart is empty", "Go add some book");
+      } else {
+        try {
+          const response = await checkoutCart(user, items);
+          await refetchCart();
+          if (response.errorMessage !== undefined) {
+            toastError(
+              "Cart checkout failed",
+              "We have removed invalid items from your cart\n" +
+                response.erroMessage
+            );
+          } else {
+            const toastId = "redirecting_id"
+            toastSuccess(
+              "Cart checkout success",
+              <NavigatingBackBtn navigate={navigate} toastId={toastId}/>,
+              toastId,
+              11000
+            );
+          }
+        } catch (e) {
+          console.log(e);
         }
-      } catch (e) {
-        console.log(e);
       }
     }
     setLoading(false);
