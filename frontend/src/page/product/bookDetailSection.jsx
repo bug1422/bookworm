@@ -19,7 +19,7 @@ const BookDetail = ({ book = undefined, bookIsLoading = true }) => {
               e.target.src = '/assets/book-placeholder.png';
             }}
             alt="book-image"
-            className="object-center w-1/2 lg:w-full bg-gray-100 rounded-md"
+            className="object-center w-1/2 lg:w-2/3 lg:object-right mx-auto bg-gray-100 rounded-md"
           />
           {bookIsLoading ? (
             <SkeletonLoader width={'24'} className="mt-4" />
@@ -45,7 +45,7 @@ const BookDetail = ({ book = undefined, bookIsLoading = true }) => {
                 ))}
             </>
           ) : (
-            <div className="text-xl">{book.book_summary}</div>
+            <div className="text-xl max-h-[25rem] overflow-y-auto md:overflow-y-scroll">{book.book_summary}</div>
           )}
         </div>
       </div>
