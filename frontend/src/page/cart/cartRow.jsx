@@ -113,7 +113,7 @@ const CartRow = ({ item = undefined }) => {
         <QuantityButton
           onDecrease={() => {
             if (item) {
-              if (quantity == MinQuantity) {
+              if (quantity <= MinQuantity) {
                 removeItem();
               } else {
                 updateQuantity(-1);
@@ -121,7 +121,7 @@ const CartRow = ({ item = undefined }) => {
             }
           }}
           onIncrease={() => {
-            if (item && quantity !== MaxQuantity) {
+            if (item && quantity < MaxQuantity) {
               updateQuantity(1);
             }
           }}

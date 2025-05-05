@@ -57,15 +57,36 @@ export const getValidatedCart = async (user) => {
   }
   const response = await validateCart(items);
   if (response.error) {
-    const cart = new Cart();
-    return {
-      erroMessage: response.message,
-      data: cart,
-    };
+    if (response.status == 409 && response.data) {
+      const data = response.data;
+      removeCartFromStorage(user);
+      const cart = new Cart();
+      for (const item of data.validated_items) {
+        const cartItem = new CartItem(item);
+        if (cartItem.available) {
+          cart.items.push(cartItem);
+          addToCart(user, cartItem.bookId, cartItem.quantity);
+        } else {
+          removeFromCart(user, cartItem.bookId);
+        }
+      }
+      return {
+        erroMessage: response.message,
+        data: cart,
+        isRevalidated: true
+      };
+    } else {
+      return {
+        erroMessage: response.message,
+        data: null,
+        isRevalidated: false
+      };
+    }
   } else {
     const cart = new Cart(response.data);
     return {
       data: cart,
+      isRevalidated: false
     };
   }
 };

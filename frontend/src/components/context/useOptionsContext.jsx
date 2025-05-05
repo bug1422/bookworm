@@ -72,9 +72,9 @@ export const OptionsProvider = ({ children }) => {
     "VND": "vi-VN",
   };
 
-  const currentCurrency = moneyOptions?.currencies[selectedCurrencyMode];
   const getCurrency = (value) => {
     if (moneyOptions?.currencies === undefined) return "loading...";
+    const currentCurrency = moneyOptions?.currencies[selectedCurrencyMode];
     if (currentCurrency === undefined) return "error...";
     return (value * currentCurrency.exchange_rate).toLocaleString(currencyMode[selectedCurrencyMode] ?? "en-US", {
       style: "currency",

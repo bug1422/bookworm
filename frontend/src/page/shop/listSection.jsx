@@ -22,7 +22,6 @@ const SortDropdown = () => {
   return (
     <OptionDropdown
       onSelect={(opt) => {
-        console.log(opt);
         if (opt[0] !== sortOption[0]) {
           setQueryState((prev) => ({
             ...prev,

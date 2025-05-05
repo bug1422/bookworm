@@ -13,8 +13,7 @@ const CartPage = () => {
   const { user, cart, userIsLoading, cartIsLoading } = useAuth();
 
   const [items, setItems] = useState([]);
-
-
+  const isItemsAvail = items !== undefined && items !== null
   const [totalPrice, setTotalPrice] = useState(0);
   useEffect(() => {
     const refreshItems = (bookId, quantity) => {
@@ -33,11 +32,11 @@ const CartPage = () => {
     };
   }, []);
   useEffect(() => {
-    setItems(cart?.items ?? [])
-  }, [cart])
+    setItems(cart?.items ?? null);
+  }, [cart]);
 
   useEffect(() => {
-    if (items !== undefined) {
+    if (isItemsAvail) {
       const newPrice = items.reduce((total, v) => {
         return total + v.quantity * v.finalPrice;
       }, 0);
@@ -64,6 +63,20 @@ const CartPage = () => {
               <CartRow />
               <CartRow />
             </>
+          ) : !isItemsAvail ? (
+            <div className="col-span-full flex flex-col justify-center text-center h-64">
+              <div>
+                <div className="font-bold text-4xl mb-6">
+                  Can't get your cart right now!
+                </div>
+                <Link
+                  className="font-light text-base text-white bg-black p-3 rounded-md hover:text-black hover:bg-gray-200 transition duration-100"
+                  to="/shop"
+                >
+                  Find your book here
+                </Link>
+              </div>
+            </div>
           ) : items?.length === 0 ? (
             <div className="col-span-full flex flex-col justify-center text-center h-64">
               <div>

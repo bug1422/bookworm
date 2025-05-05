@@ -52,7 +52,6 @@ const SignInForm = ({ handleSignInSuccess }) => {
       toastSuccess("Signin success");
       handleSignInSuccess();
     } catch (e) {
-      console.log(e)
       setSigninError(e.message);
     }
     setLoading(false)

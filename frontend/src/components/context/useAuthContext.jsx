@@ -2,6 +2,7 @@ import { fetchUserInfo, loginUser, logoutUser } from "@/api/user";
 import { checkConflictingCart, getValidatedCart } from "@/lib/cart";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext, createContext, useEffect } from "react";
+import { toastError, toastInfo } from "../toast";
 
 const AuthContext = createContext();
 
@@ -26,10 +27,15 @@ export const AuthContextProvider = ({ children }) => {
   });
   const FetchCart = async () => {
     const validationResponse = await getValidatedCart(user);
-    if (validationResponse.data === undefined) {
-      toastError("validate cart failed", validationResponse.erroMessage);
-      return null;
-    } else {
+    if(validationResponse.data === undefined){
+      toastError("Cart is invalid", "Please try again later")
+      return null
+    }
+    else {
+      if (validationResponse.isRevalidated) {
+        toastInfo("Cart has been revalidated", "Please recheck your cart");
+        return validationResponse.data;
+      }
       return validationResponse.data;
     }
   };
@@ -42,6 +48,7 @@ export const AuthContextProvider = ({ children }) => {
     queryKey: ["cart"],
     queryFn: () => FetchCart(),
     staleTime: 0,
+
   });
   const isAuthenticated = user !== undefined && user !== null;
   useEffect(() => {
