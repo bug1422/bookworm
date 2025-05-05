@@ -62,12 +62,12 @@ class OrderItemService:
         if item_input.quantity <= 0:
             validated_item.exception_details.append(
                 "Item quantity can't be 0 nor negative")
-            validated_item.available = False
+            validated_item.quantity = 1
             return False
         elif item_input.quantity > settings.MAX_ITEM_QUANTITY:
             validated_item.exception_details.append(
                 f"Item quantity can't be larger than {settings.MAX_ITEM_QUANTITY}")
-            validated_item.available = False
+            validated_item.quantity = settings.MAX_ITEM_QUANTITY
             return False
         else:
             return True

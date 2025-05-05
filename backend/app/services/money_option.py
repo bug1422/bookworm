@@ -9,7 +9,7 @@ class MoneyOptionSerivce:
             currencies={
                 currency.value: {
                     "exchange_rate": currency.exchange_rate,
-                    "symbol": currency.symbol
+                    "region_code": currency.region_code
                 }
                 for currency in Currency
             },

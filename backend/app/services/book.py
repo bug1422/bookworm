@@ -22,7 +22,11 @@ class BookService:
 
     @res_wrapper
     def get_by_id(self, id: int) -> Book:
-        return self.repository.get_by_id(id)
+        book = self.repository.get_by_id(id)
+        if book:
+            return book
+        else:
+            raise NotFoundException("Book")
 
     @res_wrapper
     def get_top_on_sale(self, limit: int = 10) -> list[BookSearchOutput]:
