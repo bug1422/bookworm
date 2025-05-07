@@ -29,13 +29,14 @@ const NavigatingBackBtn = ({ navigate, toastId = null, second = 10 }) => {
   };
   useEffect(() => {
     const interval = setInterval(() => {
-      if (time > 0) {
-        setTime((prev) => {
+      setTime((prev) => {
+        if (prev > 0) {
           return prev - 1;
-        });
-      } else {
-        navigating();
-      }
+        } else {
+          navigating();
+          return 0
+        }
+      });
     }, 1000);
     return () => {
       clearInterval(interval);
