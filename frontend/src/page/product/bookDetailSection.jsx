@@ -4,6 +4,7 @@ import SkeletonLoader from '@/components/fallback/skeletonLoader';
 import QuantityButton from '@/components/quantityButton';
 import { toastError, toastSuccess } from '@/components/toast';
 import { addToCart, MaxQuantity, MinQuantity } from '@/lib/cart';
+import { getImport } from '@/lib/import';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
@@ -13,7 +14,7 @@ const BookDetail = ({ book = undefined, bookIsLoading = true }) => {
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="w-full lg:w-[24rem] flex flex-col items-center">
           <img
-            src={`${import.meta.env.VITE_BACKEND_URL}${book.book_cover_photo}`}
+            src={`${getImport().VITE_BACKEND_URL}${book.book_cover_photo}`}
             onError={(e) => {
               e.target.onerror = null;
               e.target.src = '/assets/book-placeholder.png';

@@ -1,8 +1,9 @@
 import { createOrder, validateCart } from '@/api/order';
 import { toastError } from '@/components/toast';
+import { getImport } from './import';
 
-export const MinQuantity = import.meta.env.VITE_MIN_ITEM_QUANTITY;
-export const MaxQuantity = import.meta.env.VITE_MAX_ITEM_QUANTITY;
+export const MinQuantity = getImport().VITE_MIN_ITEM_QUANTITY;
+export const MaxQuantity = getImport().VITE_MAX_ITEM_QUANTITY;
 
 class StorageCartItem {
   constructor(bookId, quantity) {
@@ -93,28 +94,45 @@ export const getValidatedCart = async (user) => {
 
 export const checkoutCart = async (user, items) => {
   const response = await createOrder(items);
-  if (response.status == 409 && response.data) {
-    const data = response.data;
-    removeCartFromStorage(user);
-    const cart = new Cart();
-    for (const item of data.validated_items) {
-      const cartItem = new CartItem(item);
-      if (cartItem.available) {
-        cart.items.push(cartItem);
-        addToCart(user, cartItem.bookId, cartItem.quantity);
-      } else {
-        removeFromCart(user, cartItem.bookId);
+  console.log(response);
+  if (response.error) {
+    const data = response.error.response.data.detail;
+    if (response.error.status == 409 && data) {
+      const cart = new Cart();
+      let message = 'We have change invalid items from your cart\n';
+      for (const item of data.validated_items) {
+        const cartItem = new CartItem(item);
+        if (cartItem.available) {
+          if(items.find(v => v.bookId == cartItem.bookId)?.finalPrice != cartItem.finalPrice){
+          message += `- (${cartItem.bookTitle}) final price has changed\n`;
+          }
+          cart.items.push(cartItem);
+          addToCart(user, cartItem.bookId, cartItem.quantity);
+        } else {
+          message += `- (${cartItem.bookTitle}) is not available\n`;
+          removeFromCart(user, cartItem.bookId);
+        }
       }
+      console.log(cart);
+      return {
+        erroMessage: message,
+        data: cart,
+        isSuccess: false,
+        isRevalidated: true,
+      };
+    } else {
+      return {
+        erroMessage: response.error.message,
+        data: null,
+        isSuccess: false,
+        isRevalidated: false,
+      };
     }
-    return {
-      erroMessage: response.message,
-      data: cart,
-      isRevalidated: true,
-    };
   } else {
     removeCartFromStorage(getKey(user));
     return {
       successMessage: response.successMessage,
+      isSuccess: true,
     };
   }
 };

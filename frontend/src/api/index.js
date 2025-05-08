@@ -1,8 +1,9 @@
+import { getImport } from '@/lib/import';
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: `${import.meta.env.VITE_BACKEND_URL}/${
-    import.meta.env.VITE_API_V1_STRING
+  baseURL: `${getImport().VITE_BACKEND_URL}/${
+    getImport().VITE_API_V1_STRING
   }`,
   withCredentials: true,
   timeout: 5_000,

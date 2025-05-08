@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import SkeletonLoader from '../fallback/skeletonLoader';
 import { useOptions } from '../context/useOptionsContext';
 import { useEffect } from 'react';
+import { getImport } from '@/lib/import';
 
 const BookCard = ({
   bookId = undefined,
@@ -33,7 +34,7 @@ const BookCard = ({
     >
       <CardHeader className="w-full h-fit lg:py-8 border-b-2 px-0 rounded-sm border-gray-100 ">
         <img
-          src={`${import.meta.env.VITE_BACKEND_URL}${img_path}`}
+          src={`${getImport().VITE_BACKEND_URL}${img_path}`}
           onError={(e) => {
             e.target.onerror = null;
             e.target.src = '/assets/book-placeholder.png';

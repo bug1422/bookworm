@@ -1,4 +1,5 @@
 import { fetchMoneyOption, fetchSearchOption } from '@/api/option';
+import { getImport } from '@/lib/import';
 import { useQuery } from '@tanstack/react-query';
 import { createContext, useContext, useEffect, useState } from 'react';
 
@@ -74,14 +75,13 @@ export const OptionsProvider = ({ children }) => {
     refetchOnWindowFocus: true,
     staleTime: 30 * 60 * 1000,
   });
-  const selectedCurrencyMode = import.meta.env.VITE_CURRENCY_MODE;
+  const selectedCurrencyMode = getImport().VITE_CURRENCY_MODE;
   const currencyMode = {
     USD: 'en-US',
     VND: 'vi-VN',
   };
 
   const getCurrency = (value) => {
-    console.log(moneyOptions?.currencies);
     if (Object.keys(moneyOptions?.currencies || {}).length === 0)
       return 'loading...';
     const currentCurrency = moneyOptions?.currencies[selectedCurrencyMode];

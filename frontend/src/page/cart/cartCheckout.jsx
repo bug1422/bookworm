@@ -34,7 +34,7 @@ const NavigatingBackBtn = ({ navigate, toastId = null, second = 10 }) => {
           return prev - 1;
         } else {
           navigating();
-          return 0
+          return 0;
         }
       });
     }, 1000);
@@ -90,12 +90,10 @@ export const CartCheckout = ({ items, totalPrice }) => {
         try {
           const response = await checkoutCart(user, items);
           await refetchCart();
-          if (response.errorMessage !== undefined) {
-            toastError(
-              'Cart checkout failed',
-              'We have removed invalid items from your cart\n' +
-                response.erroMessage,
-            );
+          if (!response.isSuccess) {
+            if (response.isRevalidated) {
+              toastError('Cart checkout failed', response.erroMessage);
+            }
           } else {
             toastSuccess(
               'Cart checkout success',

@@ -17,6 +17,7 @@ import { Trash2 } from 'lucide-react';
 import { toastError, toastSuccess } from '@/components/toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { getImport } from '@/lib/import';
 
 const CartProduct = ({ item = undefined }) => {
   const isUndefined = item === undefined;
@@ -29,7 +30,7 @@ const CartProduct = ({ item = undefined }) => {
       }}
     >
       <img
-        src={`${import.meta.env.VITE_BACKEND_URL}${item?.bookCoverPhoto}`}
+        src={`${getImport().VITE_BACKEND_URL}${item?.bookCoverPhoto}`}
         onError={(e) => {
           e.target.onerror = null;
           e.target.src = '/assets/book-placeholder.png';
