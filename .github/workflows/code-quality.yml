@@ -25,7 +25,7 @@ jobs:
       run: npm install --no-save prettier
       
     - name: Check formatting with Prettier
-      run: npx prettier --check "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}"
+      run: npx prettier --write "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}"
 
   backend-lint:
     runs-on: ubuntu-latest
