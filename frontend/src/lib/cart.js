@@ -93,22 +93,23 @@ export const getValidatedCart = async (user) => {
 
 export const checkoutCart = async (user, items) => {
   const response = await createOrder(items);
-  if (response.error) {
-    //Remove bad items
-    const errors = response.errorMessage.split('|');
-    const bookIds = [];
-    for (const error of errors) {
-      const [bookId] = error.split(':');
-      const parsedId = parseInt(bookId);
-      if (Number.isInteger(parsedId) && !bookIds.includes(parsedId)) {
-        bookIds.push(parsedId);
+  if (response.status == 409 && response.data) {
+    const data = response.data;
+    removeCartFromStorage(user);
+    const cart = new Cart();
+    for (const item of data.validated_items) {
+      const cartItem = new CartItem(item);
+      if (cartItem.available) {
+        cart.items.push(cartItem);
+        addToCart(user, cartItem.bookId, cartItem.quantity);
+      } else {
+        removeFromCart(user, cartItem.bookId);
       }
     }
-    for (const id of bookIds) {
-      removeFromCart(user, id);
-    }
     return {
-      erroMessage: `Removed invalid items: Books[${bookIds.join(',')}]`,
+      erroMessage: response.message,
+      data: cart,
+      isRevalidated: true,
     };
   } else {
     removeCartFromStorage(getKey(user));

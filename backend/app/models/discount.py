@@ -1,8 +1,13 @@
-from sqlmodel import SQLModel, Numeric, Relationship, Field
-from typing import Optional
 from datetime import datetime, timezone
 from decimal import Decimal
+from typing import TYPE_CHECKING, Optional
 
+from sqlmodel import Field, Numeric, Relationship, SQLModel
+
+from app.models.money import get_currency
+
+if TYPE_CHECKING:
+    from app.models import Book
 
 class DiscountBase(SQLModel):
     discount_start_date: datetime = Field(
@@ -12,6 +17,11 @@ class DiscountBase(SQLModel):
     discount_price: Decimal = Field(
         max_digits=5, decimal_places=2, nullable=False, gt=0
     )
+
+    class Config:
+        json_encoders = {
+            Decimal: lambda v: get_currency(v)
+        }
 
 
 class Discount(DiscountBase, table=True):

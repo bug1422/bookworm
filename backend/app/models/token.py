@@ -9,3 +9,4 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     sub: str
     id: int
+

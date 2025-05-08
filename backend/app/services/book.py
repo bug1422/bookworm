@@ -1,31 +1,37 @@
-from app.utils.image import get_image_url
-from app.repository.book import BookRepository
-from app.models.paging import PagingResponse
-from app.models.book import (
-    BookQuery,
-    Book,
-    BookOutput,
-    BookSearchOutput,
-    BookDetailOutput,
-    BookSortOption,
-)
-from app.services.review import ReviewService
-from app.services.wrapper import async_res_wrapper
 from decimal import Decimal
 from math import ceil
+
+from app.core.image import get_image_url
+from app.models.book import (
+    Book,
+    BookDetailOutput,
+    BookOutput,
+    BookQuery,
+    BookSearchOutput,
+    BookSortOption,
+)
+from app.models.exception import NotFoundException
+from app.models.paging import PagingResponse
+from app.repository.book import BookRepository
+from app.services.review import ReviewService
+from app.services.wrapper import res_wrapper
 
 
 class BookService:
     def __init__(self, repository: BookRepository):
         self.repository = repository
 
-    @async_res_wrapper
-    async def get_by_id(self, id: int) -> Book:
-        return await self.repository.get_by_id(id)
+    @res_wrapper
+    def get_by_id(self, id: int) -> Book:
+        book = self.repository.get_by_id(id)
+        if book:
+            return book
+        else:
+            raise NotFoundException("Book")
 
-    @async_res_wrapper
-    async def get_top_on_sale(self, limit: int = 10) -> list[BookSearchOutput]:
-        books, _ = await self.repository.get_books(
+    @res_wrapper
+    def get_top_on_sale(self, limit: int = 10) -> list[BookSearchOutput]:
+        books, _ = self.repository.get_books(
             BookSortOption.ON_SALE, limit=limit
         )
         return [
@@ -35,11 +41,11 @@ class BookService:
             for book, discount_offset, final_price, total_review, avg_rating in books
         ]
 
-    @async_res_wrapper
-    async def get_recommended_books(
+    @res_wrapper
+    def get_recommended_books(
         self, limit: int = 8
     ) -> list[BookSearchOutput]:
-        books, _ = await self.repository.get_books(
+        books, _ = self.repository.get_books(
             BookSortOption.AVG_RATING, limit=limit
         )
         return [
@@ -49,11 +55,11 @@ class BookService:
             for book, discount_offset, final_price, total_review, avg_rating in books
         ]
 
-    @async_res_wrapper
-    async def get_popular_books(
+    @res_wrapper
+    def get_popular_books(
         self, limit: int = 8
     ) -> list[BookSearchOutput]:
-        books, _ = await self.repository.get_books(
+        books, _ = self.repository.get_books(
             BookSortOption.POPULARITY, limit=limit
         )
         return [
@@ -63,11 +69,11 @@ class BookService:
             for book, discount_offset, final_price, total_review, avg_rating in books
         ]
 
-    @async_res_wrapper
-    async def get_books(
+    @res_wrapper
+    def get_books(
         self, query_option: BookQuery
     ) -> PagingResponse[BookSearchOutput]:
-        books, max_items = await self.repository.get_books(
+        books, max_items = self.repository.get_books(
             sort_option=query_option.sort_option,
             category_name=query_option.category_name,
             author_name=query_option.author_name,
@@ -91,30 +97,37 @@ class BookService:
             ],
         )
 
-    @async_res_wrapper
-    async def get_book_detail(
+    @res_wrapper
+    def get_book_detail(
         self, book_id: int, review_service: ReviewService
     ) -> BookDetailOutput:
+        book_detail = self.repository.get_book_detail(book_id)
+        if not book_detail:
+            raise NotFoundException("Book detail")
         (
             book,
+            discount_offset,
             final_price,
             total_review,
             avg_rating,
-        ) = await self.repository.get_book_detail(book_id)
-        review_count_result = await review_service.get_review_count_by_rating(
+        ) = book_detail
+        review_count_result = review_service.get_review_count_by_rating(
             book_id
         )
-        if not book:
-            raise Exception("Book not found")
-        elif not review_count_result.is_success:
+        if not review_count_result.is_success:
             raise review_count_result.exception
         return self.__map_to_detail(
             book,
+            discount_offset,
             final_price,
             total_review,
             avg_rating,
             review_count_result.result,
         )
+
+    @res_wrapper
+    def get_book_max_discount(self,book_id:int):
+        return self.repository.get_book_max_discount(book_id)
 
     def get_sort_option(
         self,
@@ -132,14 +145,15 @@ class BookService:
     ) -> BookOutput:
         return BookOutput(
             **book.model_dump(
-                include=["id","book_title", "book_price"]
+                include=["id", "book_title", "book_price"]
             ),
-            book_cover_photo= get_image_url("books",book.book_cover_photo),
+            book_cover_photo=get_image_url("books", book.book_cover_photo),
             category_name=book.category.category_name,
             author_name=book.author.author_name,
             final_price=final_price,
-            rating_star=avg_rating,
-            total_review=total_review,
+            is_on_sale=final_price < book.book_price,
+            rating_star=round(avg_rating, 1) if avg_rating else None,
+            total_review=total_review if total_review else 0,
         )
 
     def __map_to_search_result(
@@ -160,14 +174,15 @@ class BookService:
     def __map_to_detail(
         self,
         book: Book,
+        discount_offset: Decimal,
         final_price: Decimal,
         total_review: int,
         avg_rating: float,
         review_count_by_rating,
     ) -> BookDetailOutput:
         return BookDetailOutput(
-            **self.__map_to_preview(
-                book, final_price, total_review, avg_rating
+            **self.__map_to_search_result(
+                book, discount_offset, final_price, total_review, avg_rating
             ).model_dump(),
             book_summary=book.book_summary,
             review_count_by_rating=review_count_by_rating,

@@ -1,6 +1,6 @@
-from functools import wraps
 from dataclasses import dataclass
-from typing import Optional, Any, TypeVar, Callable, Awaitable, Generic
+from functools import wraps
+from typing import Any, Awaitable, Callable, Generic, Optional, TypeVar
 
 P = TypeVar("P")
 
@@ -13,20 +13,20 @@ class ServiceResponse(Generic[P]):
 
     @staticmethod
     def success(result: P):
-        return ServiceResponse(is_success=True, result=result)
+        return ServiceResponse[P](is_success=True, result=result)
 
     @staticmethod
     def fail(exception):
         return ServiceResponse[Any](is_success=False, exception=exception)
 
 
-def async_res_wrapper(func: Callable[..., Awaitable[P]]):
+def res_wrapper(func: Callable[..., P]):
     @wraps(func)
-    async def async_wrapper(*args, **kwargs) -> ServiceResponse[P]:
+    def wrapper(*args, **kwargs) -> ServiceResponse[P]:
         try:
-            res: P = await func(*args, **kwargs)  # Await async function
+            res: P = func(*args, **kwargs)
             return ServiceResponse.success(res)
         except Exception as e:
             return ServiceResponse.fail(e)
 
-    return async_wrapper
+    return wrapper

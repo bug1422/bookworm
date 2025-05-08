@@ -17,12 +17,44 @@ services:
       - data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     environment:
-      POSTGRES_DB: ${POSTGRES_DEV_DB?error}
+      POSTGRES_DB: ${POSTGRES_STAGING_DB?error}
       POSTGRES_USER: ${POSTGRES_USER?error}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?error}
     ports:
-      - "${POSTGRES_DEV_PORT?error}:5432"
-    
-
+      - "${DOCKER_POSTGRES_PORT?error}:5432"
+  test_postgres:
+    image: postgres:latest
+    container_name: test_postgres
+    volumes:
+      - test_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${POSTGRES_TEST_DB?error}
+      POSTGRES_USER: ${POSTGRES_USER?error}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?error}
+      
+    ports:
+      - "${POSTGRES_TEST_PORT?error}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -h localhost"]
+      interval: 5s
+      retries: 5
+      start_period: 10s
+  web:
+    env_file:
+      - .env
+    container_name: react_website
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./frontend/ci/client.conf:/etc/nginx/conf.d/default.conf
+      - ./frontend/ci/client.crt:/etc/ssl/certs/client.crt
+      - ./frontend/ci/client.key:/etc/ssl/private/client.key
+    environment:
+      - VIRTUAL_HOST=bookworm.com
 volumes:
   data:
+  test_data:

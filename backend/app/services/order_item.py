@@ -1,13 +1,17 @@
-from app.services.wrapper import async_res_wrapper
-from app.services.book import BookService
-from app.services.discount import DiscountService
-from app.repository.order_item import OrderItemRepository
+from decimal import ROUND_HALF_UP, Decimal
+
+from app.core.config import settings
+from app.core.image import get_image_url
 from app.models.order_item import (
     OrderItem,
-    OrderItemInput,
+    OrderItemCheckoutInput,
+    OrderItemValidateInput,
     OrderItemValidateOutput,
 )
-from datetime import datetime, timezone
+from app.repository.order_item import OrderItemRepository
+from app.services.book import BookService
+from app.services.discount import DiscountService
+from app.services.wrapper import res_wrapper
 
 
 class OrderItemService:
@@ -21,73 +25,92 @@ class OrderItemService:
         self.book_service = book_service
         self.discount_service = discount_service
 
-    @async_res_wrapper
-    async def add_items(
+    @res_wrapper
+    def add_items(
         self, order_id: int, items: list[OrderItemValidateOutput]
     ):
         mapped_items = [
             OrderItem(
                 quantity=item.quantity,
-                price=item.final_price,
+                price=item.total_price,
                 book_id=item.book_id,
                 order_id=order_id,
             )
             for item in items
         ]
-        await self.repository.add_range(mapped_items)
+        self.repository.add_range(mapped_items)
 
-    async def validate_item(
-        self, item_input: OrderItemInput
+    def validate_item(
+        self, item_input: OrderItemValidateInput | OrderItemCheckoutInput
     ) -> OrderItemValidateOutput:
         validated_item = OrderItemValidateOutput(**item_input.model_dump())
-        await self.__validate_book(item_input, validated_item)
-        if len(validated_item.exception_details) == 0:
-            await self.__validate_discount(item_input, validated_item)
-
-        if validated_item.cart_price != validated_item.final_price:
+        _ = self.__validate_quantity(item_input, validated_item)
+        book_flag = self.__validate_book(item_input, validated_item)
+        if not book_flag:
+            return validated_item
+        self.__validate_discount(item_input, validated_item)
+        validated_item.total_price = (Decimal(item_input.quantity) * Decimal(validated_item.final_price)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        if isinstance(item_input, OrderItemCheckoutInput) and validated_item.total_price != item_input.cart_price:
             validated_item.exception_details.append(
-                "Price applied to cart doesn't match the final price"
-            )
-
+                "Book price doesn't match final price")
+        validated_item.is_on_sale=validated_item.final_price < validated_item.book_price
         return validated_item
 
-    async def __validate_book(
+    def __validate_quantity(
         self,
-        item_input: OrderItemInput,
+        item_input: OrderItemValidateInput,
         validated_item: OrderItemValidateOutput = OrderItemValidateOutput(),
-    ) -> list[str]:
-        book = (
-            await self.book_service.get_by_id(item_input.book_id)
-            if item_input.book_id != None
+    ) -> bool:
+        if item_input.quantity <= 0:
+            validated_item.exception_details.append(
+                "Item quantity can't be 0 nor negative")
+            validated_item.quantity = 1
+            return False
+        elif item_input.quantity > settings.MAX_ITEM_QUANTITY:
+            validated_item.exception_details.append(
+                f"Item quantity can't be larger than {settings.MAX_ITEM_QUANTITY}")
+            validated_item.quantity = settings.MAX_ITEM_QUANTITY
+            return False
+        else:
+            return True
+
+    def __validate_book(
+        self,
+        item_input: OrderItemValidateInput,
+        validated_item: OrderItemValidateOutput = OrderItemValidateOutput(),
+    ) -> bool:
+        book_res = (
+            self.book_service.get_by_id(item_input.book_id)
+            if item_input.book_id is not None
             else None
         )
-        if not book:
+        if not book_res.is_success:
             validated_item.exception_details.append("Book isn't available")
-        validated_item.book_price = book.book_price
-        validated_item.final_price = validated_item.book_price
-        return validated_item
-
-    async def __validate_discount(
-        self,
-        item_input: OrderItemInput,
-        validated_item: OrderItemValidateOutput = OrderItemValidateOutput(),
-    ) -> list[str]:
-        discount = await self.discount_service.get_by_id(
-            item_input.discount_id
-        )
-        if not discount:
-            validated_item.exception_details.append("Discount isn't available")
-        elif discount.book_id != item_input.book_id:
-            validated_item.exception_details.append(
-                "Discount doesn't apply to this book"
-            )
+            validated_item.available = False
+            return False
         else:
-            now = datetime(timezone.utc)
-            if discount.discount_start_date > now:
-                validated_item.exception_details.append(
-                    "Discount isn't ongoing"
-                )
-            elif discount.discount_end_date < now:
-                validated_item.exception_details.append("Discount is expired")
-        validated_item.final_price = discount.discount_price
-        return validated_item
+            validated_item.book_title = book_res.result.book_title
+            validated_item.book_id = book_res.result.id
+            validated_item.book_cover_photo = get_image_url(
+                "books", book_res.result.book_cover_photo)
+            validated_item.author_name = book_res.result.author.author_name
+            validated_item.book_price = book_res.result.book_price
+            validated_item.final_price = validated_item.book_price
+            return True
+
+    def __validate_discount(
+        self,
+        item_input: OrderItemValidateInput,
+        validated_item: OrderItemValidateOutput = OrderItemValidateOutput(),
+    ) -> bool:
+        response = self.book_service.get_book_max_discount(item_input.book_id)
+        if not response.is_success:
+            validated_item.exception_details.append(str(response.exception))
+            validated_item.available = False
+            return False
+
+        final_price, start_date, end_date = response.result
+        validated_item.final_price = final_price
+        validated_item.discount_start_date = start_date
+        validated_item.discount_end_date = end_date
+        return True

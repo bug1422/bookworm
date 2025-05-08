@@ -1,9 +1,18 @@
-from sqlmodel import SQLModel, Relationship, Field
 from datetime import datetime, timezone
 from decimal import Decimal
-from typing import Optional
+from typing import TYPE_CHECKING, Annotated, List, Optional
+
 from pydantic import conlist, field_validator
-from app.models.order_item import OrderItemInput, OrderItemValidateOutput
+from sqlmodel import Field, Relationship, SQLModel
+
+from app.models.money import get_currency
+from app.models.order_item import (
+    OrderItemValidateInput,
+    OrderItemValidateOutput,
+)
+
+if TYPE_CHECKING:
+    from app.models import OrderItem, User
 
 
 class OrderBase(SQLModel):
@@ -14,19 +23,26 @@ class OrderBase(SQLModel):
         default=0, max_digits=8, decimal_places=2, nullable=False
     )
 
+    class Config:
+        json_encoders = {
+            Decimal: lambda v: get_currency(v)
+        }
 
-class OrderInput(SQLModel):
-    items: conlist(OrderItemInput, min_length=1) = Field(default=[])
+
+class OrderInput(SQLModel, config=dict(from_attributes=False)):
+    items: Annotated[List[OrderItemValidateInput], conlist(
+        OrderItemValidateInput, min_length=1)] = Field(nullable=False)
 
     @field_validator("items")
     @classmethod
-    def validate_unique_item(cls, items: list[OrderItemInput]):
-        if len(items) != set(len([item.book_id for item in items])):
+    def validate_unique_item(cls, items: list[OrderItemValidateInput]):
+        if len(items) != len(set([item.book_id for item in items])):
             raise ValueError("List can't contain duplicate id")
 
 
 class OrderValidateOutput(SQLModel):
-    item_outputs: list[OrderItemValidateOutput] = Field(default=[])
+    validated_items: list[OrderItemValidateOutput]
+    exception_details: list[str] = Field(default=[])
 
 
 class Order(OrderBase, table=True):

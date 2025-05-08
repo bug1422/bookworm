@@ -1,6 +1,10 @@
-from sqlmodel import SQLModel, Relationship, Field
+from typing import TYPE_CHECKING, Optional
+
 from pydantic import EmailStr
-from typing import Optional
+from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from app.models import Order
 
 
 class UserLogin(SQLModel):
@@ -8,9 +12,17 @@ class UserLogin(SQLModel):
     password: str
 
 
+class UserSignup(UserLogin):
+    first_name: str
+    last_name: str
+    is_admin: bool
+
+
 class UserInfo(SQLModel):
-    email: str | None = None
-    full_name: str | None = None
+    id: Optional[int] = Field(default=None)
+    email: str | None = Field(default=None)
+    first_name: str = Field(max_length=50, nullable=False)
+    last_name: str = Field(max_length=50, nullable=True)
     admin: bool
 
 

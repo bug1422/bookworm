@@ -1,5 +1,7 @@
-from app.core.config import settings
 import os
+
+from app.core.config import settings
+
 
 def get_image_url(folder, file_name) -> str | None:
     if file_name:

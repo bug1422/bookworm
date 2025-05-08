@@ -1,11 +1,15 @@
-from sqlmodel import SQLModel, Relationship, Field
-from pydantic import field_validator
-from typing import Optional
 from datetime import datetime, timezone
 from enum import Enum
+from typing import TYPE_CHECKING, Optional
+
+from pydantic import field_validator
+from sqlmodel import Field, Relationship, SQLModel
+
 from app.core.config import settings
 from app.models.paging import QueryPaging
 
+if TYPE_CHECKING:
+    from app.models import Book
 
 class ReviewSortOption(Enum):
     OLDEST_DATE = ("oldest-date", "Sort by date: oldest to newest")
@@ -26,7 +30,7 @@ class ReviewBase(SQLModel):
 
 
 class ReviewQuery(QueryPaging):
-    star_rating: Optional[int] = Field(default=None)
+    rating_star: Optional[int] = Field(default=None)
     sort_option: ReviewSortOption = Field(default=ReviewSortOption.NEWEST_DATE)
 
 
@@ -34,8 +38,10 @@ class ReviewDetail(ReviewBase):
     id: Optional[int]
 
 
-class ReviewInput(ReviewBase):
-    book_id: int = Field(nullable=False)
+class ReviewInput(SQLModel):
+    review_title: str = Field(nullable=False)
+    review_details: str
+    rating_star: int = Field(nullable=False)
 
     @field_validator("rating_star")
     @classmethod
@@ -47,6 +53,7 @@ class ReviewInput(ReviewBase):
             raise ValueError(
                 f"rating must be from {settings.MIN_REVIEW_RATING} to {settings.MAX_REVIEW_RATING}"
             )
+        return value
 
 
 class Review(ReviewBase, table=True):
