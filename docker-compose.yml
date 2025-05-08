@@ -39,7 +39,22 @@ services:
       interval: 5s
       retries: 5
       start_period: 10s
-  
+  web:
+    env_file:
+      - .env
+    container_name: react_website
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./frontend/ci/client.conf:/etc/nginx/conf.d/default.conf
+      - ./frontend/ci/client.crt:/etc/ssl/certs/client.crt
+      - ./frontend/ci/client.key:/etc/ssl/private/client.key
+    environment:
+      - VIRTUAL_HOST=bookworm.com
 volumes:
   data:
   test_data:
