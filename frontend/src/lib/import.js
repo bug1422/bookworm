@@ -1,3 +1,3 @@
-export function getImport(){
-    return process.env
+export function getImport() {
+  return process.env;
 }

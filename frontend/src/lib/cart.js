@@ -103,8 +103,11 @@ export const checkoutCart = async (user, items) => {
       for (const item of data.validated_items) {
         const cartItem = new CartItem(item);
         if (cartItem.available) {
-          if(items.find(v => v.bookId == cartItem.bookId)?.finalPrice != cartItem.finalPrice){
-          message += `- (${cartItem.bookTitle}) final price has changed\n`;
+          if (
+            items.find((v) => v.bookId == cartItem.bookId)?.finalPrice !=
+            cartItem.finalPrice
+          ) {
+            message += `- (${cartItem.bookTitle}) final price has changed\n`;
           }
           cart.items.push(cartItem);
           addToCart(user, cartItem.bookId, cartItem.quantity);

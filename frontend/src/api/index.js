@@ -2,9 +2,7 @@ import { getImport } from '@/lib/import';
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: `${getImport().VITE_BACKEND_URL}/${
-    getImport().VITE_API_V1_STRING
-  }`,
+  baseURL: `${getImport().VITE_BACKEND_URL}/${getImport().VITE_API_V1_STRING}`,
   withCredentials: true,
   timeout: 5_000,
 });
